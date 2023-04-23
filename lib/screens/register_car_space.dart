@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sparepark/models/car_park_space.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:sparepark/shared/user_db_helper.dart';
+import 'package:sparepark/models/user_model.dart';
+import 'package:sparepark/pages/edit_page.dart';
+import 'package:sparepark/shared/firestore_helper.dart';
+import 'package:sparepark/shared/carpark_space_db_helper.dart';
 
 class CarParkSpace extends StatefulWidget {
   @override
@@ -18,6 +21,17 @@ class _CarParkSpaceState extends State<CarParkSpace> {
   final _spacesController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _postcodeOptions = <String>[];
+
+  void _newFunction() async {
+    final carParkService = DB_CarPark();
+    final nearestSpaces = await carParkService.getNearestSpaces(
+      latitude: 51.670797,
+      longitude: -0.027587,
+    );
+    nearestSpaces.forEach((space) {
+      print("Latitude: ${space.latitude}, Longitude: ${space.longitude}");
+    });
+  }
 
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
@@ -51,12 +65,6 @@ class _CarParkSpaceState extends State<CarParkSpace> {
         );
 
         DB_CarPark.create(carParkSpace);
-
-        // final reference = FirebaseDatabase.instance.ref();
-        // await reference
-        //     .child('carParkSpaces')
-        //     .push()
-        //     .set(carParkSpace.toJson());
       } else {
         // Postcode is invalid, show error message
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -73,11 +81,13 @@ class _CarParkSpaceState extends State<CarParkSpace> {
     final response = await http.get(url);
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      final options = List<String>.from(data['result']);
-      setState(() {
-        _postcodeOptions.clear();
-        _postcodeOptions.addAll(options);
-      });
+      if (data['result'] != null) {
+        final options = List<String>.from(data['result']);
+        setState(() {
+          _postcodeOptions.clear();
+          _postcodeOptions.addAll(options);
+        });
+      }
     }
   }
 
@@ -179,6 +189,53 @@ class _CarParkSpaceState extends State<CarParkSpace> {
           Center(
             child: ElevatedButton(
               onPressed: _submitForm,
+              child: Text('Submit'),
+            ),
+          ),
+          StreamBuilder<List<CarParkSpaceModel>>(
+              stream: DB_CarPark.read(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text("some error occured"),
+                  );
+                }
+                if (snapshot.hasData) {
+                  final userData = snapshot.data;
+                  return Expanded(
+                    child: ListView.builder(
+                        itemCount: userData!.length,
+                        itemBuilder: (context, index) {
+                          final singleSpace = userData[index];
+                          return Container(
+                            margin: EdgeInsets.symmetric(vertical: 5),
+                            child: ListTile(
+                              leading: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                    color: Colors.deepPurple,
+                                    shape: BoxShape.circle),
+                              ),
+                              title: Text("${singleSpace.address}"),
+                              subtitle: Text("${singleSpace.postcode}"),
+                            ),
+                          );
+                        }),
+                  );
+                }
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }),
+          Center(
+            child: ElevatedButton(
+              onPressed: _newFunction,
               child: Text('Submit'),
             ),
           ),
