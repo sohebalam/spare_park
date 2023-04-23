@@ -45,7 +45,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyAvrBJNQ1mlhshIdkKiILpRl5U2Q9grS1g',
-    appId: '1:146231892644:web:5be12e1e93ff74c827a431',
+    appId: '1:146231892644:web:f88f5b2faeaa533927a431',
     messagingSenderId: '146231892644',
     projectId: 'sparepark-d7804',
     authDomain: 'sparepark-d7804.firebaseapp.com',
@@ -54,7 +54,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDEzUWLtd5AmJdm-rgoI982TAwimB1hRD4',
-    appId: '1:146231892644:android:0b23d310ad174fb827a431',
+    appId: '1:146231892644:android:8891f0be52157af727a431',
     messagingSenderId: '146231892644',
     projectId: 'sparepark-d7804',
     storageBucket: 'sparepark-d7804.appspot.com',
@@ -62,23 +62,23 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCCb902p75apUUJwz2q6Xb1k-K5c9weZRQ',
-    appId: '1:146231892644:ios:a29d09c07db6ffd827a431',
+    appId: '1:146231892644:ios:93ab880e8e4ea89227a431',
     messagingSenderId: '146231892644',
     projectId: 'sparepark-d7804',
     storageBucket: 'sparepark-d7804.appspot.com',
     androidClientId: '146231892644-82704tgoi7mqhbkg57qevthqusd4uik8.apps.googleusercontent.com',
-    iosClientId: '146231892644-lteo92h1kc37g32q6q7qlbt4khp1taum.apps.googleusercontent.com',
-    iosBundleId: 'com.example.sparePark',
+    iosClientId: '146231892644-pdvj4lui8u4igq19sq4qoo7fobj4af8u.apps.googleusercontent.com',
+    iosBundleId: 'com.example.sparepark',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyCCb902p75apUUJwz2q6Xb1k-K5c9weZRQ',
-    appId: '1:146231892644:ios:a29d09c07db6ffd827a431',
+    appId: '1:146231892644:ios:93ab880e8e4ea89227a431',
     messagingSenderId: '146231892644',
     projectId: 'sparepark-d7804',
     storageBucket: 'sparepark-d7804.appspot.com',
     androidClientId: '146231892644-82704tgoi7mqhbkg57qevthqusd4uik8.apps.googleusercontent.com',
-    iosClientId: '146231892644-lteo92h1kc37g32q6q7qlbt4khp1taum.apps.googleusercontent.com',
-    iosBundleId: 'com.example.sparePark',
+    iosClientId: '146231892644-pdvj4lui8u4igq19sq4qoo7fobj4af8u.apps.googleusercontent.com',
+    iosBundleId: 'com.example.sparepark',
   );
 }

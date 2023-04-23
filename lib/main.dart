@@ -1,45 +1,24 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:sparepark/screens/home_page.dart';
-import 'package:sparepark/map.dart';
+// import 'package:firebase_crud/home_page.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:sparepark/firebase_options.dart';
+import 'package:sparepark/pages/home_page.dart';
 import 'package:sparepark/screens/register_car_space.dart';
-import 'package:sparepark/screens/user_map_info.dart';
 
-import 'firebase_options.dart';
-
-void main() async {
+Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  // Widget build(BuildContext context) {
-  //   return MaterialApp(
-  //       debugShowCheckedModeBanner: false,
-  //       home: Scaffold(body: Material(child: UserMapInfo())));
-  // }
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: Text('My App')),
-        body: Material(
-          child: CarParkSpace(),
-        ),
-      ),
+      debugShowCheckedModeBanner: false,
+      home: Material(child: CarParkSpace()),
     );
   }
 }

@@ -1,97 +1,14 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_webservice/places.dart';
-import 'package:google_maps_webservice/places.dart';
-import 'package:flutter_google_places/flutter_google_places.dart';
-
-import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:sparepark/models/car_park_space.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:sparepark/shared/user_db_helper.dart';
 
 class CarParkSpace extends StatefulWidget {
   @override
   _CarParkSpaceState createState() => _CarParkSpaceState();
 }
-
-// class _CarParkSpaceState extends State<CarParkSpace> {
-//   final _formKey = GlobalKey<FormState>();
-//   final _addressController = TextEditingController();
-//   final _postcodeController = TextEditingController();
-//   final _hourlyRateController = TextEditingController();
-//   final _spacesController = TextEditingController();
-//   final _descriptionController = TextEditingController();
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Form(
-//       key: _formKey,
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           TextFormField(
-//             controller: _addressController,
-//             decoration: InputDecoration(
-//               labelText: 'Address',
-//             ),
-//             validator: (value) {
-//               if (value?.isEmpty ?? true) {
-//                 return 'Please enter an address';
-//               }
-//               return null;
-//             },
-//           ),
-//           TextFormField(
-//             controller: _postcodeController,
-//             decoration: InputDecoration(
-//               labelText: 'Postcode',
-//             ),
-//             validator: (value) {
-//               if (value?.isEmpty ?? true) {
-//                 return 'Please enter a postcode';
-//               }
-//               return null;
-//             },
-//           ),
-//           TextFormField(
-//             controller: _hourlyRateController,
-//             keyboardType: TextInputType.number,
-//             decoration: InputDecoration(
-//               labelText: 'Hourly rate',
-//             ),
-//             validator: (value) {
-//               if (value?.isEmpty ?? true) {
-//                 return 'Please enter an hourly rate';
-//               }
-//               return null;
-//             },
-//           ),
-//           TextFormField(
-//             controller: _spacesController,
-//             keyboardType: TextInputType.number,
-//             decoration: InputDecoration(
-//               labelText: 'Number of parking spaces',
-//             ),
-//             validator: (value) {
-//               if (value?.isEmpty ?? true) {
-//                 return 'Please enter the number of parking spaces';
-//               }
-//               return null;
-//             },
-//           ),
-//           TextFormField(
-//             controller: _descriptionController,
-//             decoration: InputDecoration(
-//               labelText: 'Description (optional)',
-//             ),
-//           ),
-//           SizedBox(height: 16),
-//           ElevatedButton(
-//             onPressed: _submitForm,
-//             child: Text('Save'),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
 
 class _CarParkSpaceState extends State<CarParkSpace> {
   final _formKey = GlobalKey<FormState>();
@@ -100,16 +17,67 @@ class _CarParkSpaceState extends State<CarParkSpace> {
   final _hourlyRateController = TextEditingController();
   final _spacesController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _placesApiClient =
-      GoogleMapsPlaces(apiKey: 'AIzaSyCY8J7h0Q-5Q1UDP9aY0EOy_WZBPESNBBg');
+  final _postcodeOptions = <String>[];
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      print('Address: ${_addressController.text}');
-      print('Postcode: ${_postcodeController.text}');
-      print('Hourly Rate: ${_hourlyRateController.text}');
-      print('Spaces: ${_spacesController.text}');
-      print('Description: ${_descriptionController.text}');
+      // Validate postcode
+      final postcode = _postcodeController.text;
+      final postcodeUrl =
+          Uri.parse('https://api.postcodes.io/postcodes/$postcode');
+      final postcodeResponse = await http.get(postcodeUrl);
+      if (postcodeResponse.statusCode == 200) {
+        // Postcode is valid, continue with form submission
+        final postcodeData = json.decode(postcodeResponse.body);
+        final longitude = postcodeData['result']['longitude'];
+        final latitude = postcodeData['result']['latitude'];
+        print('Address: ${_addressController.text}');
+        print('Postcode: $postcode');
+        print('Longitude: $longitude');
+        print('Latitude: $latitude');
+        print('Hourly Rate: ${_hourlyRateController.text}');
+        print('Spaces: ${_spacesController.text}');
+        print('Description: ${_descriptionController.text}');
+
+        final carParkSpace = CarParkSpaceModel(
+          address: _addressController.text,
+          postcode: postcode,
+          hourlyRate: double.parse(_hourlyRateController.text),
+          spaces: int.parse(_spacesController.text),
+          description: _descriptionController.text,
+          // phoneNumber: _phoneNumberController.text,
+          latitude: latitude,
+          longitude: longitude,
+        );
+
+        DB_CarPark.create(carParkSpace);
+
+        // final reference = FirebaseDatabase.instance.ref();
+        // await reference
+        //     .child('carParkSpaces')
+        //     .push()
+        //     .set(carParkSpace.toJson());
+      } else {
+        // Postcode is invalid, show error message
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Invalid postcode'),
+          duration: Duration(seconds: 2),
+        ));
+      }
+    }
+  }
+
+  void _fetchPostcodeOptions(String input) async {
+    final url =
+        Uri.parse('https://api.postcodes.io/postcodes/$input/autocomplete');
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final options = List<String>.from(data['result']);
+      setState(() {
+        _postcodeOptions.clear();
+        _postcodeOptions.addAll(options);
+      });
     }
   }
 
@@ -120,6 +88,9 @@ class _CarParkSpaceState extends State<CarParkSpace> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          SizedBox(
+            height: 50.0,
+          ),
           TextFormField(
             controller: _addressController,
             decoration: InputDecoration(
@@ -132,21 +103,40 @@ class _CarParkSpaceState extends State<CarParkSpace> {
               return null;
             },
           ),
-          PlacesAutocompleteFormField(
+          TextFormField(
             controller: _postcodeController,
-            apiKey: 'AIzaSyCY8J7h0Q-5Q1UDP9aY0EOy_WZBPESNBBg',
-
-            // mode: Mode.postalCode,
-            inputDecoration: InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Postcode',
             ),
-            // validator: (value) {
-            //   if (value.isEmpty ?? true) {
-            //     return 'Please enter a postcode';
-            //   }
-            //   return null;
-            // },
+            onChanged: (value) {
+              _fetchPostcodeOptions(value);
+            },
+            validator: (value) {
+              if (value?.isEmpty ?? true) {
+                return 'Please enter a postcode';
+              }
+              return null;
+            },
           ),
+          if (_postcodeOptions.isNotEmpty)
+            Container(
+              height: 100.0,
+              child: ListView.builder(
+                itemCount: _postcodeOptions.length,
+                itemBuilder: (context, index) {
+                  final postcodeOption = _postcodeOptions[index];
+                  return ListTile(
+                    title: Text(postcodeOption),
+                    onTap: () {
+                      setState(() {
+                        _postcodeController.text = postcodeOption;
+                        _postcodeOptions.clear();
+                      });
+                    },
+                  );
+                },
+              ),
+            ),
           TextFormField(
             controller: _hourlyRateController,
             keyboardType: TextInputType.number,
@@ -164,11 +154,11 @@ class _CarParkSpaceState extends State<CarParkSpace> {
             controller: _spacesController,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
-              labelText: 'Number of parking spaces',
+              labelText: 'Spaces',
             ),
             validator: (value) {
               if (value?.isEmpty ?? true) {
-                return 'Please enter the number of parking spaces';
+                return 'Please enter the number of spaces';
               }
               return null;
             },
@@ -176,13 +166,21 @@ class _CarParkSpaceState extends State<CarParkSpace> {
           TextFormField(
             controller: _descriptionController,
             decoration: InputDecoration(
-              labelText: 'Description (optional)',
+              labelText: 'Description',
             ),
+            validator: (value) {
+              if (value?.isEmpty ?? true) {
+                return 'Please enter a description';
+              }
+              return null;
+            },
           ),
-          SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _submitForm,
-            child: Text('Save'),
+          SizedBox(height: 16.0),
+          Center(
+            child: ElevatedButton(
+              onPressed: _submitForm,
+              child: Text('Submit'),
+            ),
           ),
         ],
       ),
