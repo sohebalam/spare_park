@@ -41,13 +41,13 @@ class DB_CarPark {
   }
 
   Future<List<CarParkSpaceModel>> getNearestSpaces({
-    double latitude = 51.670797,
-    double longitude = -0.027587,
+    double? latitude,
+    double? longitude,
   }) async {
     final carParkSpaces = await read().first;
     final position = Position(
-      latitude: latitude,
-      longitude: longitude,
+      latitude: latitude!,
+      longitude: longitude!,
       altitude: 0,
       heading: 0,
       speed: 0,

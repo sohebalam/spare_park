@@ -22,17 +22,6 @@ class _CarParkSpaceState extends State<CarParkSpace> {
   final _descriptionController = TextEditingController();
   final _postcodeOptions = <String>[];
 
-  void _newFunction() async {
-    final carParkService = DB_CarPark();
-    final nearestSpaces = await carParkService.getNearestSpaces(
-      latitude: 51.670797,
-      longitude: -0.027587,
-    );
-    nearestSpaces.forEach((space) {
-      print("Latitude: ${space.latitude}, Longitude: ${space.longitude}");
-    });
-  }
-
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       // Validate postcode
@@ -233,12 +222,6 @@ class _CarParkSpaceState extends State<CarParkSpace> {
                   child: CircularProgressIndicator(),
                 );
               }),
-          Center(
-            child: ElevatedButton(
-              onPressed: _newFunction,
-              child: Text('Submit'),
-            ),
-          ),
         ],
       ),
     );

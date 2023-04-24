@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_webservice/places.dart';
+import 'package:sparepark/screens/mapscreens/results_page.dart';
+import 'package:sparepark/shared/carpark_space_db_helper.dart';
 
 class UserMapInfo extends StatefulWidget {
   const UserMapInfo({Key? key}) : super(key: key);
@@ -25,6 +27,65 @@ class _UserMapInfoState extends State<UserMapInfo> {
     super.initState();
     getLocation();
     _selectedOption = 'Current Location';
+  }
+
+  // void _newFunction(
+  //   double? latitude,
+  //   double? longitude,
+  // ) async {
+  //   final carParkService = DB_CarPark();
+  //   final nearestSpaces = await carParkService.getNearestSpaces(
+  //     latitude: latitude,
+  //     longitude: longitude,
+  //   );
+  //   List<List<double>> results = [];
+  //   nearestSpaces.forEach((space) {
+  //     results.add([space.latitude, space.longitude]);
+  //     print("Latitude: ${space.latitude}, Longitude: ${space.longitude}");
+  //   });
+  //   print(results);
+
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => ResultsPage(
+  //         location: LatLng(latitude!, longitude!),
+  //         results: results,
+  //         latitude: _currentPosition.latitude,
+  //         longitude: _currentPosition.longitude,
+  //       ),
+  //     ),
+  //   );
+  // }
+
+  void _newFunction(
+    double? latitude,
+    double? longitude,
+  ) async {
+    final carParkService = DB_CarPark();
+    final nearestSpaces = await carParkService.getNearestSpaces(
+      latitude: latitude,
+      longitude: longitude,
+    );
+    List<List<dynamic>> results = [];
+    nearestSpaces.forEach((space) {
+      results.add([space.id, space.latitude, space.longitude]);
+      print(
+          "ID: ${space.id}, Latitude: ${space.latitude}, Longitude: ${space.longitude}");
+    });
+    print(results);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ResultsPage(
+          location: LatLng(latitude!, longitude!),
+          results: results,
+          latitude: _currentPosition.latitude,
+          longitude: _currentPosition.longitude,
+        ),
+      ),
+    );
   }
 
   getLocation() async {
@@ -55,6 +116,7 @@ class _UserMapInfoState extends State<UserMapInfo> {
     });
 
     if (_selectedOption == 'Current Location') {
+      _newFunction(_currentPosition.latitude, _currentPosition.longitude);
       print(
           'Current location lat: ${_currentPosition.latitude}, long: ${_currentPosition.longitude}');
     }
@@ -90,6 +152,7 @@ class _UserMapInfoState extends State<UserMapInfo> {
         details.result.geometry?.location.lat ?? 0.0,
         details.result.geometry?.location.lng ?? 0.0,
       );
+      _newFunction(location?.latitude, location?.longitude);
       print('Selected location: ${location?.latitude}, ${location?.longitude}');
     });
   }
