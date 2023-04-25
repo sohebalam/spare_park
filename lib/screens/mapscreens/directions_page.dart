@@ -7,10 +7,12 @@ import 'package:url_launcher/url_launcher.dart';
 class DirectionsPage extends StatefulWidget {
   final LatLng currentLocation;
   final LatLng selectedLocation;
+  String? cpsId;
 
   DirectionsPage({
     required this.currentLocation,
     required this.selectedLocation,
+    required cpsId,
   });
 
   @override
@@ -71,6 +73,8 @@ class _DirectionsPageState extends State<DirectionsPage> {
   }
 
   void _fetchDirections() async {
+    print('fetching directions');
+    print(widget.cpsId);
     final apiKey = 'AIzaSyCY8J7h0Q-5Q1UDP9aY0EOy_WZBPESNBBg';
     final origin =
         '${widget.currentLocation.latitude},${widget.currentLocation.longitude}';

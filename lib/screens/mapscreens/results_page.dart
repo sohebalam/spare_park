@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sparepark/screens/mapscreens/directions_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:android_intent/android_intent.dart';
+import 'package:label_marker/label_marker.dart';
 
 class ResultsPage extends StatefulWidget {
   final LatLng location;
@@ -29,6 +30,7 @@ class _ResultsPageState extends State<ResultsPage> {
   @override
   void initState() {
     super.initState();
+
     // Ensure that the Google Maps plugin has fully initialized before
     // attempting to animate the camera
     WidgetsBinding.instance?.addPostFrameCallback((_) {
@@ -95,6 +97,9 @@ class _ResultsPageState extends State<ResultsPage> {
                     icon: BitmapDescriptor.defaultMarkerWithHue(
                       BitmapDescriptor.hueRed,
                     ),
+                    infoWindow: InfoWindow(
+                      title: 'Result ${i + 1}',
+                    ),
                   ),
               },
             ),
@@ -108,6 +113,7 @@ class _ResultsPageState extends State<ResultsPage> {
                 final lng = result[2];
                 return GestureDetector(
                   onTap: () {
+                    print(result[0]);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -115,6 +121,7 @@ class _ResultsPageState extends State<ResultsPage> {
                           currentLocation:
                               LatLng(widget.latitude!, widget.longitude!),
                           selectedLocation: LatLng(result[1], result[2]),
+                          cpsId: result[0],
                         ),
                       ),
                     );
