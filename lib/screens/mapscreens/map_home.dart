@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_webservice/places.dart';
-import 'package:sparepark/screens/label_marker.dart';
-import 'package:sparepark/screens/mapscreens/label_marker.dart';
 import 'package:sparepark/screens/mapscreens/results_page.dart';
+
 import 'package:sparepark/shared/carpark_space_db_helper.dart';
 
 class UserMapInfo extends StatefulWidget {

@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 // import 'package:firebase_crud/home_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:sparepark/firebase_options.dart';
-import 'package:sparepark/pages/home_page.dart';
-import 'package:sparepark/screens/map.dart';
 import 'package:sparepark/screens/mapscreens/map_home.dart';
 import 'package:sparepark/screens/register_car_space.dart';
 
