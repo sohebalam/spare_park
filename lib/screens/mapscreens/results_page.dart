@@ -4,6 +4,9 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:sparepark/screens/booking/booking.dart';
+import 'package:sparepark/screens/info/info.dart';
+import 'package:sparepark/screens/mapscreens/directions_page.dart';
 
 class ResultsPage extends StatefulWidget {
   final LatLng location;
@@ -175,7 +178,19 @@ class _ResultsPageState extends State<ResultsPage> {
                           width: 80,
                           child: TextButton(
                             onPressed: () {
-                              // Navigate to the selected location
+                              // Show directions to  the selected space
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DirectionsPage(
+                                    currentLocation: LatLng(
+                                        widget.latitude!, widget.longitude!),
+                                    selectedLocation:
+                                        LatLng(result[1], result[2]),
+                                    cpsId: result[0],
+                                  ),
+                                ),
+                              );
                             },
                             child: Column(
                               children: [
@@ -192,6 +207,12 @@ class _ResultsPageState extends State<ResultsPage> {
                           child: TextButton(
                             onPressed: () {
                               // Book the selected space
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => BookingPage(),
+                                ),
+                              );
                             },
                             child: Column(
                               children: [
@@ -208,6 +229,12 @@ class _ResultsPageState extends State<ResultsPage> {
                           child: TextButton(
                             onPressed: () {
                               // Show info for the selected space
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => InfoPage(),
+                                ),
+                              );
                             },
                             child: Column(
                               children: [
