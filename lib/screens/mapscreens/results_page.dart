@@ -26,6 +26,7 @@ class ResultsPage extends StatefulWidget {
 
 class _ResultsPageState extends State<ResultsPage> {
   final Set<Marker> _markers = {};
+  late String? cpsId;
   GoogleMapController? controller;
   @override
   void initState() {
@@ -132,19 +133,6 @@ class _ResultsPageState extends State<ResultsPage> {
     return data!.buffer.asUint8List();
   }
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     body: GoogleMap(
-  //       onMapCreated: _onMapCreated,
-  //       initialCameraPosition: CameraPosition(
-  //         target: widget.location,
-  //         zoom: 12.0,
-  //       ),
-  //       markers: _markers,
-  //     ),
-  //   );
-  // }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -210,7 +198,9 @@ class _ResultsPageState extends State<ResultsPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => BookingPage(),
+                                  builder: (context) => BookingPage(
+                                    cpsId: result[0],
+                                  ),
                                 ),
                               );
                             },
@@ -232,7 +222,9 @@ class _ResultsPageState extends State<ResultsPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => InfoPage(),
+                                  builder: (context) => InfoPage(
+                                    cpsId: result[0],
+                                  ),
                                 ),
                               );
                             },
