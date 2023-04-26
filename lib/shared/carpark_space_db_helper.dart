@@ -55,6 +55,7 @@ class DB_CarPark {
       accuracy: 0,
       timestamp: null,
     );
+
     final distanceThreshold = 10000.0;
     final filteredSpaces = carParkSpaces.where((space) {
       final spacePosition = Position(

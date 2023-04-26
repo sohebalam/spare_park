@@ -45,7 +45,7 @@ class _CarParkSpaceState extends State<CarParkSpace> {
           address: _addressController.text,
           postcode: postcode,
           hourlyRate: double.parse(_hourlyRateController.text),
-          spaces: int.parse(_spacesController.text),
+          spaces: double.parse(_spacesController.text),
           description: _descriptionController.text,
           // phoneNumber: _phoneNumberController.text,
           latitude: latitude,

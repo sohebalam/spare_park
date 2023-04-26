@@ -5,7 +5,7 @@ class CarParkSpaceModel {
   String address;
   String postcode;
   double hourlyRate;
-  int spaces;
+  double spaces;
   String description;
   String? phoneNumber;
   double latitude;

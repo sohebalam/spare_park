@@ -49,6 +49,8 @@ class _UserMapInfoState extends State<UserMapInfo> {
       ]);
     });
 
+    print(results);
+
     Navigator.push(
       context,
       MaterialPageRoute(
