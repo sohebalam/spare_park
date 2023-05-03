@@ -21,8 +21,8 @@ class DB_CarPark {
     final cpsid = carpark_spaceCollection.doc().id;
     final docRef = carpark_spaceCollection.doc(cpsid);
 
-    final newUser = CarParkSpaceModel(
-      id: cpsid,
+    final newCPS = CarParkSpaceModel(
+      p_id: cps.p_id,
       address: cps.address,
       postcode: cps.postcode,
       hourlyRate: cps.hourlyRate,
@@ -34,7 +34,7 @@ class DB_CarPark {
     ).toJson();
 
     try {
-      await docRef.set(newUser);
+      await docRef.set(newCPS);
     } catch (e) {
       print("some error occured $e");
     }

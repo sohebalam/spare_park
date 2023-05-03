@@ -42,7 +42,7 @@ class _UserMapInfoState extends State<UserMapInfo> {
     List<List<dynamic>> results = [];
     nearestSpaces.forEach((space) {
       results.add([
-        space.id,
+        space.p_id,
         space.latitude,
         space.longitude,
         space.hourlyRate,

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CarParkSpaceModel {
-  String? id;
+  String? p_id;
   String address;
   String postcode;
   double hourlyRate;
@@ -12,7 +12,7 @@ class CarParkSpaceModel {
   double longitude;
 
   CarParkSpaceModel({
-    this.id,
+    this.p_id,
     required this.address,
     required this.postcode,
     required this.hourlyRate,
@@ -27,7 +27,7 @@ class CarParkSpaceModel {
     var snapshot = snap.data() as Map<String, dynamic>;
 
     return CarParkSpaceModel(
-      id: snapshot['id'],
+      p_id: snapshot['p_id'],
       address: snapshot['address'],
       postcode: snapshot['postcode'],
       hourlyRate: snapshot['hourlyRate'],
@@ -40,7 +40,7 @@ class CarParkSpaceModel {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
+        'cpsId': p_id,
         'address': address,
         'postcode': postcode,
         'hourlyRate': hourlyRate,
