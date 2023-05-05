@@ -7,6 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sparepark/screens/booking/booking.dart';
 import 'package:sparepark/screens/booking/bookingdatetime.dart';
 import 'package:sparepark/screens/mapscreens/directions_page.dart';
+import 'package:sparepark/shared/fiunctions.dart';
 
 class ResultsPage extends StatefulWidget {
   final LatLng location;
@@ -159,10 +160,10 @@ class _ResultsPageState extends State<ResultsPage> {
             child: Stack(
               children: [
                 Padding(
-                  padding: EdgeInsets.fromLTRB(16, 16, 0, 0),
+                  padding: EdgeInsets.fromLTRB(16, 16, 10, 0),
                   child: Text(
-                    'Availability at: ${widget.startdatetime.day}/${widget.startdatetime.month}/${widget.startdatetime.year} ${widget.startdatetime.hour}:${widget.startdatetime.minute} and ${widget.enddatetime.day}/${widget.enddatetime.month}/${widget.enddatetime.year} ${widget.enddatetime.hour}:${widget.enddatetime.minute}',
-                    style: TextStyle(fontSize: 16),
+                    'Availability at: ${formatDateTime(widget.startdatetime)} and ${formatDateTime(widget.enddatetime)}',
+                    style: TextStyle(fontSize: 15),
                   ),
                 ),
                 ListView.builder(
