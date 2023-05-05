@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:sparepark/models/booking_model.dart';
 import 'package:sparepark/models/car_park_space.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -45,6 +46,8 @@ class DB_CarPark {
   Future<List<CarParkSpaceModel>> getNearestSpaces({
     double? latitude,
     double? longitude,
+    required DateTime startdatetime,
+    required DateTime enddatetime,
   }) async {
     final carParkSpaces = await read().first;
     final position = Position(
@@ -113,7 +116,34 @@ class DB_CarPark {
       );
       return aDistance.compareTo(bDistance);
     });
-    final nearestSpaces = filteredSpaces.take(10).toList();
+
+    // Get all the bookings between the startdatetime and enddatetime
+    // final bookings = await FirebaseFirestore.instance
+    //     .collection('bookings')
+    //     .where('start_date_time', isLessThanOrEqualTo: enddatetime)
+    //     .where('end_date_time', isGreaterThanOrEqualTo: startdatetime)
+    //     .get();
+
+    final bookings = await FirebaseFirestore.instance
+        .collection('bookings')
+        .where('start_date_time', isLessThanOrEqualTo: enddatetime)
+        .get();
+
+    final filteredBookings = bookings.docs
+        .map((doc) => BookingModel.fromSnapshot(doc))
+        .where((booking) => booking.end_date_time!.isAfter(startdatetime))
+        .toList();
+
+    // Filter out any booked spaces between the enddatetime and startdatetime
+    final nearestSpaces = filteredSpaces
+        .where((space) {
+          final spaceIsAvailable =
+              bookings.docs.every((booking) => booking['p_id'] != space.p_id);
+          return spaceIsAvailable;
+        })
+        .take(10)
+        .toList();
+
     return nearestSpaces;
   }
 }

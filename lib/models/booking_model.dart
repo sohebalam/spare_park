@@ -26,17 +26,17 @@ class BookingModel {
       b_id: snapshot['b_id'],
       p_id: snapshot['p_id'],
       u_id: snapshot['u_id'],
-      start_date_time: snapshot['start_date_time'],
-      end_date_time: snapshot['end_date_time'],
+      start_date_time: snapshot['start_date_time'].toDate(),
+      end_date_time: snapshot['end_date_time'].toDate(),
       b_total: snapshot['b_total'],
-      reg_date: snapshot['reg_date'],
+      reg_date: snapshot['reg_date'].toDate(),
     );
   }
 
   Map<String, dynamic> toJson() => {
         'b_id': b_id,
         'p_id': p_id,
-        'uid': u_id,
+        'u_id': u_id,
         'start_date_time': start_date_time,
         'end_date_time': end_date_time,
         'b_total': b_total,

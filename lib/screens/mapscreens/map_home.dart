@@ -3,6 +3,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:sparepark/screens/mapscreens/results_page.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:intl/intl.dart';
 
 import 'package:sparepark/shared/carpark_space_db_helper.dart';
 
@@ -15,7 +17,11 @@ class UserMapInfo extends StatefulWidget {
 
 class _UserMapInfoState extends State<UserMapInfo> {
   late GoogleMapController mapController;
-
+  // DateTime? _selectedDateTimeStart;
+  // DateTime? _selectedDateTimeEnd;
+  DateTime _selectedDateTimeStart = roundToNearest15Minutes(DateTime.now());
+  DateTime _selectedDateTimeEnd =
+      roundToNearest15Minutes(DateTime.now().add(Duration(hours: 1)));
   LatLng _currentPosition = LatLng(0, 0);
   bool _isLoading = true;
   String? _selectedOption;
@@ -38,6 +44,8 @@ class _UserMapInfoState extends State<UserMapInfo> {
     final nearestSpaces = await carParkService.getNearestSpaces(
       latitude: latitude,
       longitude: longitude,
+      startdatetime: _selectedDateTimeStart,
+      enddatetime: _selectedDateTimeEnd,
     );
     List<List<dynamic>> results = [];
     nearestSpaces.forEach((space) {
@@ -51,9 +59,6 @@ class _UserMapInfoState extends State<UserMapInfo> {
       ]);
     });
 
-    print('her');
-    print(results);
-
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -62,6 +67,8 @@ class _UserMapInfoState extends State<UserMapInfo> {
           results: results,
           latitude: _currentPosition.latitude,
           longitude: _currentPosition.longitude,
+          startdatetime: _selectedDateTimeStart,
+          enddatetime: _selectedDateTimeEnd,
         ),
       ),
     );
@@ -162,6 +169,115 @@ class _UserMapInfoState extends State<UserMapInfo> {
         height: MediaQuery.of(context).size.height / 3,
         child: Column(
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    DatePicker.showDateTimePicker(
+                      context,
+                      showTitleActions: true,
+                      minTime: DateTime.now(),
+                      maxTime: DateTime.now().add(Duration(days: 365)),
+                      onChanged: (date) {},
+                      onConfirm: (date) {
+                        setState(() {
+                          _selectedDateTimeStart = date;
+                          _selectedDateTimeEnd = date.add(Duration(hours: 1));
+                        });
+                      },
+                      currentTime: _selectedDateTimeStart,
+                      locale: LocaleType.en,
+                    );
+                  },
+                  child: Column(
+                    children: [
+                      Text(
+                        'Start',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              _selectedDateTimeStart != null
+                                  ? DateFormat('hh:mm a dd/MM/yy')
+                                      .format(_selectedDateTimeStart)
+                                  : 'Start',
+                            ),
+                            Icon(Icons.keyboard_arrow_down),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    DatePicker.showDateTimePicker(
+                      context,
+                      showTitleActions: true,
+                      minTime: DateTime.now(),
+                      maxTime: DateTime.now().add(Duration(days: 365)),
+                      onChanged: (date) {},
+                      onConfirm: (date) {
+                        setState(() {
+                          _selectedDateTimeEnd = date;
+                        });
+                        print(
+                            'Start: ${DateFormat('hh:mm a dd/MM/yy').format(_selectedDateTimeStart)}');
+                        print(
+                            'End: ${DateFormat('hh:mm a dd/MM/yy').format(date)}');
+                      },
+                      currentTime: _selectedDateTimeEnd,
+                      locale: LocaleType.en,
+                    );
+                  },
+                  child: Column(
+                    children: [
+                      Text(
+                        'End',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              _selectedDateTimeEnd != null
+                                  ? DateFormat('hh:mm a dd/MM/yy')
+                                      .format(_selectedDateTimeEnd)
+                                  : 'End',
+                            ),
+                            Icon(Icons.keyboard_arrow_down),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16.0),
             DropdownButtonFormField<String>(
               value: _selectedOption,
               items: <String>['Current Location'].map((String option) {
@@ -212,4 +328,11 @@ class _UserMapInfoState extends State<UserMapInfo> {
       ),
     );
   }
+}
+
+DateTime roundToNearest15Minutes(DateTime dateTime) {
+  final minutes = dateTime.minute;
+  final roundedMinutes = (minutes / 15).round() * 15;
+  return DateTime(dateTime.year, dateTime.month, dateTime.day, dateTime.hour,
+      roundedMinutes);
 }

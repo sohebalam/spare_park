@@ -1,59 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CarParkSpaceModel {
-  // String? id;
-  // String address;
-  // String postcode;
-  // double hourlyRate;
-  // int spaces;
-  // String description;
-  // String? phoneNumber;
-  // double latitude;
-  // double longitude;
-
-  // CarParkSpaceModel({
-  //   this.id,
-  //   required this.address,
-  //   required this.postcode,
-  //   required this.hourlyRate,
-  //   required this.spaces,
-  //   required this.description,
-  //   this.phoneNumber,
-  //   required this.latitude,
-  //   required this.longitude,
-  // });
-
-  // factory CarParkSpaceModel.fromSnapshot(DocumentSnapshot snap) {
-  //   var snapshot = snap.data() as Map<String, dynamic>;
-
-  //   // print(snapshot);
-
-  //   return CarParkSpaceModel(
-  //     id: snapshot['id'],
-  //     address: snapshot['address'],
-  //     postcode: snapshot['postcode'],
-  //     hourlyRate: snapshot['hourlyRate'],
-  //     spaces: snapshot['spaces'],
-  //     description: snapshot['description'],
-  //     phoneNumber: snapshot['phoneNumber'],
-  //     latitude: snapshot['latitude'],
-  //     longitude: snapshot['longitude'],
-  //   );
-  // }
-  // // print(snapshot['id']);
-
-  // Map<String, dynamic> toJson() => {
-  //       'p_id': id,
-  //       'address': address,
-  //       'postcode': postcode,
-  //       'hourlyRate': hourlyRate,
-  //       'spaces': spaces,
-  //       'description': description,
-  //       'phoneNumber': phoneNumber ?? "",
-  //       'latitude': latitude,
-  //       'longitude': longitude,
-  //     };
-
   String p_id;
   String postcode;
   String address;
@@ -116,6 +63,17 @@ class CarParkSpaceModel {
       'latitude': latitude,
       'longitude': longitude,
     };
+  }
+
+  Future<bool> isAvailable(
+      String p_id, DateTime startDateTime, DateTime endDateTime) async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('bookings')
+        .where('p_id', isEqualTo: p_id)
+        .where('start_date_time', isLessThanOrEqualTo: endDateTime)
+        .where('end_date_time', isGreaterThanOrEqualTo: startDateTime)
+        .get();
+    return snapshot.docs.isEmpty;
   }
 
   static fromSnapshot(QueryDocumentSnapshot<Map<String, dynamic>> e) {}

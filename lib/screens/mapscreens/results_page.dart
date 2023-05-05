@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sparepark/screens/booking/booking.dart';
 import 'package:sparepark/screens/booking/bookingdatetime.dart';
-import 'package:sparepark/screens/info/info.dart';
 import 'package:sparepark/screens/mapscreens/directions_page.dart';
 
 class ResultsPage extends StatefulWidget {
@@ -14,13 +13,20 @@ class ResultsPage extends StatefulWidget {
   final List<List<dynamic>> results;
   final double? latitude;
   final double? longitude;
-  const ResultsPage(
-      {Key? key,
-      required this.location,
-      required this.results,
-      this.latitude,
-      this.longitude})
-      : super(key: key);
+
+  const ResultsPage({
+    Key? key,
+    required this.location,
+    required this.results,
+    this.latitude,
+    this.longitude,
+    required this.startdatetime,
+    required this.enddatetime,
+  }) : super(key: key);
+
+  final DateTime startdatetime;
+  final DateTime enddatetime;
+
   @override
   _ResultsPageState createState() => _ResultsPageState();
 }
@@ -29,12 +35,10 @@ class _ResultsPageState extends State<ResultsPage> {
   final Set<Marker> _markers = {};
   late String? cpsId;
   GoogleMapController? controller;
+
   @override
   void initState() {
     super.initState();
-
-    // Ensure that the Google Maps plugin has fully initialized before
-    // attempting to animate the camera
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       final mostNortheastSpace = widget.results.reduce((curr, next) =>
           curr[1] > next[1] || (curr[1] == next[1] && curr[2] > next[2])
@@ -136,6 +140,8 @@ class _ResultsPageState extends State<ResultsPage> {
 
   @override
   Widget build(BuildContext context) {
+    print('Start date and time: ${widget.startdatetime}');
+
     return Scaffold(
       body: Column(
         children: [
@@ -150,99 +156,89 @@ class _ResultsPageState extends State<ResultsPage> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: widget.results.length,
-              itemBuilder: (context, index) {
-                final result = widget.results[index];
-                final lat = result[1];
-                final lng = result[2];
-                return Card(
-                  child: ListTile(
-                    title: Text("£${(result[3].toString())}"),
-                    subtitle: Text("Closest space ${(index + 1).toString()}"),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          width: 80,
-                          child: TextButton(
-                            onPressed: () {
-                              // Show directions to  the selected space
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => DirectionsPage(
-                                    currentLocation: LatLng(
-                                        widget.latitude!, widget.longitude!),
-                                    selectedLocation:
-                                        LatLng(result[1], result[2]),
-                                    cpsId: result[0],
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Column(
-                              children: [
-                                Icon(Icons.directions),
-                                SizedBox(height: 4),
-                                Text("Navigate",
-                                    style: TextStyle(fontSize: 10)),
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 80,
-                          child: TextButton(
-                            onPressed: () {
-                              // Book the selected space
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => BookingDateTime(
-                                    cpsId: result[0],
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Column(
-                              children: [
-                                Icon(Icons.bookmark),
-                                SizedBox(height: 4),
-                                Text("Book Now",
-                                    style: TextStyle(fontSize: 10)),
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 80,
-                          child: TextButton(
-                            onPressed: () {
-                              // Show info for the selected space
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => InfoPage(
-                                    cpsId: result[0],
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Column(
-                              children: [
-                                Icon(Icons.info),
-                                SizedBox(height: 4),
-                                Text("Info", style: TextStyle(fontSize: 10)),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+            child: Stack(
+              children: [
+                Padding(
+                  padding: EdgeInsets.fromLTRB(16, 16, 0, 0),
+                  child: Text(
+                    'Availability at: ${widget.startdatetime.day}/${widget.startdatetime.month}/${widget.startdatetime.year} ${widget.startdatetime.hour}:${widget.startdatetime.minute} and ${widget.enddatetime.day}/${widget.enddatetime.month}/${widget.enddatetime.year} ${widget.enddatetime.hour}:${widget.enddatetime.minute}',
+                    style: TextStyle(fontSize: 16),
                   ),
-                );
-              },
+                ),
+                ListView.builder(
+                  itemCount: widget.results.length,
+                  itemBuilder: (context, index) {
+                    final result = widget.results[index];
+                    final lat = result[1];
+                    final lng = result[2];
+                    return Card(
+                      child: ListTile(
+                        title: Text("£${(result[3].toString())}"),
+                        subtitle:
+                            Text("Closest space ${(index + 1).toString()}"),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              width: 80,
+                              child: TextButton(
+                                onPressed: () {
+                                  // Show directions to  the selected space
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => DirectionsPage(
+                                        currentLocation: LatLng(
+                                            widget.latitude!,
+                                            widget.longitude!),
+                                        selectedLocation:
+                                            LatLng(result[1], result[2]),
+                                        cpsId: result[0],
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Column(
+                                  children: [
+                                    Icon(Icons.directions),
+                                    SizedBox(height: 4),
+                                    Text("Navigate",
+                                        style: TextStyle(fontSize: 10)),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 80,
+                              child: TextButton(
+                                onPressed: () {
+                                  // Book the selected space
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => BookingDateTime(
+                                        cpsId: result[0],
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Column(
+                                  children: [
+                                    Icon(Icons.bookmark),
+                                    SizedBox(height: 4),
+                                    Text("Book Now",
+                                        style: TextStyle(fontSize: 10)),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
         ],
