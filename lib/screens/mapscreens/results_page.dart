@@ -5,7 +5,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sparepark/screens/booking/booking.dart';
-import 'package:sparepark/screens/booking/bookingdatetime.dart';
 import 'package:sparepark/screens/mapscreens/directions_page.dart';
 import 'package:sparepark/shared/fiunctions.dart';
 
@@ -217,7 +216,9 @@ class _ResultsPageState extends State<ResultsPage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => BookingDateTime(
+                                      builder: (context) => Booking(
+                                        startDateTime: widget.startdatetime,
+                                        endDateTime: widget.enddatetime,
                                         cpsId: result[0],
                                       ),
                                     ),
