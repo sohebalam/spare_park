@@ -1,11 +1,14 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sparepark/models/car_park_space.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:sparepark/models/user_model.dart';
+import 'package:sparepark/pages/edit_page.dart';
 import 'package:sparepark/shared/firestore_helper.dart';
-import 'package:sparepark/shared/carpark_space_db_helper.dart';
+// import 'package:sparepark/shared/carpark_space_db_helper.dart';
+import 'package:sparepark/shared/user_db_helper.dart';
 
 class CarParkSpace extends StatefulWidget {
   @override
@@ -41,18 +44,7 @@ class _CarParkSpaceState extends State<CarParkSpace> {
         print('Spaces: ${_spacesController.text}');
         print('Description: ${_descriptionController.text}');
 
-        final carParkSpace = CarParkSpaceModel(
-          address: _addressController.text,
-          postcode: postcode,
-          hourlyRate: double.parse(_hourlyRateController.text),
-          spaces: double.parse(_spacesController.text),
-          description: _descriptionController.text,
-          // phoneNumber: _phoneNumberController.text,
-          latitude: latitude,
-          longitude: longitude,
-        );
-
-        DB_CarPark.create(carParkSpace);
+        await _registerParkingSpace(postcode, latitude, longitude);
       } else {
         // Postcode is invalid, show error message
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -60,6 +52,31 @@ class _CarParkSpaceState extends State<CarParkSpace> {
           duration: Duration(seconds: 2),
         ));
       }
+    }
+  }
+
+  Future<void> _registerParkingSpace(postcode, latitude, longitude) async {
+    try {
+      final id =
+          FirebaseFirestore.instance.collection('parking_spaces').doc().id;
+      final parkingSpace = ParkingSpace(
+        p_id: id, postcode: postcode,
+
+        address: _addressController.text,
+        hourlyRate: double.parse(_hourlyRateController.text),
+        spaces: int.parse(_spacesController.text),
+        description: _descriptionController.text,
+        // phoneNumber: _phoneNumberController.text,
+        latitude: latitude,
+        longitude: longitude,
+      );
+      await FirebaseFirestore.instance
+          .collection('parking_spaces')
+          .doc(id)
+          .set(parkingSpace.toMap());
+      // SnackBar(content: Text('Parking space registered successfully'));
+    } catch (e) {
+      // SnackBar(content: Text('Failed to register parking space'));
     }
   }
 
@@ -180,49 +197,38 @@ class _CarParkSpaceState extends State<CarParkSpace> {
               child: Text('Submit'),
             ),
           ),
-          StreamBuilder<List<CarParkSpaceModel>>(
-              stream: DB_CarPark.read(),
+          Expanded(
+            child: FutureBuilder<List<ParkingSpace>>(
+              future: _getParkingSpaces(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                    child: CircularProgressIndicator(),
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  final parkingSpaces = snapshot.data;
+                  return ListView.builder(
+                    itemCount: parkingSpaces!.length,
+                    itemBuilder: (context, index) {
+                      final parkingSpace = parkingSpaces[index];
+                      return ListTile(
+                        title: Text(parkingSpace.postcode),
+                        subtitle: Text(parkingSpace.p_id),
+                      );
+                    },
                   );
                 }
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text("some error occured"),
-                  );
-                }
-                if (snapshot.hasData) {
-                  final userData = snapshot.data;
-                  return Expanded(
-                    child: ListView.builder(
-                        itemCount: userData!.length,
-                        itemBuilder: (context, index) {
-                          final singleSpace = userData[index];
-                          return Container(
-                            margin: EdgeInsets.symmetric(vertical: 5),
-                            child: ListTile(
-                              leading: Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                    color: Colors.deepPurple,
-                                    shape: BoxShape.circle),
-                              ),
-                              title: Text("${singleSpace.address}"),
-                              subtitle: Text("${singleSpace.postcode}"),
-                            ),
-                          );
-                        }),
-                  );
-                }
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }),
+              },
+            ),
+          ),
         ],
       ),
     );
   }
+}
+
+Future<List<ParkingSpace>> _getParkingSpaces() async {
+  final snapshot =
+      await FirebaseFirestore.instance.collection('parking_spaces').get();
+  return snapshot.docs.map((doc) => ParkingSpace.fromMap(doc.data())).toList();
 }

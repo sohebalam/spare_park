@@ -1,20 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class CarParkSpaceModel {
-  String? p_id;
-  String address;
+class ParkingSpace {
+  String p_id;
   String postcode;
+  String address;
   double hourlyRate;
-  double spaces;
+  int spaces;
   String description;
   String? phoneNumber;
   double latitude;
   double longitude;
 
-  CarParkSpaceModel({
-    this.p_id,
-    required this.address,
+  ParkingSpace({
+    required this.p_id,
     required this.postcode,
+    required this.address,
     required this.hourlyRate,
     required this.spaces,
     required this.description,
@@ -23,31 +23,31 @@ class CarParkSpaceModel {
     required this.longitude,
   });
 
-  factory CarParkSpaceModel.fromSnapshot(DocumentSnapshot snap) {
-    var snapshot = snap.data() as Map<String, dynamic>;
-
-    return CarParkSpaceModel(
-      p_id: snapshot['p_id'],
-      address: snapshot['address'],
-      postcode: snapshot['postcode'],
-      hourlyRate: snapshot['hourlyRate'],
-      spaces: snapshot['spaces'],
-      description: snapshot['description'],
-      phoneNumber: snapshot['phoneNumber'],
-      latitude: snapshot['latitude'],
-      longitude: snapshot['longitude'],
-    );
+  Map<String, dynamic> toMap() {
+    return {
+      'p_id': p_id,
+      'postcode': postcode,
+      'address': address,
+      'hourlyRate': hourlyRate,
+      'spaces': spaces,
+      'description': description,
+      'phoneNumber': phoneNumber ?? "",
+      'latitude': latitude,
+      'longitude': longitude,
+    };
   }
 
-  Map<String, dynamic> toJson() => {
-        'cpsId': p_id,
-        'address': address,
-        'postcode': postcode,
-        'hourlyRate': hourlyRate,
-        'spaces': spaces,
-        'description': description,
-        'phoneNumber': phoneNumber ?? "",
-        'latitude': latitude,
-        'longitude': longitude,
-      };
+  static ParkingSpace fromMap(Map<String, dynamic> map) {
+    return ParkingSpace(
+      p_id: map['p_id'],
+      postcode: map['postcode'],
+      address: map['address'] ?? "",
+      hourlyRate: map['hourlyRate'] ?? 0.00,
+      spaces: map['spaces'] ?? 0,
+      description: map['description'] ?? "",
+      phoneNumber: map['phoneNumber'],
+      latitude: map['latitude'] ?? 0.00,
+      longitude: map['longitude'] ?? 0.00,
+    );
+  }
 }

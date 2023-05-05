@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 // import 'package:firebase_crud/home_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:sparepark/firebase_options.dart';
-import 'package:sparepark/screens/booking/bookingdatetime.dart';
-import 'package:sparepark/screens/mapscreens/map_home.dart';
+import 'package:sparepark/pages/home_page.dart';
 import 'package:sparepark/screens/register_car_space.dart';
 
 Future main() async {
@@ -19,7 +18,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Material(child: DateTimePickerPage()),
+      home: Material(child: CarParkSpace()),
     );
   }
 }
