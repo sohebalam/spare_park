@@ -13,7 +13,7 @@ class DB_Booking {
         querySnapshot.docs.map((e) => BookingModel.fromSnapshot(e)).toList());
   }
 
-  static Future create(BookingModel book) async {
+  static Future create(BookingModel book, userId) async {
     final carpark_spaceCollection =
         FirebaseFirestore.instance.collection("bookings");
 
@@ -21,6 +21,7 @@ class DB_Booking {
     final docRef = carpark_spaceCollection.doc(bookid);
 
     final booking = BookingModel(
+      u_id: userId,
       p_id: book.p_id,
       b_total: book.b_total,
       end_date_time: book.end_date_time,
