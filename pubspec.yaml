@@ -51,6 +51,10 @@ dependencies:
   intl: ^0.18.1
   flutter_cupertino_date_picker: ^1.0.26+2
   date_format: ^2.0.7
+  flutter_stripe: ^9.2.0
+  flutter_bloc: ^8.1.2
+  equatable: ^2.0.5
+  http: ^0.13.6
 
 dev_dependencies:
   flutter_test:

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:sparepark/models/booking_model.dart';
+import 'package:sparepark/screens/booking/payment.dart';
 import 'package:sparepark/shared/booking_db_helper.dart';
 import 'dart:async';
 import 'dart:typed_data';
@@ -63,14 +64,25 @@ class _BookingState extends State<Booking> {
     );
 
     // Add the booking to Firebase
-    await FirebaseFirestore.instance
+    final DocumentReference bookingRef = await FirebaseFirestore.instance
         .collection('bookings')
         .add(booking.toJson());
+    final String bookingId = bookingRef.id;
 
-    // Show a success message
+    // Show a success message with the booking ID
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Booking created successfully'),
+        content: Text('Booking $bookingId created successfully'),
+      ),
+    );
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Payment(
+          b_id: bookingId,
+          total: total,
+        ),
       ),
     );
   }
@@ -88,6 +100,7 @@ class _BookingState extends State<Booking> {
 
     final ByteData data = await rootBundle.load('assets/carpark1.jpg');
     final Uint8List resizedBytes = await _resizeImage(data, 200, 150);
+
     final BitmapDescriptor bitmapDescriptor =
         BitmapDescriptor.fromBytes(resizedBytes);
 
