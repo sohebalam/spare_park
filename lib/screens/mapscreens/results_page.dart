@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:sparepark/chat/chat_home.dart';
 import 'package:sparepark/screens/booking/booking.dart';
 import 'package:sparepark/screens/mapscreens/directions_page.dart';
 import 'package:sparepark/shared/fiunctions.dart';
@@ -227,6 +228,28 @@ class _ResultsPageState extends State<ResultsPage> {
                                 child: Column(
                                   children: [
                                     Icon(Icons.bookmark),
+                                    SizedBox(height: 4),
+                                    Text("Book Now",
+                                        style: TextStyle(fontSize: 10)),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 80,
+                              child: TextButton(
+                                onPressed: () {
+                                  // Book the selected space
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ChatHome(),
+                                    ),
+                                  );
+                                },
+                                child: Column(
+                                  children: [
+                                    Icon(Icons.email),
                                     SizedBox(height: 4),
                                     Text("Book Now",
                                         style: TextStyle(fontSize: 10)),
