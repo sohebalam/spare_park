@@ -29,11 +29,12 @@ class DB_CarPark {
       address: cps.address,
       postcode: cps.postcode,
       hourlyRate: cps.hourlyRate,
-      spaces: cps.spaces,
+      // spaces: cps.spaces,
       description: cps.description,
       phoneNumber: cps.phoneNumber,
       latitude: cps.latitude,
       longitude: cps.longitude,
+      p_image: cps.p_image,
     ).toJson();
 
     try {
@@ -118,16 +119,16 @@ class DB_CarPark {
     });
 
     // Get all the bookings between the startdatetime and enddatetime
-    // final bookings = await FirebaseFirestore.instance
-    //     .collection('bookings')
-    //     .where('start_date_time', isLessThanOrEqualTo: enddatetime)
-    //     .where('end_date_time', isGreaterThanOrEqualTo: startdatetime)
-    //     .get();
-
     final bookings = await FirebaseFirestore.instance
         .collection('bookings')
         .where('start_date_time', isLessThanOrEqualTo: enddatetime)
+        .where('end_date_time', isGreaterThanOrEqualTo: startdatetime)
         .get();
+
+    // final bookings = await FirebaseFirestore.instance
+    //     .collection('bookings')
+    //     .where('start_date_time', isLessThanOrEqualTo: enddatetime)
+    //     .get();
 
     final filteredBookings = bookings.docs
         .map((doc) => BookingModel.fromSnapshot(doc))

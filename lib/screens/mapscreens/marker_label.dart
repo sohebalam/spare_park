@@ -17,6 +17,7 @@ class _CarParkSpaceState extends State<CarParkSpace> {
   final _hourlyRateController = TextEditingController();
   final _spacesController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _imageController = TextEditingController();
   final _postcodeOptions = <String>[];
 
   void _submitForm() async {
@@ -38,6 +39,7 @@ class _CarParkSpaceState extends State<CarParkSpace> {
         print('Hourly Rate: ${_hourlyRateController.text}');
         print('Spaces: ${_spacesController.text}');
         print('Description: ${_descriptionController.text}');
+        print('p_image: ${_imageController.text}');
 
         final id =
             FirebaseFirestore.instance.collection('parking_spaces').doc().id;
@@ -46,7 +48,7 @@ class _CarParkSpaceState extends State<CarParkSpace> {
           address: _addressController.text,
           postcode: postcode,
           hourlyRate: double.parse(_hourlyRateController.text),
-          spaces: int.parse(_spacesController.text),
+          // spaces: int.parse(_spacesController.text),
           description: _descriptionController.text,
           // phoneNumber: _phoneNumberController.text,
           latitude: latitude,
@@ -149,15 +151,27 @@ class _CarParkSpaceState extends State<CarParkSpace> {
               return null;
             },
           ),
+          // TextFormField(
+          //   controller: _spacesController,
+          //   keyboardType: TextInputType.number,
+          //   decoration: InputDecoration(
+          //     labelText: 'Spaces',
+          //   ),
+          //   validator: (value) {
+          //     if (value?.isEmpty ?? true) {
+          //       return 'Please enter the number of spaces';
+          //     }
+          //     return null;
+          //   },
+          // ),
           TextFormField(
-            controller: _spacesController,
-            keyboardType: TextInputType.number,
+            controller: _imageController,
             decoration: InputDecoration(
-              labelText: 'Spaces',
+              labelText: 'Image',
             ),
             validator: (value) {
               if (value?.isEmpty ?? true) {
-                return 'Please enter the number of spaces';
+                return 'Please create a new image';
               }
               return null;
             },

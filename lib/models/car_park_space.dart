@@ -5,22 +5,24 @@ class CarParkSpaceModel {
   String postcode;
   String address;
   double hourlyRate;
-  int spaces;
+  // int spaces;
   String description;
   String? phoneNumber;
   double latitude;
   double longitude;
+  String? p_image;
 
   CarParkSpaceModel({
     required this.p_id,
     required this.postcode,
     required this.address,
     required this.hourlyRate,
-    required this.spaces,
+    // required this.spaces,
     required this.description,
     this.phoneNumber,
     required this.latitude,
     required this.longitude,
+    this.p_image,
   });
 
   Map<String, dynamic> toMap() {
@@ -29,11 +31,12 @@ class CarParkSpaceModel {
       'postcode': postcode,
       'address': address,
       'hourlyRate': hourlyRate,
-      'spaces': spaces,
+      // 'spaces': spaces,
       'description': description,
       'phoneNumber': phoneNumber ?? "",
       'latitude': latitude,
       'longitude': longitude,
+      'p_image': p_image ?? "",
     };
   }
 
@@ -43,11 +46,12 @@ class CarParkSpaceModel {
       postcode: map['postcode'],
       address: map['address'] ?? "",
       hourlyRate: map['hourlyRate'] ?? 0.00,
-      spaces: map['spaces'] ?? 0,
+      // spaces: map['spaces'] ?? 0,
       description: map['description'] ?? "",
       phoneNumber: map['phoneNumber'],
       latitude: map['latitude'] ?? 0.00,
       longitude: map['longitude'] ?? 0.00,
+      p_image: map['p_image'] ?? "",
     );
   }
 
@@ -57,11 +61,12 @@ class CarParkSpaceModel {
       'postcode': postcode,
       'address': address,
       'hourlyRate': hourlyRate,
-      'spaces': spaces,
+      // 'spaces': spaces,
       'description': description,
       'phoneNumber': phoneNumber ?? "",
       'latitude': latitude,
       'longitude': longitude,
+      'p_image': p_image,
     };
   }
 

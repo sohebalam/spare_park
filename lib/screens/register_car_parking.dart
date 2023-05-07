@@ -1,18 +1,19 @@
 import 'dart:convert';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sparepark/models/car_park_space.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:sparepark/models/user_model.dart';
 import 'package:sparepark/shared/carpark_space_db_helper.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
-class CarParkSpace extends StatefulWidget {
+class RegisterParkingSpace extends StatefulWidget {
   @override
-  _CarParkSpaceState createState() => _CarParkSpaceState();
+  _RegisterParkingSpaceState createState() => _RegisterParkingSpaceState();
 }
 
-class _CarParkSpaceState extends State<CarParkSpace> {
+class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
   final _formKey = GlobalKey<FormState>();
   final _addressController = TextEditingController();
   final _postcodeController = TextEditingController();
@@ -20,6 +21,9 @@ class _CarParkSpaceState extends State<CarParkSpace> {
   final _spacesController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _postcodeOptions = <String>[];
+  final picker = ImagePicker();
+
+  File? _image;
 
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
@@ -33,29 +37,33 @@ class _CarParkSpaceState extends State<CarParkSpace> {
         final postcodeData = json.decode(postcodeResponse.body);
         final longitude = postcodeData['result']['longitude'];
         final latitude = postcodeData['result']['latitude'];
-        print('Address: ${_addressController.text}');
-        print('Postcode: $postcode');
-        print('Longitude: $longitude');
-        print('Latitude: $latitude');
-        print('Hourly Rate: ${_hourlyRateController.text}');
-        print('Spaces: ${_spacesController.text}');
-        print('Description: ${_descriptionController.text}');
 
         final id =
             FirebaseFirestore.instance.collection('parking_spaces').doc().id;
 
-        final carParkSpace = CarParkSpaceModel(
+        final RegisterParkingSpace = CarParkSpaceModel(
           address: _addressController.text,
           postcode: postcode,
           hourlyRate: double.parse(_hourlyRateController.text),
-          spaces: int.parse(_spacesController.text),
           description: _descriptionController.text,
-          // phoneNumber: _phoneNumberController.text,
           latitude: latitude,
-          longitude: longitude, p_id: id,
+          longitude: longitude,
+          p_id: id,
         );
 
-        DB_CarPark.create(carParkSpace);
+        // Upload image to Firebase Storage
+        if (_image != null) {
+          final storageRef = firebase_storage.FirebaseStorage.instance
+              .ref()
+              .child('parking_spaces')
+              .child(id);
+          final uploadTask = storageRef.putFile(_image!);
+          final snapshot = await uploadTask.whenComplete(() {});
+          final imageUrl = await snapshot.ref.getDownloadURL();
+          RegisterParkingSpace.p_image = imageUrl;
+        }
+
+        DB_CarPark.create(RegisterParkingSpace);
       } else {
         // Postcode is invalid, show error message
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -82,6 +90,61 @@ class _CarParkSpaceState extends State<CarParkSpace> {
     }
   }
 
+  // void _getImage() async {
+  //   final pickedFile =
+  //       await ImagePicker().pickImage(source: ImageSource.gallery);
+
+  //   setState(() {
+  //     if (pickedFile != null) {
+  //       _image = File(pickedFile.path);
+  //     } else {
+  //       print('No image selected.');
+  //     }
+  //   });
+  // }
+
+  Future<void> _getImage() async {
+    final action = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Select Image Source'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                GestureDetector(
+                  child: Text('Camera'),
+                  onTap: () {
+                    Navigator.of(context).pop(ImageSource.camera);
+                  },
+                ),
+                Padding(padding: EdgeInsets.all(8.0)),
+                GestureDetector(
+                  child: Text('Gallery'),
+                  onTap: () {
+                    Navigator.of(context).pop(ImageSource.gallery);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    if (action == null) return;
+
+    final pickedFile = await picker.pickImage(source: action);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -104,13 +167,18 @@ class _CarParkSpaceState extends State<CarParkSpace> {
               return null;
             },
           ),
+          SizedBox(
+            height: 16.0,
+          ),
           TextFormField(
             controller: _postcodeController,
             decoration: InputDecoration(
               labelText: 'Postcode',
             ),
-            onChanged: (value) {
-              _fetchPostcodeOptions(value);
+            onChanged: (input) {
+              if (input.length > 2) {
+                _fetchPostcodeOptions(input);
+              }
             },
             validator: (value) {
               if (value?.isEmpty ?? true) {
@@ -119,18 +187,26 @@ class _CarParkSpaceState extends State<CarParkSpace> {
               return null;
             },
           ),
+          SizedBox(
+            height: 8.0,
+          ),
           if (_postcodeOptions.isNotEmpty)
             Container(
-              height: 100.0,
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              margin: EdgeInsets.symmetric(vertical: 8.0),
               child: ListView.builder(
+                shrinkWrap: true,
                 itemCount: _postcodeOptions.length,
                 itemBuilder: (context, index) {
-                  final postcodeOption = _postcodeOptions[index];
+                  final option = _postcodeOptions[index];
                   return ListTile(
-                    title: Text(postcodeOption),
+                    title: Text(option),
                     onTap: () {
+                      _postcodeController.text = option;
                       setState(() {
-                        _postcodeController.text = postcodeOption;
                         _postcodeOptions.clear();
                       });
                     },
@@ -138,37 +214,34 @@ class _CarParkSpaceState extends State<CarParkSpace> {
                 },
               ),
             ),
+          SizedBox(
+            height: 16.0,
+          ),
           TextFormField(
             controller: _hourlyRateController,
-            keyboardType: TextInputType.number,
             decoration: InputDecoration(
-              labelText: 'Hourly rate',
+              labelText: 'Hourly rate (£)',
             ),
+            keyboardType: TextInputType.number,
             validator: (value) {
               if (value?.isEmpty ?? true) {
                 return 'Please enter an hourly rate';
               }
-              return null;
-            },
-          ),
-          TextFormField(
-            controller: _spacesController,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: 'Spaces',
-            ),
-            validator: (value) {
-              if (value?.isEmpty ?? true) {
-                return 'Please enter the number of spaces';
+              if (double.tryParse(value!) == null) {
+                return 'Please enter a valid hourly rate';
               }
               return null;
             },
+          ),
+          SizedBox(
+            height: 16.0,
           ),
           TextFormField(
             controller: _descriptionController,
             decoration: InputDecoration(
               labelText: 'Description',
             ),
+            maxLines: 3,
             validator: (value) {
               if (value?.isEmpty ?? true) {
                 return 'Please enter a description';
@@ -176,54 +249,36 @@ class _CarParkSpaceState extends State<CarParkSpace> {
               return null;
             },
           ),
-          SizedBox(height: 16.0),
+          SizedBox(
+            height: 16.0,
+          ),
+          TextButton(
+            onPressed: _getImage,
+            child: Text('Select an image'),
+          ),
+          SizedBox(
+            height: 16.0,
+          ),
+          if (_image != null)
+            Container(
+              height: 200.0,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: FileImage(_image!),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          SizedBox(
+            height: 16.0,
+          ),
           Center(
             child: ElevatedButton(
               onPressed: _submitForm,
               child: Text('Submit'),
             ),
           ),
-          StreamBuilder<List<CarParkSpaceModel>>(
-              stream: DB_CarPark.read(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text("some error occured"),
-                  );
-                }
-                if (snapshot.hasData) {
-                  final userData = snapshot.data;
-                  return Expanded(
-                    child: ListView.builder(
-                        itemCount: userData!.length,
-                        itemBuilder: (context, index) {
-                          final singleSpace = userData[index];
-                          return Container(
-                            margin: EdgeInsets.symmetric(vertical: 5),
-                            child: ListTile(
-                              leading: Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                    color: Colors.deepPurple,
-                                    shape: BoxShape.circle),
-                              ),
-                              title: Text("${singleSpace.address}"),
-                              subtitle: Text("${singleSpace.postcode}"),
-                            ),
-                          );
-                        }),
-                  );
-                }
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }),
         ],
       ),
     );

@@ -4,8 +4,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:sparepark/firebase_options.dart';
 import 'package:sparepark/screens/booking/booking.dart';
+import 'package:sparepark/screens/mapscreens/image_selector.dart';
 import 'package:sparepark/screens/mapscreens/map_home.dart';
-import 'package:sparepark/screens/register_car_space.dart';
+import 'package:sparepark/screens/register_car_parking.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Material(child: UserMapInfo()),
+      home: Material(child: RegisterParkingSpace()),
     );
   }
 }
