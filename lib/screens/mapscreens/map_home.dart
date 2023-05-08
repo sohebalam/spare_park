@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_webservice/places.dart';
+import 'package:sparepark/screens/crud/parking/register_car_parking.dart';
 import 'package:sparepark/screens/mapscreens/results_page.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
 
 import 'package:sparepark/shared/carpark_space_db_helper.dart';
+import 'package:sparepark/shared/widgets/drawer.dart';
 
 class UserMapInfo extends StatefulWidget {
   const UserMapInfo({Key? key}) : super(key: key);
@@ -152,6 +155,41 @@ class _UserMapInfoState extends State<UserMapInfo> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Map'),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          // Important: Remove any padding from the ListView.
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text('Drawer Header'),
+            ),
+            ListTile(
+              title: const Text('Register Parking Space'),
+              onTap: () {
+                print('navigate to');
+                Get.to(() => RegisterParkingSpace());
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) => RegisterParkingSpace()));
+                // Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('Item 2'),
+              onTap: () {
+                // Update the state of the app
+                // ...
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -134,139 +135,146 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 50.0,
-          ),
-          TextFormField(
-            controller: _addressController,
-            decoration: InputDecoration(
-              labelText: 'Address',
-            ),
-            validator: (value) {
-              if (value?.isEmpty ?? true) {
-                return 'Please enter an address';
-              }
-              return null;
-            },
-          ),
-          SizedBox(
-            height: 16.0,
-          ),
-          TextFormField(
-            controller: _postcodeController,
-            decoration: InputDecoration(
-              labelText: 'Postcode',
-            ),
-            onChanged: (input) {
-              if (input.length > 2) {
-                _fetchPostcodeOptions(input);
-              }
-            },
-            validator: (value) {
-              if (value?.isEmpty ?? true) {
-                return 'Please enter a postcode';
-              }
-              return null;
-            },
-          ),
-          SizedBox(
-            height: 8.0,
-          ),
-          if (_postcodeOptions.isNotEmpty)
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(5.0),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Register Parking Space'),
+      ),
+      body: Center(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 50.0,
               ),
-              margin: EdgeInsets.symmetric(vertical: 8.0),
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: _postcodeOptions.length,
-                itemBuilder: (context, index) {
-                  final option = _postcodeOptions[index];
-                  return ListTile(
-                    title: Text(option),
-                    onTap: () {
-                      _postcodeController.text = option;
-                      setState(() {
-                        _postcodeOptions.clear();
-                      });
-                    },
-                  );
+              TextFormField(
+                controller: _addressController,
+                decoration: InputDecoration(
+                  labelText: 'Address',
+                ),
+                validator: (value) {
+                  if (value?.isEmpty ?? true) {
+                    return 'Please enter an address';
+                  }
+                  return null;
                 },
               ),
-            ),
-          SizedBox(
-            height: 16.0,
-          ),
-          TextFormField(
-            controller: _hourlyRateController,
-            decoration: InputDecoration(
-              labelText: 'Hourly rate (£)',
-            ),
-            keyboardType: TextInputType.number,
-            validator: (value) {
-              if (value?.isEmpty ?? true) {
-                return 'Please enter an hourly rate';
-              }
-              if (double.tryParse(value!) == null) {
-                return 'Please enter a valid hourly rate';
-              }
-              return null;
-            },
-          ),
-          SizedBox(
-            height: 16.0,
-          ),
-          TextFormField(
-            controller: _descriptionController,
-            decoration: InputDecoration(
-              labelText: 'Description',
-            ),
-            maxLines: 3,
-            validator: (value) {
-              if (value?.isEmpty ?? true) {
-                return 'Please enter a description';
-              }
-              return null;
-            },
-          ),
-          SizedBox(
-            height: 16.0,
-          ),
-          TextButton(
-            onPressed: _getImage,
-            child: Text('Select an image'),
-          ),
-          SizedBox(
-            height: 16.0,
-          ),
-          if (_image != null)
-            Container(
-              height: 200.0,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: FileImage(_image!),
-                  fit: BoxFit.cover,
+              SizedBox(
+                height: 16.0,
+              ),
+              TextFormField(
+                controller: _postcodeController,
+                decoration: InputDecoration(
+                  labelText: 'Postcode',
+                ),
+                onChanged: (input) {
+                  if (input.length > 2) {
+                    _fetchPostcodeOptions(input);
+                  }
+                },
+                validator: (value) {
+                  if (value?.isEmpty ?? true) {
+                    return 'Please enter a postcode';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(
+                height: 8.0,
+              ),
+              if (_postcodeOptions.isNotEmpty)
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(5.0),
+                  ),
+                  margin: EdgeInsets.symmetric(vertical: 8.0),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: _postcodeOptions.length,
+                    itemBuilder: (context, index) {
+                      final option = _postcodeOptions[index];
+                      return ListTile(
+                        title: Text(option),
+                        onTap: () {
+                          _postcodeController.text = option;
+                          setState(() {
+                            _postcodeOptions.clear();
+                          });
+                        },
+                      );
+                    },
+                  ),
+                ),
+              SizedBox(
+                height: 16.0,
+              ),
+              TextFormField(
+                controller: _hourlyRateController,
+                decoration: InputDecoration(
+                  labelText: 'Hourly rate (£)',
+                ),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value?.isEmpty ?? true) {
+                    return 'Please enter an hourly rate';
+                  }
+                  if (double.tryParse(value!) == null) {
+                    return 'Please enter a valid hourly rate';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(
+                height: 16.0,
+              ),
+              TextFormField(
+                controller: _descriptionController,
+                decoration: InputDecoration(
+                  labelText: 'Description',
+                ),
+                maxLines: 3,
+                validator: (value) {
+                  if (value?.isEmpty ?? true) {
+                    return 'Please enter a description';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(
+                height: 16.0,
+              ),
+              TextButton(
+                onPressed: _getImage,
+                child: Text('Select an image'),
+              ),
+              SizedBox(
+                height: 16.0,
+              ),
+              if (_image != null)
+                Container(
+                  height: 200.0,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: FileImage(_image!),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              SizedBox(
+                height: 16.0,
+              ),
+              Center(
+                child: ElevatedButton(
+                  onPressed: _submitForm,
+                  child: Text('Submit'),
                 ),
               ),
-            ),
-          SizedBox(
-            height: 16.0,
+            ],
           ),
-          Center(
-            child: ElevatedButton(
-              onPressed: _submitForm,
-              child: Text('Submit'),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
