@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:sparepark/chat/widgets/message_textfield.dart';
-import 'package:sparepark/chat/widgets/single_message.dart';
+import 'package:sparepark/shared/widgets/message_textfield.dart';
+import 'package:sparepark/shared/widgets/single_message.dart';
 import 'package:sparepark/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';

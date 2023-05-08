@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:sparepark/firebase_options.dart';
-import 'package:sparepark/screens/bookings/booking_list.dart';
-import 'package:sparepark/screens/bookings/create_booking.dart';
+import 'package:sparepark/screens/crud/bookings/booking_list.dart';
+import 'package:sparepark/screens/crud/bookings/create_booking.dart';
 import 'package:sparepark/screens/mapscreens/map_home.dart';
-import 'package:sparepark/screens/parking/parking_list.dart';
-import 'package:sparepark/screens/parking/register_car_parking.dart';
-import 'package:sparepark/screens/reviews/create_review.dart';
-import 'package:sparepark/screens/reviews/review_list.dart';
+import 'package:sparepark/screens/crud/parking/parking_list.dart';
+import 'package:sparepark/screens/crud/parking/register_car_parking.dart';
+import 'package:sparepark/screens/crud/reviews/create_review.dart';
+import 'package:sparepark/screens/crud/reviews/review_list.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,9 +27,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Material(
-          child: ReviewListPage(
-        userId: '123',
-      )),
+          child: UserMapInfo(
+              // userId: '123',
+              )),
     );
   }
 }

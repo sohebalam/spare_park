@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:sparepark/chat/screens/chat_screen.dart';
+import 'package:sparepark/screens/chat/chat_screen.dart';
 import 'package:sparepark/models/user_model.dart';
 import 'package:flutter/material.dart';
 

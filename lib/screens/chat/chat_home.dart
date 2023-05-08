@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:sparepark/chat/screens/auth_screen.dart';
-import 'package:sparepark/chat/screens/chat_list.dart';
+import 'package:sparepark/auth_screen.dart';
+import 'package:sparepark/screens/chat/chat_list.dart';
 import 'package:sparepark/models/user_model.dart';
 
 import 'package:flutter/material.dart';

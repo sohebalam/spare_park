@@ -2,9 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:sparepark/chat/screens/auth_screen.dart';
-import 'package:sparepark/chat/screens/chat_screen.dart';
-import 'package:sparepark/chat/screens/search_screen.dart';
+import 'package:sparepark/auth_screen.dart';
+import 'package:sparepark/screens/chat/chat_screen.dart';
+import 'package:sparepark/screens/chat/search_screen.dart';
 import 'package:sparepark/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
