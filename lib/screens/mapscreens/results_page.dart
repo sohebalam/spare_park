@@ -7,7 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sparepark/screens/chat/chat_home.dart';
 import 'package:sparepark/screens/crud/bookings/create_booking.dart';
 import 'package:sparepark/screens/mapscreens/directions_page.dart';
-import 'package:sparepark/shared/fiunctions.dart';
+import 'package:sparepark/shared/functions.dart';
 
 class ResultsPage extends StatefulWidget {
   final LatLng location;

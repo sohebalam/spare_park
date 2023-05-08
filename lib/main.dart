@@ -11,7 +11,6 @@ import 'package:sparepark/screens/crud/parking/parking_list.dart';
 import 'package:sparepark/screens/crud/parking/register_car_parking.dart';
 import 'package:sparepark/screens/crud/reviews/create_review.dart';
 import 'package:sparepark/screens/crud/reviews/review_list.dart';
-import 'package:sparepark/screens/mapscreens/map_homepage.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,20 +20,6 @@ Future main() async {
   runApp(MyApp());
 }
 
-// class MyApp extends StatelessWidget {
-//   const MyApp({Key? key}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       debugShowCheckedModeBanner: false,
-//       home: Material(
-//           child: MapHomePage(
-//               // userId: '123',
-//               )),
-//     );
-//   }
-// }
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -43,7 +28,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Material(
-        child: MapHomePage(
+        child: UserMapInfo(
             // userId: '123',
             ),
       ),

@@ -122,7 +122,7 @@ class DB_CarPark {
     final bookings = await FirebaseFirestore.instance
         .collection('bookings')
         .where('start_date_time', isLessThanOrEqualTo: enddatetime)
-        .where('end_date_time', isGreaterThanOrEqualTo: startdatetime)
+        // .where('end_date_time', isGreaterThanOrEqualTo: startdatetime)
         .get();
 
     // final bookings = await FirebaseFirestore.instance

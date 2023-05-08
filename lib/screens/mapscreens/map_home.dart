@@ -9,6 +9,7 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
 
 import 'package:sparepark/shared/carpark_space_db_helper.dart';
+import 'package:sparepark/shared/widgets/app_bar.dart';
 import 'package:sparepark/shared/widgets/drawer.dart';
 
 class UserMapInfo extends StatefulWidget {
@@ -153,44 +154,11 @@ class _UserMapInfoState extends State<UserMapInfo> {
     };
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Map'),
+      appBar: const CustomAppBar(
+        title: 'Map',
+        isLoggedIn: false,
       ),
-      drawer: Drawer(
-        child: ListView(
-          // Important: Remove any padding from the ListView.
-          padding: EdgeInsets.zero,
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Text('Drawer Header'),
-            ),
-            ListTile(
-              title: const Text('Register Parking Space'),
-              onTap: () {
-                print('navigate to');
-                Get.to(() => RegisterParkingSpace());
-                // Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (context) => RegisterParkingSpace()));
-                // Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: const Text('Item 2'),
-              onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer: AppDrawer(),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : GoogleMap(

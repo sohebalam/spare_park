@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:sparepark/models/booking_model.dart';
+import 'package:sparepark/shared/style/contstants.dart';
+import 'package:sparepark/shared/widgets/app_bar.dart';
 
 class Payment extends StatefulWidget {
   final String b_id;
@@ -25,18 +27,39 @@ class _PaymentState extends State<Payment> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Stripe Payment'),
-      ),
-      body: Center(
-        child: TextButton(
-          child: const Text('Make Payment'),
-          onPressed: () async {
-            await makePayment();
-          },
+        appBar: CustomAppBar(
+          title: 'Pay',
+          isLoggedIn: true,
         ),
-      ),
-    );
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Center(
+              child: Text(
+                '£${widget.total}',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+            Center(
+              child: TextButton(
+                child: Text(
+                  'Make Payment',
+                  style: TextStyle(
+                    color: Constants().primaryColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                onPressed: () async {
+                  await makePayment();
+                },
+              ),
+            ),
+          ],
+        ));
   }
 
   Future<void> makePayment() async {
@@ -94,38 +117,6 @@ class _PaymentState extends State<Payment> {
     }
   }
 
-//   Future<Map<String, dynamic>> createPaymentIntent(
-//     String amount,
-//     String currency,
-//   ) async {
-//     try {
-//       final calculatedAmount = (double.parse(amount) * 100).toInt();
-//       final body = {
-//         'amount': calculatedAmount.toString(),
-//         'currency': currency,
-//         'payment_method_types[]': 'card'
-//       };
-
-//       final response = await http.post(
-//         Uri.parse('https://api.stripe.com/v1/payment_intents'),
-//         headers: {
-//           'Authorization':
-//               'Bearer sk_test_51N4eusA3A5lLQKKz6dxEn2tp4Lo5p858G1GN9AuoTR29rjE4JxMOrA1nqFeXDpzMo2AjfHTd4gDkUrVemhLw95FM005PPx9ygl',
-//           'Content-Type': 'application/x-www-form-urlencoded'
-//         },
-//         body: body,
-//       );
-//       print('Payment Intent Body->>> ${response.body.toString()}');
-
-//       await placeInFireBase(response.body);
-
-//       return jsonDecode(response.body);
-//     } catch (err) {
-//       print('err charging user: ${err.toString()}');
-//       rethrow;
-//     }
-//   }
-// }
   Future<Map<String, dynamic>> createPaymentIntent(
     String amount,
     String currency,
