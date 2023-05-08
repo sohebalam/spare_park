@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import 'package:sparepark/firebase_options.dart';
 import 'package:sparepark/screens/crud/bookings/booking_list.dart';
 import 'package:sparepark/screens/crud/bookings/create_booking.dart';
@@ -17,7 +18,26 @@ Future main() async {
   Stripe.publishableKey =
       'pk_test_51N4eusA3A5lLQKKzHmKCZVaUW7lheJqD1xgmoQuKagsz0glmNUx9flCfp5xriz07jBWU51DYRzfv2eGwEZsmkhZm00lWvz2Dqb';
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthNotifier()),
+        // add other providers here if needed
+      ],
+      child: MyApp(),
+    ),
+  );
+}
+
+class AuthNotifier extends ChangeNotifier {
+  bool _isLoggedIn = false;
+
+  bool get isLoggedIn => _isLoggedIn;
+
+  void setLoggedIn(bool value) {
+    _isLoggedIn = value;
+    notifyListeners();
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -25,10 +45,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    create:
+    (_) => AuthNotifier();
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Material(
-        child: UserMapInfo(
+        child: RegisterParkingSpace(
             // userId: '123',
             ),
       ),

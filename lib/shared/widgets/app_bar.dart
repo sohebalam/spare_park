@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sparepark/shared/functions.dart';
 import 'package:sparepark/shared/style/contstants.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -11,17 +12,41 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Padding(
-        padding: EdgeInsets.only(left: isLoggedIn ? 110 : 111),
-        child: Text(title),
-      ),
+      title: isLoggedIn
+          ? Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20.0,
+              ),
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0,
+                  ),
+                ),
+                // SizedBox(width: 10.0),
+                // Icon(
+                //   Icons.account_circle,
+                //   color: Constants().primaryColor,
+                // ),
+              ],
+            ),
+      centerTitle: true,
       backgroundColor: Constants().primaryColor,
       actions: isLoggedIn
           ? <Widget>[
               IconButton(
                 icon: Icon(Icons.logout),
                 onPressed: () {
-                  // TODO: Implement logout functionality
+                  disconnect();
                 },
               ),
             ]

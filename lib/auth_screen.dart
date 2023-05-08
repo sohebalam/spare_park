@@ -58,10 +58,10 @@ class _AuthScreenState extends State<AuthScreen> {
                             "https://cdn.iconscout.com/icon/free/png-256/chat-2639493-2187526.png"))),
               ),
             ),
-            Text(
-              "Flutter Chat App",
-              style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
-            ),
+            // Text(
+            //   "Flutter Chat App",
+            //   style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+            // ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
               child: ElevatedButton(

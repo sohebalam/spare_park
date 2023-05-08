@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -8,6 +9,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sparepark/models/car_park_space.dart';
 import 'package:sparepark/shared/carpark_space_db_helper.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:auth_buttons/auth_buttons.dart';
+import 'package:sparepark/shared/functions.dart';
+import 'package:sparepark/shared/widgets/app_bar.dart';
 
 class RegisterParkingSpace extends StatefulWidget {
   @override
@@ -23,8 +27,21 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
   final _descriptionController = TextEditingController();
   final _postcodeOptions = <String>[];
   final picker = ImagePicker();
+  final bool isLoggedIn = FirebaseAuth.instance.currentUser != null;
 
   File? _image;
+
+  void checkCurrentUser() {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = auth.currentUser;
+
+    if (user != null) {
+      print('User is signed in.');
+      print('User UID: ${user.uid}');
+    } else {
+      print('No user is currently signed in.');
+    }
+  }
 
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
@@ -42,6 +59,9 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
         final id =
             FirebaseFirestore.instance.collection('parking_spaces').doc().id;
 
+        // var user;
+        FirebaseAuth auth = FirebaseAuth.instance;
+        User? user = auth.currentUser;
         final RegisterParkingSpace = CarParkSpaceModel(
           address: _addressController.text,
           postcode: postcode,
@@ -50,6 +70,8 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
           latitude: latitude,
           longitude: longitude,
           p_id: id,
+          u_id: user!.uid,
+          reg_date: DateTime.now(),
         );
 
         // Upload image to Firebase Storage
@@ -136,143 +158,175 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Register Parking Space'),
+      appBar: CustomAppBar(
+        title: 'Register Car Park Space',
+        isLoggedIn: isLoggedIn,
       ),
-      body: Center(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 50.0,
-              ),
-              TextFormField(
-                controller: _addressController,
-                decoration: InputDecoration(
-                  labelText: 'Address',
+      body: SingleChildScrollView(
+        child: Center(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 40.0,
                 ),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Please enter an address';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(
-                height: 16.0,
-              ),
-              TextFormField(
-                controller: _postcodeController,
-                decoration: InputDecoration(
-                  labelText: 'Postcode',
-                ),
-                onChanged: (input) {
-                  if (input.length > 2) {
-                    _fetchPostcodeOptions(input);
-                  }
-                },
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Please enter a postcode';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-              if (_postcodeOptions.isNotEmpty)
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                  margin: EdgeInsets.symmetric(vertical: 8.0),
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: _postcodeOptions.length,
-                    itemBuilder: (context, index) {
-                      final option = _postcodeOptions[index];
-                      return ListTile(
-                        title: Text(option),
-                        onTap: () {
-                          _postcodeController.text = option;
-                          setState(() {
-                            _postcodeOptions.clear();
-                          });
-                        },
-                      );
+                Center(
+                  child: GoogleAuthButton(
+                    onPressed: () async {
+                      await signInFunction();
                     },
-                  ),
-                ),
-              SizedBox(
-                height: 16.0,
-              ),
-              TextFormField(
-                controller: _hourlyRateController,
-                decoration: InputDecoration(
-                  labelText: 'Hourly rate (£)',
-                ),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Please enter an hourly rate';
-                  }
-                  if (double.tryParse(value!) == null) {
-                    return 'Please enter a valid hourly rate';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(
-                height: 16.0,
-              ),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: InputDecoration(
-                  labelText: 'Description',
-                ),
-                maxLines: 3,
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Please enter a description';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(
-                height: 16.0,
-              ),
-              TextButton(
-                onPressed: _getImage,
-                child: Text('Select an image'),
-              ),
-              SizedBox(
-                height: 16.0,
-              ),
-              if (_image != null)
-                Container(
-                  height: 200.0,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: FileImage(_image!),
-                      fit: BoxFit.cover,
+                    text: "Sign up with Google",
+                    style: AuthButtonStyle(
+                      width: 300,
+                      height: 60,
+                      iconType: AuthIconType.outlined,
+                      buttonColor: Colors.white,
+                      textStyle: TextStyle(
+                        color: Colors.black,
+                      ),
                     ),
                   ),
                 ),
-              SizedBox(
-                height: 16.0,
-              ),
-              Center(
-                child: ElevatedButton(
-                  onPressed: _submitForm,
-                  child: Text('Submit'),
+                SizedBox(
+                  height: 20.0,
                 ),
-              ),
-            ],
+                TextFormField(
+                  controller: _addressController,
+                  decoration: InputDecoration(
+                    labelText: 'Address',
+                  ),
+                  validator: (value) {
+                    if (value?.isEmpty ?? true) {
+                      return 'Please enter an address';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(
+                  height: 16.0,
+                ),
+                TextFormField(
+                  controller: _postcodeController,
+                  decoration: InputDecoration(
+                    labelText: 'Postcode',
+                  ),
+                  onChanged: (input) {
+                    if (input.length > 2) {
+                      _fetchPostcodeOptions(input);
+                    }
+                  },
+                  validator: (value) {
+                    if (value?.isEmpty ?? true) {
+                      return 'Please enter a postcode';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(
+                  height: 8.0,
+                ),
+                if (_postcodeOptions.isNotEmpty)
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                    margin: EdgeInsets.symmetric(vertical: 8.0),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _postcodeOptions.length,
+                      itemBuilder: (context, index) {
+                        final option = _postcodeOptions[index];
+                        return ListTile(
+                          title: Text(option),
+                          onTap: () {
+                            _postcodeController.text = option;
+                            setState(() {
+                              _postcodeOptions.clear();
+                            });
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                SizedBox(
+                  height: 16.0,
+                ),
+                TextFormField(
+                  controller: _hourlyRateController,
+                  decoration: InputDecoration(
+                    labelText: 'Hourly rate (£)',
+                  ),
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value?.isEmpty ?? true) {
+                      return 'Please enter an hourly rate';
+                    }
+                    if (double.tryParse(value!) == null) {
+                      return 'Please enter a valid hourly rate';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(
+                  height: 16.0,
+                ),
+                TextFormField(
+                  controller: _descriptionController,
+                  decoration: InputDecoration(
+                    labelText: 'Description',
+                  ),
+                  maxLines: 3,
+                  validator: (value) {
+                    if (value?.isEmpty ?? true) {
+                      return 'Please enter a description';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(
+                  height: 16.0,
+                ),
+                TextButton(
+                  onPressed: _getImage,
+                  child: Text('Select an image'),
+                ),
+                SizedBox(
+                  height: 16.0,
+                ),
+                if (_image != null)
+                  Container(
+                    height: 200.0,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: FileImage(_image!),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                SizedBox(
+                  height: 16.0,
+                ),
+                Center(
+                    child: ElevatedButton(
+                  onPressed: isLoggedIn
+                      ? _submitForm
+                      : () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text('Please log in to submit the form.'),
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                        },
+                  child: Text('Submit'),
+                )),
+              ],
+            ),
           ),
         ),
       ),

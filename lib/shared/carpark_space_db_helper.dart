@@ -25,17 +25,19 @@ class DB_CarPark {
     final docRef = carpark_spaceCollection.doc(cpsid);
 
     final newCPS = CarParkSpaceModel(
-      p_id: cpsid,
-      address: cps.address,
-      postcode: cps.postcode,
-      hourlyRate: cps.hourlyRate,
-      // spaces: cps.spaces,
-      description: cps.description,
-      phoneNumber: cps.phoneNumber,
-      latitude: cps.latitude,
-      longitude: cps.longitude,
-      p_image: cps.p_image,
-    ).toJson();
+            p_id: cpsid,
+            address: cps.address,
+            postcode: cps.postcode,
+            hourlyRate: cps.hourlyRate,
+            // spaces: cps.spaces,
+            description: cps.description,
+            phoneNumber: cps.phoneNumber,
+            latitude: cps.latitude,
+            longitude: cps.longitude,
+            p_image: cps.p_image,
+            u_id: cps.u_id,
+            reg_date: DateTime.now())
+        .toJson();
 
     try {
       await docRef.set(newCPS);
