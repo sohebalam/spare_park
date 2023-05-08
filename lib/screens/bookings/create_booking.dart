@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:sparepark/models/booking_model.dart';
-import 'package:sparepark/screens/booking/payment.dart';
+import 'package:sparepark/screens/bookings/payment.dart';
 import 'package:sparepark/shared/booking_db_helper.dart';
 import 'dart:async';
 import 'dart:typed_data';

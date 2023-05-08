@@ -5,7 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sparepark/chat/chat_home.dart';
-import 'package:sparepark/screens/booking/booking.dart';
+import 'package:sparepark/screens/bookings/create_booking.dart';
 import 'package:sparepark/screens/mapscreens/directions_page.dart';
 import 'package:sparepark/shared/fiunctions.dart';
 

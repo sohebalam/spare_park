@@ -90,19 +90,6 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
     }
   }
 
-  // void _getImage() async {
-  //   final pickedFile =
-  //       await ImagePicker().pickImage(source: ImageSource.gallery);
-
-  //   setState(() {
-  //     if (pickedFile != null) {
-  //       _image = File(pickedFile.path);
-  //     } else {
-  //       print('No image selected.');
-  //     }
-  //   });
-  // }
-
   Future<void> _getImage() async {
     final action = await showDialog(
       context: context,
