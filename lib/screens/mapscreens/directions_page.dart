@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:sparepark/shared/widgets/app_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DirectionsPage extends StatefulWidget {
@@ -22,6 +24,8 @@ class DirectionsPage extends StatefulWidget {
 class _DirectionsPageState extends State<DirectionsPage> {
   Set<Marker> _markers = {};
   Set<Polyline> _polylines = {};
+
+  final bool isLoggedIn = FirebaseAuth.instance.currentUser != null;
 
   @override
   void initState() {
@@ -119,9 +123,7 @@ class _DirectionsPageState extends State<DirectionsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Directions'),
-        ),
+        appBar: CustomAppBar(title: 'Directions', isLoggedIn: false),
         body: Stack(
           children: [
             GoogleMap(

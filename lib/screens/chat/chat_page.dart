@@ -3,22 +3,22 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sparepark/shared/style/contstants.dart';
 import 'package:sparepark/shared/widgets/message_textfield.dart';
 import 'package:sparepark/shared/widgets/single_message.dart';
 
-class ChatUserPage extends StatefulWidget {
+class ChatPage extends StatefulWidget {
   final String u_id;
   final String currentUserId;
 
-  const ChatUserPage(
-      {Key? key, required this.u_id, required this.currentUserId})
+  const ChatPage({Key? key, required this.u_id, required this.currentUserId})
       : super(key: key);
 
   @override
-  _ChatUserPageState createState() => _ChatUserPageState();
+  _ChatPageState createState() => _ChatPageState();
 }
 
-class _ChatUserPageState extends State<ChatUserPage> {
+class _ChatPageState extends State<ChatPage> {
   // User? _currentUser;
   String _otherUserName = '';
   String _otherUserImage = '';
@@ -58,7 +58,7 @@ class _ChatUserPageState extends State<ChatUserPage> {
     print(_otherUserName);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.teal,
+        backgroundColor: Constants().primaryColor,
         title: Row(
           children: [
             Stack(

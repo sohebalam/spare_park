@@ -5,7 +5,7 @@ import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:sparepark/screens/chat/chat_user_page.dart';
+import 'package:sparepark/screens/chat/chat_page.dart';
 import 'package:sparepark/screens/crud/bookings/create_booking.dart';
 import 'package:sparepark/screens/mapscreens/directions_page.dart';
 import 'package:sparepark/shared/functions.dart';
@@ -51,6 +51,7 @@ class _ResultsPageState extends State<ResultsPage> {
       print('Currently logged in user: ${user?.uid}');
       print('Currently logged in user: ${user?.uid}');
     });
+    print(widget.results);
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       final mostNortheastSpace = widget.results.reduce((curr, next) =>
           curr[1] > next[1] || (curr[1] == next[1] && curr[2] > next[2])
@@ -253,7 +254,7 @@ class _ResultsPageState extends State<ResultsPage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => ChatUserPage(
+                                      builder: (context) => ChatPage(
                                         u_id: result[4],
                                         currentUserId: _currentUserId,
                                       ),

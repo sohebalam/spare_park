@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Material(
-        child: UserMapInfo(
+        child: MapHome(
             // latitude: 51.6683, longitude: 0.0420,
             // userId: '123',
             ),

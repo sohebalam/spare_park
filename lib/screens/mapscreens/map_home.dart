@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_webservice/places.dart';
+import 'package:sparepark/auth_screen.dart';
 import 'package:sparepark/screens/crud/parking/register_car_parking.dart';
 import 'package:sparepark/screens/mapscreens/results_page.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
@@ -13,14 +14,14 @@ import 'package:sparepark/shared/carpark_space_db_helper.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
 import 'package:sparepark/shared/widgets/drawer.dart';
 
-class UserMapInfo extends StatefulWidget {
-  const UserMapInfo({Key? key}) : super(key: key);
+class MapHome extends StatefulWidget {
+  const MapHome({Key? key}) : super(key: key);
 
   @override
-  State<UserMapInfo> createState() => _UserMapInfoState();
+  State<MapHome> createState() => _MapHomeState();
 }
 
-class _UserMapInfoState extends State<UserMapInfo> {
+class _MapHomeState extends State<MapHome> {
   late GoogleMapController mapController;
   // DateTime? _selectedDateTimeStart;
   // DateTime? _selectedDateTimeEnd;
@@ -52,8 +53,10 @@ class _UserMapInfoState extends State<UserMapInfo> {
       startdatetime: _selectedDateTimeStart,
       enddatetime: _selectedDateTimeEnd,
     );
+
     List<List<dynamic>> results = [];
     final currentUser = FirebaseAuth.instance.currentUser;
+
     nearestSpaces.forEach((space) {
       if (space.u_id != currentUser?.uid) {
         results.add([
@@ -66,19 +69,47 @@ class _UserMapInfoState extends State<UserMapInfo> {
       }
     });
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ResultsPage(
-          location: LatLng(latitude!, longitude!),
-          results: results,
-          latitude: _currentPosition.latitude,
-          longitude: _currentPosition.longitude,
-          startdatetime: _selectedDateTimeStart,
-          enddatetime: _selectedDateTimeEnd,
+    if (currentUser == null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => AuthScreen(
+                  prior_page: 'map_home',
+                  location: LatLng(latitude!, longitude!),
+                  results: results,
+                  latitude: _currentPosition.latitude,
+                  longitude: _currentPosition.longitude,
+                  startdatetime: _selectedDateTimeStart,
+                  enddatetime: _selectedDateTimeEnd,
+                )),
+      );
+    } else {
+      nearestSpaces.forEach((space) {
+        if (space.u_id != currentUser.uid) {
+          results.add([
+            space.p_id,
+            space.latitude,
+            space.longitude,
+            space.hourlyRate,
+            space.u_id,
+          ]);
+        }
+      });
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ResultsPage(
+            location: LatLng(latitude!, longitude!),
+            results: results,
+            latitude: _currentPosition.latitude,
+            longitude: _currentPosition.longitude,
+            startdatetime: _selectedDateTimeStart,
+            enddatetime: _selectedDateTimeEnd,
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   getLocation() async {
