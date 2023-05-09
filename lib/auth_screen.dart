@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:sparepark/screens/chat/chat_home.dart';
 import 'package:sparepark/main.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -40,8 +39,8 @@ class _AuthScreenState extends State<AuthScreen> {
       });
     }
 
-    Navigator.pushAndRemoveUntil(context,
-        MaterialPageRoute(builder: (context) => ChatHome()), (route) => false);
+    // Navigator.pushAndRemoveUntil(context,
+    //     MaterialPageRoute(builder: (context) => ChatHome()), (route) => false);
   }
 
   @override

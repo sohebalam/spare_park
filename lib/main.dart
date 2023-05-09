@@ -5,7 +5,6 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:sparepark/firebase_options.dart';
-import 'package:sparepark/screens/chat/chat_home.dart';
 import 'package:sparepark/screens/crud/bookings/booking_list.dart';
 import 'package:sparepark/screens/crud/bookings/create_booking.dart';
 import 'package:sparepark/screens/mapscreens/map_home.dart';
