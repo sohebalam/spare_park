@@ -41,11 +41,11 @@ class _UserMapInfoState extends State<UserMapInfo> {
   }
 
   void _newFunction(
-    double? latitude,
-    double? longitude,
+    double latitude,
+    double longitude,
   ) async {
     final carParkService = DB_CarPark();
-    final nearestSpaces = await carParkService.getNearestSpaces(
+    final nearestSpaces = await DB_CarPark.getNearestSpaces(
       latitude: latitude,
       longitude: longitude,
       startdatetime: _selectedDateTimeStart,
@@ -140,7 +140,7 @@ class _UserMapInfoState extends State<UserMapInfo> {
         details.result.geometry?.location.lat ?? 0.0,
         details.result.geometry?.location.lng ?? 0.0,
       );
-      _newFunction(location?.latitude, location?.longitude);
+      _newFunction(location!.latitude, location!.longitude);
     });
   }
 
