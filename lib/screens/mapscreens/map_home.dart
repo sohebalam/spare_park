@@ -60,6 +60,7 @@ class _UserMapInfoState extends State<UserMapInfo> {
         space.latitude,
         space.longitude,
         space.hourlyRate,
+        space.u_id,
       ]);
     });
 

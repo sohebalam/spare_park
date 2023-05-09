@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sparepark/screens/chat/chat_home.dart';
+import 'package:sparepark/screens/chat/chat_user_page.dart';
 import 'package:sparepark/screens/crud/bookings/create_booking.dart';
 import 'package:sparepark/screens/mapscreens/directions_page.dart';
 import 'package:sparepark/shared/functions.dart';
@@ -141,7 +142,7 @@ class _ResultsPageState extends State<ResultsPage> {
 
   @override
   Widget build(BuildContext context) {
-    print('Start date and time: ${widget.startdatetime}');
+    print('results: ${widget.results}');
 
     return Scaffold(
       body: Column(
@@ -240,10 +241,17 @@ class _ResultsPageState extends State<ResultsPage> {
                               child: TextButton(
                                 onPressed: () {
                                   // Book the selected space
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //     builder: (context) => ChatHome(),
+                                  //   ),
+                                  // );
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => ChatHome(),
+                                      builder: (context) =>
+                                          ChatUserPage(u_id: result[4]),
                                     ),
                                   );
                                 },
