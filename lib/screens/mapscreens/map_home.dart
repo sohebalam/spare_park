@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -52,16 +53,17 @@ class _UserMapInfoState extends State<UserMapInfo> {
       enddatetime: _selectedDateTimeEnd,
     );
     List<List<dynamic>> results = [];
+    final currentUser = FirebaseAuth.instance.currentUser;
     nearestSpaces.forEach((space) {
-      print('her');
-      print(space);
-      results.add([
-        space.p_id,
-        space.latitude,
-        space.longitude,
-        space.hourlyRate,
-        space.u_id,
-      ]);
+      if (space.u_id != currentUser?.uid) {
+        results.add([
+          space.p_id,
+          space.latitude,
+          space.longitude,
+          space.hourlyRate,
+          space.u_id,
+        ]);
+      }
     });
 
     Navigator.push(

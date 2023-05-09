@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 
 import 'dart:typed_data';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sparepark/screens/chat/chat_home.dart';
@@ -38,9 +39,19 @@ class _ResultsPageState extends State<ResultsPage> {
   late String? cpsId;
   GoogleMapController? controller;
 
+  User? _currentUser;
+  late String _currentUserId;
   @override
   void initState() {
     super.initState();
+    FirebaseAuth.instance.authStateChanges().listen((user) {
+      setState(() {
+        _currentUser = user;
+        _currentUserId = _currentUser!.uid;
+      });
+      print('Currently logged in user: ${user?.uid}');
+      print('Currently logged in user: ${user?.uid}');
+    });
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       final mostNortheastSpace = widget.results.reduce((curr, next) =>
           curr[1] > next[1] || (curr[1] == next[1] && curr[2] > next[2])
@@ -240,18 +251,13 @@ class _ResultsPageState extends State<ResultsPage> {
                               width: 80,
                               child: TextButton(
                                 onPressed: () {
-                                  // Book the selected space
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //     builder: (context) => ChatHome(),
-                                  //   ),
-                                  // );
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          ChatUserPage(u_id: result[4]),
+                                      builder: (context) => ChatUserPage(
+                                        u_id: result[4],
+                                        currentUserId: _currentUserId,
+                                      ),
                                     ),
                                   );
                                 },
