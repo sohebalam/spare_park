@@ -26,15 +26,7 @@ class _ChatUserPageState extends State<ChatUserPage> {
   @override
   void initState() {
     super.initState();
-    // Get the currently logged in user from Firebase
-    // FirebaseAuth.instance.authStateChanges().listen((user) {
-    //   setState(() {
-    //     _currentUser = user;
-    //   });
-    //   print('Currently logged in user: ${user?.uid}');
-    //   print('Currently logged in user: ${user?.uid}');
-    // });
-    // Get the user's name and image from Firestore
+
     FirebaseFirestore.instance
         .collection('users')
         .doc(widget.u_id)
@@ -51,6 +43,13 @@ class _ChatUserPageState extends State<ChatUserPage> {
     }).catchError((error) {
       print('Error retrieving user data: $error');
     });
+
+    // Load the Firebase image after a delay of 1 second
+    Future.delayed(Duration(seconds: 1), () {
+      if (_otherUserImage.isNotEmpty) {
+        setState(() {});
+      }
+    });
   }
 
   @override
@@ -62,16 +61,34 @@ class _ChatUserPageState extends State<ChatUserPage> {
         backgroundColor: Colors.teal,
         title: Row(
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(80),
-              // child: CachedNetworkImage(
-              //   imageUrl: _otherUserImage,
-              //   placeholder: (conteext, url) => CircularProgressIndicator(),
-              //   errorWidget: (context, url, error) => Icon(
-              //     Icons.error,
-              //   ),
-              //   height: 40,
-              // ),
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(80),
+                  child: _otherUserImage.isNotEmpty
+                      ? Image.network(
+                          _otherUserImage,
+                          height: 30,
+                        )
+                      : Image.asset(
+                          'assets/person.png', // replace with your local image path
+                          height: 30,
+                        ),
+                ),
+                if (_otherUserImage.isEmpty)
+                  Container(
+                    height: 30,
+                    width: 30,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(80),
+                    ),
+                    child: Icon(
+                      Icons.person,
+                      color: Colors.grey[500],
+                    ),
+                  ),
+              ],
             ),
             SizedBox(
               width: 5,
@@ -146,130 +163,4 @@ class _ChatUserPageState extends State<ChatUserPage> {
       ),
     );
   }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   print(_currentUser?.uid);
-  //   print(_otherUserName);
-  //   return Scaffold(
-  //     appBar: AppBar(
-  //       backgroundColor: Colors.teal,
-  //       title: Row(
-  //         children: [
-  //           ClipRRect(
-  //             borderRadius: BorderRadius.circular(80),
-  //             child: CachedNetworkImage(
-  //               imageUrl: _otherUserImage,
-  //               placeholder: (conteext, url) => CircularProgressIndicator(),
-  //               errorWidget: (context, url, error) => Icon(
-  //                 Icons.error,
-  //               ),
-  //               height: 40,
-  //             ),
-  //           ),
-  //           SizedBox(
-  //             width: 5,
-  //           ),
-  //           Text(
-  //             _otherUserName,
-  //             style: TextStyle(fontSize: 20),
-  //           )
-  //         ],
-  //       ),
-  //     ),
-  //     body: Column(
-  //       children: [
-  //         Expanded(
-  //             child: Container(
-  //           padding: EdgeInsets.all(10),
-  //           decoration: BoxDecoration(
-  //               color: Colors.white,
-  //               borderRadius: BorderRadius.only(
-  //                   topLeft: Radius.circular(25),
-  //                   topRight: Radius.circular(25))),
-  //           child: StreamBuilder(
-  //               stream: FirebaseFirestore.instance
-  //                   .collection("users")
-  //                   .doc(_currentUser?.uid)
-  //                   .collection('messages')
-  //                   .doc(widget.u_id)
-  //                   .collection('chats')
-  //                   .orderBy("date", descending: true)
-  //                   .snapshots(),
-  //               builder: (context, AsyncSnapshot snapshot) {
-  //                 if (snapshot.hasData) {
-  //                   if (snapshot.data.docs.length < 1) {
-  //                     return Center(
-  //                       child: Text("Say Hi"),
-  //                     );
-  //                   }
-  //                   return ListView.builder(
-  //                     itemCount: snapshot.data.docs.length,
-  //                     reverse: true,
-  //                     physics: BouncingScrollPhysics(),
-  //                     itemBuilder: (context, index) {
-  //                       bool isMe = snapshot.data.docs[index]['senderId'] ==
-  //                           _currentUser?.uid;
-  //                       DateTime date =
-  //                           snapshot.data.docs[index]['date'].toDate();
-  //                       String datetime =
-  //                           DateFormat('MMM d, h:mm a').format(date);
-  //                       String message = snapshot.data.docs[index]['message'];
-  //                       return SingleMessage(
-  //                         friendName: _otherUserName,
-  //                         datetime: datetime,
-  //                         message: message,
-  //                         isMe: isMe,
-  //                       );
-  //                     },
-  //                   );
-  //                 }
-  //                 return Center(child: CircularProgressIndicator());
-  //               }),
-  //         )),
-  //         MessageTextField(_currentUser!.uid, _otherUserName),
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     appBar: AppBar(
-  //       title: Text('User Page'),
-  //     ),
-  //     body: Center(
-  //       child: Column(
-  //         mainAxisAlignment: MainAxisAlignment.center,
-  //         children: [
-  //           Text('User ID: ${widget.u_id}'),
-  //           if (_user != null) Text('Logged in user: ${_user!.uid}'),
-  //           Text('Name: $_userName'),
-  //           Image.network(
-  //             _userImage,
-  //             loadingBuilder: (BuildContext context, Widget child,
-  //                 ImageChunkEvent? loadingProgress) {
-  //               if (loadingProgress == null) {
-  //                 return child;
-  //               }
-  //               return Center(
-  //                 child: CircularProgressIndicator(
-  //                   value: loadingProgress.expectedTotalBytes != null
-  //                       ? loadingProgress.cumulativeBytesLoaded /
-  //                           loadingProgress.expectedTotalBytes!
-  //                       : null,
-  //                 ),
-  //               );
-  //             },
-  //             errorBuilder:
-  //                 (BuildContext context, Object error, StackTrace? stackTrace) {
-  //               return Text('Error loading image');
-  //             },
-  //           )
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
 }
