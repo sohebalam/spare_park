@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:auth_buttons/auth_buttons.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:sparepark/models/car_park_space.dart';
 import 'package:sparepark/services/auth_service.dart';
 import 'package:sparepark/shared/carpark_space_db_helper.dart';
+import 'package:sparepark/shared/functions.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -28,6 +30,7 @@ class _RegisterSpaceState extends State<RegisterSpace> {
   final _spacesController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _postcodeOptions = <String>[];
+  final bool isLoggedIn = FirebaseAuth.instance.currentUser != null;
   final picker = ImagePicker();
 
   File? _image;
@@ -98,7 +101,21 @@ class _RegisterSpaceState extends State<RegisterSpace> {
 
     void _submitForm() async {
       if (_formKey.currentState!.validate()) {
-        // Validate postcode
+        // Check if user is logged in
+        final authService = Provider.of<AuthService>(context, listen: false);
+        // final user = await authService.getCurrentUser();
+        if (isLoggedIn == false) {
+          // User is not logged in, show snackbar message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Please log in to register your space'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+          return;
+        }
+
+        // User is logged in, continue with form submission
         final postcode = _postcodeController.text;
         final postcodeUrl =
             Uri.parse('https://api.postcodes.io/postcodes/$postcode');
@@ -136,12 +153,22 @@ class _RegisterSpaceState extends State<RegisterSpace> {
           }
 
           DB_CarPark.create(RegisterParkingSpace);
+
+          // Show success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Space registered successfully'),
+              duration: Duration(seconds: 2),
+            ),
+          );
         } else {
           // Postcode is invalid, show error message
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Invalid postcode'),
-            duration: Duration(seconds: 2),
-          ));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Invalid postcode'),
+              duration: Duration(seconds: 2),
+            ),
+          );
         }
       }
     }
@@ -153,38 +180,66 @@ class _RegisterSpaceState extends State<RegisterSpace> {
         ),
         body: SingleChildScrollView(
             child: Stack(children: [
-          Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: StreamBuilder<bool>(
-                stream: authService.user?.map((user) => user != null),
-                initialData: false,
-                builder: (context, snapshot) {
-                  if (snapshot.data == true) {
-                    return Text(
-                      'You are logged in.',
-                      style: TextStyle(fontSize: 20),
-                    );
-                  } else {
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 20.0),
-                      child: Text(
-                        'You are not logged in, please login to register your space.',
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: StreamBuilder<bool>(
+                  stream: authService.user?.map((user) => user != null),
+                  initialData: false,
+                  builder: (context, snapshot) {
+                    if (snapshot.data == true) {
+                      return Text(
+                        'You are logged in.',
                         style: TextStyle(fontSize: 20),
-                      ),
-                    );
-                  }
-                },
+                      );
+                    } else {
+                      return Padding(
+                          padding: const EdgeInsets.fromLTRB(35, 20, 20, 20),
+                          child: Stack(
+                            children: [
+                              // Text(
+                              //   'Please login to register your Parking Space',
+                              //   style: TextStyle(fontSize: 20),
+                              // ),
+                              // SizedBox(
+                              //   height: 16.0,
+                              // ),
+                              GoogleAuthButton(
+                                onPressed: () async {
+                                  await signInFunction();
+                                },
+                                text: "Sign up with Google",
+                                style: AuthButtonStyle(
+                                  width: 300,
+                                  height: 60,
+                                  iconType: AuthIconType.outlined,
+                                  buttonColor: Colors.white,
+                                  textStyle: TextStyle(
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ));
+                    }
+                  },
+                ),
               ),
-            ),
-          ]),
+              // Visibility(
+              //   visible: !isLoggedIn,
+              //   child:
+              // ),
+            ],
+          ),
           Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  height: 50.0,
+                  height: 100.0,
                 ),
                 Form(
                   key: _formKey,

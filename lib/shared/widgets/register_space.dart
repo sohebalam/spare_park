@@ -42,7 +42,7 @@ class RegisterSpace extends StatelessWidget {
                   );
                 } else {
                   return Text(
-                    'You are not logged in. Please login to register your space.',
+                    'Please login to register your space.',
                     style: TextStyle(fontSize: 20),
                   );
                 }
