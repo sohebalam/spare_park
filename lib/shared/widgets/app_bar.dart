@@ -1,56 +1,64 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sparepark/services/auth_service.dart';
 import 'package:sparepark/shared/functions.dart';
 import 'package:sparepark/shared/style/contstants.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
-  final bool isLoggedIn;
+  // final Stream<bool> isLoggedInStream;
 
-  const CustomAppBar({Key? key, required this.title, required this.isLoggedIn})
-      : super(key: key);
+  CustomAppBar({
+    Key? key,
+    required this.title,
+    required Stream<bool> isLoggedInStream,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      title: isLoggedIn
-          ? Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20.0,
-              ),
-            )
-          : Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
+    final authService = Provider.of<AuthService>(context);
+    final isLoggedInStream = authService.user?.map((user) => user != null);
+    return StreamBuilder<bool>(
+      stream: isLoggedInStream,
+      initialData: false,
+      builder: (context, snapshot) {
+        return AppBar(
+          title: snapshot.data == true
+              ? Text(
                   title,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 20.0,
                   ),
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.0,
+                      ),
+                    ),
+                  ],
                 ),
-                // SizedBox(width: 10.0),
-                // Icon(
-                //   Icons.account_circle,
-                //   color: Constants().primaryColor,
-                // ),
-              ],
-            ),
-      centerTitle: true,
-      backgroundColor: Constants().primaryColor,
-      actions: isLoggedIn
-          ? <Widget>[
-              IconButton(
-                icon: Icon(Icons.logout),
-                onPressed: () {
-                  disconnect();
-                },
-              ),
-            ]
-          : null,
+          centerTitle: true,
+          backgroundColor: Constants().primaryColor,
+          actions: snapshot.data == true
+              ? <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.logout),
+                    onPressed: () {
+                      authService.disconnect();
+                    },
+                  ),
+                ]
+              : null,
+        );
+      },
     );
   }
 

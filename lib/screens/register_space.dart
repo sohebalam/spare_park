@@ -1,24 +1,26 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:sparepark/models/car_park_space.dart';
+import 'package:sparepark/services/auth_service.dart';
+import 'package:sparepark/shared/carpark_space_db_helper.dart';
+import 'package:sparepark/shared/widgets/app_bar.dart';
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:sparepark/models/car_park_space.dart';
-import 'package:sparepark/shared/carpark_space_db_helper.dart';
+// import 'package:sparepark/models/car_park_space.dart';
+// import 'package:sparepark/shared/carpark_space_db_helper.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:auth_buttons/auth_buttons.dart';
-import 'package:sparepark/shared/functions.dart';
-import 'package:sparepark/shared/widgets/app_bar.dart';
 
-class RegisterParkingSpace extends StatefulWidget {
+class RegisterSpace extends StatefulWidget {
   @override
-  _RegisterParkingSpaceState createState() => _RegisterParkingSpaceState();
+  State<RegisterSpace> createState() => _RegisterSpaceState();
 }
 
-class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
+class _RegisterSpaceState extends State<RegisterSpace> {
   final _formKey = GlobalKey<FormState>();
   final _addressController = TextEditingController();
   final _postcodeController = TextEditingController();
@@ -27,75 +29,8 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
   final _descriptionController = TextEditingController();
   final _postcodeOptions = <String>[];
   final picker = ImagePicker();
-  final bool isLoggedIn = FirebaseAuth.instance.currentUser != null;
 
   File? _image;
-
-  void checkCurrentUser() {
-    FirebaseAuth auth = FirebaseAuth.instance;
-    User? user = auth.currentUser;
-
-    if (user != null) {
-      print('User is signed in.');
-      print('User UID: ${user.uid}');
-    } else {
-      print('No user is currently signed in.');
-    }
-  }
-
-  void _submitForm() async {
-    if (_formKey.currentState!.validate()) {
-      // Validate postcode
-      final postcode = _postcodeController.text;
-      final postcodeUrl =
-          Uri.parse('https://api.postcodes.io/postcodes/$postcode');
-      final postcodeResponse = await http.get(postcodeUrl);
-      if (postcodeResponse.statusCode == 200) {
-        // Postcode is valid, continue with form submission
-        final postcodeData = json.decode(postcodeResponse.body);
-        final longitude = postcodeData['result']['longitude'];
-        final latitude = postcodeData['result']['latitude'];
-
-        final id =
-            FirebaseFirestore.instance.collection('parking_spaces').doc().id;
-
-        // var user;
-        FirebaseAuth auth = FirebaseAuth.instance;
-        User? user = auth.currentUser;
-        final RegisterParkingSpace = CarParkSpaceModel(
-          address: _addressController.text,
-          postcode: postcode,
-          hourlyRate: double.parse(_hourlyRateController.text),
-          description: _descriptionController.text,
-          latitude: latitude,
-          longitude: longitude,
-          p_id: id,
-          u_id: user!.uid,
-          reg_date: DateTime.now(),
-        );
-
-        // Upload image to Firebase Storage
-        if (_image != null) {
-          final storageRef = firebase_storage.FirebaseStorage.instance
-              .ref()
-              .child('parking_spaces')
-              .child(id);
-          final uploadTask = storageRef.putFile(_image!);
-          final snapshot = await uploadTask.whenComplete(() {});
-          final imageUrl = await snapshot.ref.getDownloadURL();
-          RegisterParkingSpace.p_image = imageUrl;
-        }
-
-        DB_CarPark.create(RegisterParkingSpace);
-      } else {
-        // Postcode is invalid, show error message
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Invalid postcode'),
-          duration: Duration(seconds: 2),
-        ));
-      }
-    }
-  }
 
   void _fetchPostcodeOptions(String input) async {
     final url =
@@ -157,52 +92,114 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+    final isLoggedInStream = authService.user!.map((user) => user != null);
+    User? user = FirebaseAuth.instance.currentUser;
+
+    void _submitForm() async {
+      if (_formKey.currentState!.validate()) {
+        // Validate postcode
+        final postcode = _postcodeController.text;
+        final postcodeUrl =
+            Uri.parse('https://api.postcodes.io/postcodes/$postcode');
+        final postcodeResponse = await http.get(postcodeUrl);
+        if (postcodeResponse.statusCode == 200) {
+          // Postcode is valid, continue with form submission
+          final postcodeData = json.decode(postcodeResponse.body);
+          final longitude = postcodeData['result']['longitude'];
+          final latitude = postcodeData['result']['latitude'];
+
+          final id =
+              FirebaseFirestore.instance.collection('parking_spaces').doc().id;
+
+          final RegisterParkingSpace = CarParkSpaceModel(
+            u_id: user!.uid,
+            address: _addressController.text,
+            postcode: postcode,
+            hourlyRate: double.parse(_hourlyRateController.text),
+            description: _descriptionController.text,
+            latitude: latitude,
+            longitude: longitude,
+            p_id: id,
+          );
+
+          // Upload image to Firebase Storage
+          if (_image != null) {
+            final storageRef = firebase_storage.FirebaseStorage.instance
+                .ref()
+                .child('parking_spaces')
+                .child(id);
+            final uploadTask = storageRef.putFile(_image!);
+            final snapshot = await uploadTask.whenComplete(() {});
+            final imageUrl = await snapshot.ref.getDownloadURL();
+            RegisterParkingSpace.p_image = imageUrl;
+          }
+
+          DB_CarPark.create(RegisterParkingSpace);
+        } else {
+          // Postcode is invalid, show error message
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Invalid postcode'),
+            duration: Duration(seconds: 2),
+          ));
+        }
+      }
+    }
+
     return Scaffold(
-      appBar: CustomAppBar(
-        title: 'Register Car Park Space',
-        isLoggedIn: isLoggedIn,
-      ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Form(
-            key: _formKey,
+        appBar: CustomAppBar(
+          title: 'Register your space',
+          isLoggedInStream: isLoggedInStream,
+        ),
+        body: SingleChildScrollView(
+            child: Stack(children: [
+          Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: StreamBuilder<bool>(
+                stream: authService.user?.map((user) => user != null),
+                initialData: false,
+                builder: (context, snapshot) {
+                  if (snapshot.data == true) {
+                    return Text(
+                      'You are logged in.',
+                      style: TextStyle(fontSize: 20),
+                    );
+                  } else {
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 20.0),
+                      child: Text(
+                        'You are not logged in, please login to register your space.',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    );
+                  }
+                },
+              ),
+            ),
+          ]),
+          Padding(
+            padding: const EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  height: 40.0,
+                  height: 50.0,
                 ),
-                Center(
-                  child: GoogleAuthButton(
-                    onPressed: () async {
-                      await signInFunction();
-                    },
-                    text: "Sign up with Google",
-                    style: AuthButtonStyle(
-                      width: 300,
-                      height: 60,
-                      iconType: AuthIconType.outlined,
-                      buttonColor: Colors.white,
-                      textStyle: TextStyle(
-                        color: Colors.black,
-                      ),
+                Form(
+                  key: _formKey,
+                  child: TextFormField(
+                    controller: _addressController,
+                    decoration: InputDecoration(
+                      labelText: 'Address',
                     ),
+                    validator: (value) {
+                      if (value?.isEmpty ?? true) {
+                        return 'Please enter an address';
+                      }
+                      return null;
+                    },
                   ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                TextFormField(
-                  controller: _addressController,
-                  decoration: InputDecoration(
-                    labelText: 'Address',
-                  ),
-                  validator: (value) {
-                    if (value?.isEmpty ?? true) {
-                      return 'Please enter an address';
-                    }
-                    return null;
-                  },
                 ),
                 SizedBox(
                   height: 16.0,
@@ -311,25 +308,14 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
                   height: 16.0,
                 ),
                 Center(
-                    child: ElevatedButton(
-                  onPressed: isLoggedIn
-                      ? _submitForm
-                      : () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content:
-                                  Text('Please log in to submit the form.'),
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
-                        },
-                  child: Text('Submit'),
-                )),
+                  child: ElevatedButton(
+                    onPressed: _submitForm,
+                    child: Text('Submit'),
+                  ),
+                ),
               ],
             ),
           ),
-        ),
-      ),
-    );
+        ])));
   }
 }
