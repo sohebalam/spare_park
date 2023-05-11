@@ -13,7 +13,7 @@ import 'package:sparepark/shared/carpark_space_db_helper.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:auth_buttons/auth_buttons.dart';
 import 'package:sparepark/shared/functions.dart';
-import 'package:sparepark/shared/widgets/LoginDialog.dart';
+import 'package:sparepark/shared/widgets/loginDialog.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
 
 class RegisterParkingSpace extends StatefulWidget {
@@ -30,7 +30,7 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
   final _descriptionController = TextEditingController();
   final _postcodeOptions = <String>[];
   final picker = ImagePicker();
-  final bool isLoggedIn = FirebaseAuth.instance.currentUser != null;
+  // final bool isLoggedIn = FirebaseAuth.instance.currentUser != null;
 
   File? _image;
 
@@ -43,60 +43,6 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
       print('User UID: ${user.uid}');
     } else {
       print('No user is currently signed in.');
-    }
-  }
-
-  void _submitForm() async {
-    if (_formKey.currentState!.validate()) {
-      // Validate postcode
-      final postcode = _postcodeController.text;
-      final postcodeUrl =
-          Uri.parse('https://api.postcodes.io/postcodes/$postcode');
-      final postcodeResponse = await http.get(postcodeUrl);
-      if (postcodeResponse.statusCode == 200) {
-        // Postcode is valid, continue with form submission
-        final postcodeData = json.decode(postcodeResponse.body);
-        final longitude = postcodeData['result']['longitude'];
-        final latitude = postcodeData['result']['latitude'];
-
-        final id =
-            FirebaseFirestore.instance.collection('parking_spaces').doc().id;
-
-        // var user;
-        FirebaseAuth auth = FirebaseAuth.instance;
-        User? user = auth.currentUser;
-        final RegisterParkingSpace = CarParkSpaceModel(
-          address: _addressController.text,
-          postcode: postcode,
-          hourlyRate: double.parse(_hourlyRateController.text),
-          description: _descriptionController.text,
-          latitude: latitude,
-          longitude: longitude,
-          p_id: id,
-          u_id: user!.uid,
-          reg_date: DateTime.now(),
-        );
-
-        // Upload image to Firebase Storage
-        if (_image != null) {
-          final storageRef = firebase_storage.FirebaseStorage.instance
-              .ref()
-              .child('parking_spaces')
-              .child(id);
-          final uploadTask = storageRef.putFile(_image!);
-          final snapshot = await uploadTask.whenComplete(() {});
-          final imageUrl = await snapshot.ref.getDownloadURL();
-          RegisterParkingSpace.p_image = imageUrl;
-        }
-
-        DB_CarPark.create(RegisterParkingSpace);
-      } else {
-        // Postcode is invalid, show error message
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Invalid postcode'),
-          duration: Duration(seconds: 2),
-        ));
-      }
     }
   }
 
@@ -162,6 +108,81 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
     final isLoggedInStream = authService.user!.map((user) => user != null);
+    User? user = FirebaseAuth.instance.currentUser;
+    void _submitForm() async {
+      if (_formKey.currentState!.validate()) {
+        // Check if user is logged in
+        final authService = Provider.of<AuthService>(context, listen: false);
+        // final user = await authService.getCurrentUser();
+        if (isLoggedInStream == false) {
+          // User is not logged in, show snackbar message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Please log in to register your space'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+          return;
+        }
+
+        // User is logged in, continue with form submission
+        final postcode = _postcodeController.text;
+        final postcodeUrl =
+            Uri.parse('https://api.postcodes.io/postcodes/$postcode');
+        final postcodeResponse = await http.get(postcodeUrl);
+        if (postcodeResponse.statusCode == 200) {
+          // Postcode is valid, continue with form submission
+          final postcodeData = json.decode(postcodeResponse.body);
+          final longitude = postcodeData['result']['longitude'];
+          final latitude = postcodeData['result']['latitude'];
+
+          final id =
+              FirebaseFirestore.instance.collection('parking_spaces').doc().id;
+
+          final RegisterParkingSpace = CarParkSpaceModel(
+            u_id: user!.uid,
+            address: _addressController.text,
+            postcode: postcode,
+            hourlyRate: double.parse(_hourlyRateController.text),
+            description: _descriptionController.text,
+            latitude: latitude,
+            longitude: longitude,
+            p_id: id,
+          );
+
+          // Upload image to Firebase Storage
+          if (_image != null) {
+            final storageRef = firebase_storage.FirebaseStorage.instance
+                .ref()
+                .child('parking_spaces')
+                .child(id);
+            final uploadTask = storageRef.putFile(_image!);
+            final snapshot = await uploadTask.whenComplete(() {});
+            final imageUrl = await snapshot.ref.getDownloadURL();
+            RegisterParkingSpace.p_image = imageUrl;
+          }
+
+          DB_CarPark.create(RegisterParkingSpace);
+
+          // Show success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Space registered successfully'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        } else {
+          // Postcode is invalid, show error message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Invalid postcode'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+    }
+
     return Scaffold(
         appBar: CustomAppBar(
           title: 'Register your space',

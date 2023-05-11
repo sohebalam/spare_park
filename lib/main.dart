@@ -1,12 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:sparepark/firebase_options.dart';
+import 'package:sparepark/screens/auth/register_screen.dart';
 import 'package:sparepark/screens/mapscreens/map_home.dart';
-import 'package:sparepark/screens/register_space.dart';
 import 'package:sparepark/services/auth_service.dart';
-import 'package:sparepark/wrapper.dart';
 import 'package:provider/provider.dart';
-import 'screens/screens.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
