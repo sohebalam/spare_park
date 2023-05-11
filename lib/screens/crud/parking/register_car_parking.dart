@@ -30,7 +30,6 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
   final _descriptionController = TextEditingController();
   final _postcodeOptions = <String>[];
   final picker = ImagePicker();
-  // final bool isLoggedIn = FirebaseAuth.instance.currentUser != null;
 
   File? _image;
 
