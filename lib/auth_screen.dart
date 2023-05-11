@@ -1,10 +1,13 @@
+import 'package:auth_buttons/auth_buttons.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_maps_flutter_platform_interface/src/types/location.dart';
+import 'package:provider/provider.dart';
 import 'package:sparepark/main.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sparepark/screens/mapscreens/results_page.dart';
+import 'package:sparepark/services/auth_service.dart';
 
 class AuthScreen extends StatefulWidget {
   final String prior_page;
@@ -33,6 +36,8 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   GoogleSignIn googleSignIn = GoogleSignIn();
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   Future<void> signInFunction(
     BuildContext context,
@@ -85,6 +90,8 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+    final isLoggedInStream = authService.user!.map((user) => user != null);
     print('resutls:');
     print(widget.results);
     return Scaffold(
@@ -99,42 +106,69 @@ class _AuthScreenState extends State<AuthScreen> {
                             "https://cdn.iconscout.com/icon/free/png-256/chat-2639493-2187526.png"))),
               ),
             ),
-            // Text(
-            //   "Flutter Chat App",
-            //   style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
-            // ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-              child: ElevatedButton(
-                onPressed: () async {
-                  await signInFunction(
-                    context,
-                    widget.location!,
-                    widget.results!,
-                    widget.startdatetime,
-                    widget.enddatetime,
-                  );
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.network(
-                      'https://www.freepnglogos.com/uploads/google-logo-png/google-logo-png-webinar-optimizing-for-success-google-business-webinar-13.png',
-                      height: 36,
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: emailController,
+                    decoration: InputDecoration(
+                      labelText: "Email",
                     ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      "Sign in With Google",
-                      style: TextStyle(fontSize: 20),
-                    )
-                  ],
+                  ),
                 ),
-                style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Colors.black),
-                    padding: MaterialStateProperty.all(
-                        EdgeInsets.symmetric(vertical: 12))),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: passwordController,
+                    decoration: InputDecoration(
+                      labelText: "Password",
+                    ),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    authService.signInWithEmailAndPassword(
+                      emailController.text,
+                      passwordController.text,
+                    );
+                  },
+                  child: Text('Login'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/register');
+                  },
+                  child: Text('Register'),
+                ),
+              ],
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 30),
+              child: Center(
+                child: GoogleAuthButton(
+                  onPressed: () async {
+                    await signInFunction(
+                      context,
+                      widget.location!,
+                      widget.results!,
+                      widget.startdatetime,
+                      widget.enddatetime,
+                    );
+                  },
+                  text: "Sign up with Google",
+                  style: AuthButtonStyle(
+                    width: 350,
+                    height: 60,
+                    iconType: AuthIconType.outlined,
+                    buttonColor: Colors.white,
+                    textStyle: TextStyle(
+                      fontSize: 12,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
               ),
             ),
           ],

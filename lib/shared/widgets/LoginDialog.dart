@@ -11,7 +11,7 @@ class CustomLoginDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
     return AlertDialog(
-      title: Text('Custom Login'),
+      title: Text('Login'),
       content: Form(
         key: _formKey1,
         child: Column(
