@@ -98,13 +98,23 @@ class _AuthScreenState extends State<AuthScreen> {
       body: Center(
         child: Column(
           children: [
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: NetworkImage(
-                            "https://cdn.iconscout.com/icon/free/png-256/chat-2639493-2187526.png"))),
+            SizedBox(
+              height: 180,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/parking.png'),
+                ),
               ),
+              child: SizedBox(
+                width: 200,
+                height: 200,
+                child: Image.asset('assets/parking.png'),
+              ),
+            ),
+            SizedBox(
+              height: 20,
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -127,6 +137,9 @@ class _AuthScreenState extends State<AuthScreen> {
                     ),
                   ),
                 ),
+                SizedBox(
+                  height: 20,
+                ),
                 ElevatedButton(
                   onPressed: () {
                     authService.signInWithEmailAndPassword(
@@ -143,6 +156,9 @@ class _AuthScreenState extends State<AuthScreen> {
                   child: Text('Register'),
                 ),
               ],
+            ),
+            SizedBox(
+              height: 70,
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(0, 0, 0, 30),
