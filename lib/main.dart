@@ -31,10 +31,10 @@ class MyApp extends StatelessWidget {
         ),
         initialRoute: '/map_home',
         routes: {
-          '/': (context) => Wrapper(),
+          // '/': (context) => Wrapper(),
           '/map_home': (context) => MapHome(),
-          '/login': (context) => LoginScreen(),
-          '/register': (context) => RegisterScreen(),
+          // '/login': (context) => LoginScreen(),
+          // '/register': (context) => RegisterScreen(),
         },
       ),
     );

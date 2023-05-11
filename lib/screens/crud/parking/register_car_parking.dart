@@ -13,6 +13,7 @@ import 'package:sparepark/shared/carpark_space_db_helper.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:auth_buttons/auth_buttons.dart';
 import 'package:sparepark/shared/functions.dart';
+import 'package:sparepark/shared/widgets/LoginDialog.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
 
 class RegisterParkingSpace extends StatefulWidget {
@@ -162,51 +163,126 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
     final authService = Provider.of<AuthService>(context);
     final isLoggedInStream = authService.user!.map((user) => user != null);
     return Scaffold(
-      appBar: CustomAppBar(
-        title: 'Register Car Park Space',
-        isLoggedInStream: isLoggedInStream,
-      ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Form(
-            key: _formKey,
+        appBar: CustomAppBar(
+          title: 'Register your space',
+          isLoggedInStream: isLoggedInStream,
+        ),
+        body: SingleChildScrollView(
+            child: Stack(children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: StreamBuilder<bool>(
+                  stream: authService.user?.map((user) => user != null),
+                  initialData: false,
+                  builder: (context, snapshot) {
+                    if (snapshot.data == true) {
+                      return Text(
+                        'You are logged in.',
+                        style: TextStyle(fontSize: 20),
+                      );
+                    } else {
+                      return Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+                          child: Stack(
+                            children: [
+                              // Text(
+                              //   'Please login to register your Parking Space',
+                              //   style: TextStyle(fontSize: 20),
+                              // ),
+                              // SizedBox(
+                              //   height: 16.0,
+                              // ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Center(
+                                      child: GoogleAuthButton(
+                                        onPressed: () async {
+                                          await signInFunction();
+                                        },
+                                        text: "Sign up with Google",
+                                        style: AuthButtonStyle(
+                                          width: 250,
+                                          height: 50,
+                                          iconType: AuthIconType.outlined,
+                                          buttonColor: Colors.white,
+                                          textStyle: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 10),
+                                  SizedBox(
+                                    height: 50,
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) =>
+                                              CustomLoginDialog(),
+                                        );
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.blue,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        elevation: 3,
+                                        shadowColor:
+                                            Colors.black.withOpacity(1),
+                                      ),
+                                      child: Text(
+                                        'Email & Password Login',
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ));
+                    }
+                  },
+                ),
+              ),
+              // Visibility(
+              //   visible: !isLoggedIn,
+              //   child:
+              // ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  height: 40.0,
+                  height: 100.0,
                 ),
-                Center(
-                  child: GoogleAuthButton(
-                    onPressed: () async {
-                      await signInFunction();
-                    },
-                    text: "Sign up with Google",
-                    style: AuthButtonStyle(
-                      width: 300,
-                      height: 60,
-                      iconType: AuthIconType.outlined,
-                      buttonColor: Colors.white,
-                      textStyle: TextStyle(
-                        color: Colors.black,
-                      ),
+                Form(
+                  key: _formKey,
+                  child: TextFormField(
+                    controller: _addressController,
+                    decoration: InputDecoration(
+                      labelText: 'Address',
                     ),
+                    validator: (value) {
+                      if (value?.isEmpty ?? true) {
+                        return 'Please enter an address';
+                      }
+                      return null;
+                    },
                   ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                TextFormField(
-                  controller: _addressController,
-                  decoration: InputDecoration(
-                    labelText: 'Address',
-                  ),
-                  validator: (value) {
-                    if (value?.isEmpty ?? true) {
-                      return 'Please enter an address';
-                    }
-                    return null;
-                  },
                 ),
                 SizedBox(
                   height: 16.0,
@@ -315,25 +391,14 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
                   height: 16.0,
                 ),
                 Center(
-                    child: ElevatedButton(
-                  onPressed: isLoggedIn
-                      ? _submitForm
-                      : () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content:
-                                  Text('Please log in to submit the form.'),
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
-                        },
-                  child: Text('Submit'),
-                )),
+                  child: ElevatedButton(
+                    onPressed: _submitForm,
+                    child: Text('Submit'),
+                  ),
+                ),
               ],
             ),
           ),
-        ),
-      ),
-    );
+        ])));
   }
 }
