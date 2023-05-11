@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sparepark/screens/crud/parking/register_car_parking.dart';
+import 'package:sparepark/shared/style/contstants.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({Key? key}) : super(key: key);
@@ -14,9 +15,9 @@ class AppDrawer extends StatelessWidget {
         // Important: Remove any padding from the ListView.
         padding: EdgeInsets.zero,
         children: [
-          const DrawerHeader(
+          DrawerHeader(
             decoration: BoxDecoration(
-              color: Colors.blue,
+              color: Constants().primaryColor,
             ),
             child: Text('Drawer Header'),
           ),

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sparepark/services/auth_service.dart';
 import 'package:provider/provider.dart';
+import 'package:sparepark/shared/widgets/app_bar.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -80,6 +81,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   // rest of the code remains the same
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+    final isLoggedInStream = authService.user!.map((user) => user != null);
     Future<void> _getImage() async {
       final action = await showDialog(
         context: context,
@@ -123,78 +126,80 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Register'),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: nameController,
-                decoration: InputDecoration(
-                  labelText: 'Name',
-                  errorText: !submitted || nameController.text.isNotEmpty
-                      ? null
-                      : 'Please enter your name.',
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: emailController,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  errorText: !submitted || emailController.text.isNotEmpty
-                      ? null
-                      : 'Please enter your email.',
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: passwordController,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  errorText: !submitted || passwordController.text.isNotEmpty
-                      ? null
-                      : 'Please enter your password.',
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 16.0,
-            ),
-            TextButton(
-              onPressed: _getImage,
-              child: const Text('Select an image'),
-            ),
-            const SizedBox(
-              height: 16.0,
-            ),
-            if (_image != null)
-              Container(
-                height: 200.0,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: FileImage(_image!),
-                    fit: BoxFit.cover,
+      appBar:
+          CustomAppBar(title: 'Register', isLoggedInStream: isLoggedInStream),
+      body: Container(
+        margin: const EdgeInsets.only(top: 16.0, left: 16, right: 16),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    labelText: 'Name',
+                    errorText: !submitted || nameController.text.isNotEmpty
+                        ? null
+                        : 'Please enter your name.',
                   ),
                 ),
               ),
-            const SizedBox(
-              height: 16.0,
-            ),
-            ElevatedButton(
-              onPressed: _registerUser,
-              child: const Text('Register'),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    errorText: !submitted || emailController.text.isNotEmpty
+                        ? null
+                        : 'Please enter your email.',
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    errorText: !submitted || passwordController.text.isNotEmpty
+                        ? null
+                        : 'Please enter your password.',
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 16.0,
+              ),
+              TextButton(
+                onPressed: _getImage,
+                child: const Text('Select an image'),
+              ),
+              const SizedBox(
+                height: 16.0,
+              ),
+              if (_image != null)
+                Container(
+                  height: 200.0,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: FileImage(_image!),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              const SizedBox(
+                height: 16.0,
+              ),
+              ElevatedButton(
+                onPressed: _registerUser,
+                child: const Text('Register'),
+              ),
+            ],
+          ),
         ),
       ),
     );
