@@ -7,14 +7,14 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:146231892644:android:8891f0be52157af727a431",
+        "mobilesdk_app_id": "1:146231892644:android:89529db118f8fa7727a431",
         "android_client_info": {
           "package_name": "com.example.sparepark"
         }
       },
       "oauth_client": [
         {
-          "client_id": "146231892644-p9v23jdaio8ggo8ofpi4rubdphjnvj16.apps.googleusercontent.com",
+          "client_id": "146231892644-hvjudsp288rqf5pm8idb85o9s47s4ecm.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -27,7 +27,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "146231892644-p9v23jdaio8ggo8ofpi4rubdphjnvj16.apps.googleusercontent.com",
+              "client_id": "146231892644-hvjudsp288rqf5pm8idb85o9s47s4ecm.apps.googleusercontent.com",
               "client_type": 3
             },
             {

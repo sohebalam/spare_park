@@ -56,10 +56,21 @@ class _AuthScreenState extends State<AuthScreen> {
     UserCredential userCredential =
         await FirebaseAuth.instance.signInWithCredential(credential);
 
+    // DocumentSnapshot userExist =
+    //     await firestore.collection('users').doc(userCredential.user!.uid).get();
+    // DocumentSnapshot userEmailExist = await firestore
+    //     .collection('users')
+    //     .doc(userCredential.user!.email)
+    //     .get();
+
     DocumentSnapshot userExist =
         await firestore.collection('users').doc(userCredential.user!.uid).get();
+    DocumentSnapshot userEmailExist = await firestore
+        .collection('users')
+        .doc(userCredential.user!.email)
+        .get();
 
-    if (userExist.exists) {
+    if (userExist.exists || userEmailExist.exists) {
       print("User Already Exists in Database");
     } else {
       await firestore.collection('users').doc(userCredential.user!.uid).set({

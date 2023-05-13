@@ -55,6 +55,7 @@ class _MapHomeState extends State<MapHome> {
       startdatetime: _selectedDateTimeStart,
       enddatetime: _selectedDateTimeEnd,
     );
+    // print(nearestSpaces);
 
     List<List<dynamic>> results = [];
     final currentUser = FirebaseAuth.instance.currentUser;
@@ -69,6 +70,7 @@ class _MapHomeState extends State<MapHome> {
           space.u_id,
         ]);
       }
+      // print(results);
     });
 
     if (currentUser == null) {

@@ -45,7 +45,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyAvrBJNQ1mlhshIdkKiILpRl5U2Q9grS1g',
-    appId: '1:146231892644:web:f88f5b2faeaa533927a431',
+    appId: '1:146231892644:web:873f7c6d08ddac4d27a431',
     messagingSenderId: '146231892644',
     projectId: 'sparepark-d7804',
     authDomain: 'sparepark-d7804.firebaseapp.com',
@@ -54,7 +54,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDEzUWLtd5AmJdm-rgoI982TAwimB1hRD4',
-    appId: '1:146231892644:android:8891f0be52157af727a431',
+    appId: '1:146231892644:android:89529db118f8fa7727a431',
     messagingSenderId: '146231892644',
     projectId: 'sparepark-d7804',
     storageBucket: 'sparepark-d7804.appspot.com',
@@ -62,7 +62,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCCb902p75apUUJwz2q6Xb1k-K5c9weZRQ',
-    appId: '1:146231892644:ios:93ab880e8e4ea89227a431',
+    appId: '1:146231892644:ios:a3a27962f67060af27a431',
     messagingSenderId: '146231892644',
     projectId: 'sparepark-d7804',
     storageBucket: 'sparepark-d7804.appspot.com',
@@ -73,7 +73,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyCCb902p75apUUJwz2q6Xb1k-K5c9weZRQ',
-    appId: '1:146231892644:ios:93ab880e8e4ea89227a431',
+    appId: '1:146231892644:ios:a3a27962f67060af27a431',
     messagingSenderId: '146231892644',
     projectId: 'sparepark-d7804',
     storageBucket: 'sparepark-d7804.appspot.com',

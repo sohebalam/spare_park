@@ -37,12 +37,14 @@ class _ResultsPageState extends State<ResultsPage> {
   final Set<Marker> _markers = {};
   late String? cpsId;
   GoogleMapController? controller;
+  late List<List<dynamic>> filteredResults;
 
   User? _currentUser;
   late String _currentUserId;
   @override
   void initState() {
     super.initState();
+    filteredResults = removeDuplicates(widget.results);
     FirebaseAuth.instance.authStateChanges().listen((user) {
       setState(() {
         _currentUser = user;
@@ -51,28 +53,41 @@ class _ResultsPageState extends State<ResultsPage> {
       print('Currently logged in user: ${user?.uid}');
       print('Currently logged in user: ${user?.uid}');
     });
-    print(widget.results);
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      final mostNortheastSpace = widget.results.reduce((curr, next) =>
-          curr[1] > next[1] || (curr[1] == next[1] && curr[2] > next[2])
-              ? curr
-              : next);
 
-      final mostSouthwestSpace = widget.results.reduce((curr, next) =>
-          curr[1] < next[1] || (curr[1] == next[1] && curr[2] < next[2])
-              ? curr
-              : next);
+    print(widget.results.length);
+    // WidgetsBinding.instance?.addPostFrameCallback((_) {
+    //   final mostNortheastSpace = widget.results.reduce((curr, next) =>
+    //       curr[1] > next[1] || (curr[1] == next[1] && curr[2] > next[2])
+    //           ? curr
+    //           : next);
 
-      controller?.animateCamera(
-        CameraUpdate.newLatLngBounds(
-          LatLngBounds(
-            northeast: LatLng(mostNortheastSpace[1], mostNortheastSpace[2]),
-            southwest: LatLng(mostSouthwestSpace[1], mostSouthwestSpace[2]),
-          ),
-          100.0,
-        ),
-      );
-    });
+    //   final mostSouthwestSpace = widget.results.reduce((curr, next) =>
+    //       curr[1] < next[1] || (curr[1] == next[1] && curr[2] < next[2])
+    //           ? curr
+    //           : next);
+
+    //   controller?.animateCamera(
+    //     CameraUpdate.newLatLngBounds(
+    //       LatLngBounds(
+    //         northeast: LatLng(mostNortheastSpace[1], mostNortheastSpace[2]),
+    //         southwest: LatLng(mostSouthwestSpace[1], mostSouthwestSpace[2]),
+    //       ),
+    //       100.0,
+    //     ),
+    //   );
+    // });
+  }
+
+  List<List<dynamic>> removeDuplicates(List<List<dynamic>> list) {
+    Map<dynamic, List<dynamic>> map = {};
+    List<List<dynamic>> result = [];
+    for (List<dynamic> item in list) {
+      if (!map.containsKey(item[0])) {
+        map[item[0]] = item;
+        result.add(item);
+      }
+    }
+    return result;
   }
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
@@ -87,8 +102,8 @@ class _ResultsPageState extends State<ResultsPage> {
       _markers.add(locationMarker);
     });
 
-    for (int i = 0; i < widget.results.length; i++) {
-      final item = widget.results[i];
+    for (int i = 0; i < filteredResults.length; i++) {
+      final item = filteredResults[i];
       final marker = Marker(
         markerId: MarkerId(i.toString()),
         position: LatLng(item[1], item[2]),
@@ -153,7 +168,7 @@ class _ResultsPageState extends State<ResultsPage> {
 
   @override
   Widget build(BuildContext context) {
-    print('results: ${widget.results}');
+    // print('results: ${widget.results}');
 
     return Scaffold(
       body: Column(
@@ -179,9 +194,9 @@ class _ResultsPageState extends State<ResultsPage> {
                   ),
                 ),
                 ListView.builder(
-                  itemCount: widget.results.length,
+                  itemCount: filteredResults.length,
                   itemBuilder: (context, index) {
-                    final result = widget.results[index];
+                    final result = filteredResults[index];
                     final lat = result[1];
                     final lng = result[2];
                     return Card(

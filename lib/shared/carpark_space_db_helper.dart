@@ -6,12 +6,37 @@ import 'package:sparepark/models/car_park_space.dart';
 import 'package:geolocator/geolocator.dart';
 
 class DB_CarPark {
+  // static Stream<List<CarParkSpaceModel>> read() {
+  //   final userCollection =
+  //       FirebaseFirestore.instance.collection("parking_spaces");
+  //   return userCollection.snapshots().map((querySnapshot) => querySnapshot.docs
+  //       .map((e) => CarParkSpaceModel.fromMap(e.data() as Map<String, dynamic>))
+  //       .toSet() // convert to a set
+  //       .toList()); // convert back to a list
+  // }
+
   static Stream<List<CarParkSpaceModel>> read() {
-    final userCollection =
-        FirebaseFirestore.instance.collection("parking_spaces");
-    return userCollection.snapshots().map((querySnapshot) => querySnapshot.docs
-        .map((e) => CarParkSpaceModel.fromMap(e.data() as Map<String, dynamic>))
-        .toList());
+    final parkingSpacesCollection =
+        FirebaseFirestore.instance.collection('parking_spaces');
+
+    return parkingSpacesCollection.snapshots().map((querySnapshot) {
+      List<CarParkSpaceModel> parkingSpaces = [];
+
+      // Use a Set to remove duplicates
+      Set<String> ids = {};
+
+      for (var doc in querySnapshot.docs) {
+        var parkingSpace =
+            CarParkSpaceModel.fromMap(doc.data() as Map<String, dynamic>);
+        // Check if the parking space ID has already been added
+        if (!ids.contains(parkingSpace.id)) {
+          parkingSpaces.add(parkingSpace);
+          ids.add(parkingSpace.id.toString());
+        }
+      }
+
+      return parkingSpaces;
+    });
   }
 
   static Future<void> create(CarParkSpaceModel cps) async {
@@ -81,6 +106,9 @@ class DB_CarPark {
       );
       return distance <= distanceThreshold;
     }).toList();
+
+    // print(filteredSpaces); // Add this line to print the list of filtered spaces
+
     filteredSpaces.sort((a, b) {
       final aPosition = Position(
         latitude: a.latitude,
@@ -117,39 +145,7 @@ class DB_CarPark {
       return aDistance.compareTo(bDistance);
     });
 
-    // Get all the bookings between the startdatetime and enddatetime
-//     final bookings = await FirebaseFirestore.instance
-//         .collection('bookings')
-//         .where('start_date_time', isLessThanOrEqualTo: enddatetime);
-//     // .where('end_date_time',
-// // Filter out the booked spaces
-//     final availableSpaces =
-//         filteredSpaces.where((space) => !bookeings.contains(space.p_id));
-
-//     return availableSpaces.toList();
-    // Get all the bookings between the startdatetime and enddatetime
-    final bookings = await FirebaseFirestore.instance
-        .collection('bookings')
-        .where('start_date_time', isLessThanOrEqualTo: enddatetime)
-        // .where('end_date_time', isGreaterThanOrEqualTo: startdatetime)
-        .get();
-
-    final filteredBookings = bookings.docs
-        .map((doc) => BookingModel.fromSnapshot(doc))
-        .where((booking) => booking.end_date_time!.isAfter(startdatetime))
-        .toList();
-
-    // Filter out any booked spaces between the enddatetime and startdatetime
-    final nearestSpaces = filteredSpaces
-        .where((space) {
-          final spaceIsAvailable =
-              bookings.docs.every((booking) => booking['p_id'] != space.p_id);
-          return spaceIsAvailable;
-        })
-        .take(10)
-        .toList();
-
-    return nearestSpaces;
+    return filteredSpaces.take(10).toList();
   }
 }
 
