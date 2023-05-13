@@ -6,37 +6,13 @@ import 'package:sparepark/models/car_park_space.dart';
 import 'package:geolocator/geolocator.dart';
 
 class DB_CarPark {
-  // static Stream<List<CarParkSpaceModel>> read() {
-  //   final userCollection =
-  //       FirebaseFirestore.instance.collection("parking_spaces");
-  //   return userCollection.snapshots().map((querySnapshot) => querySnapshot.docs
-  //       .map((e) => CarParkSpaceModel.fromMap(e.data() as Map<String, dynamic>))
-  //       .toSet() // convert to a set
-  //       .toList()); // convert back to a list
-  // }
-
   static Stream<List<CarParkSpaceModel>> read() {
-    final parkingSpacesCollection =
-        FirebaseFirestore.instance.collection('parking_spaces');
-
-    return parkingSpacesCollection.snapshots().map((querySnapshot) {
-      List<CarParkSpaceModel> parkingSpaces = [];
-
-      // Use a Set to remove duplicates
-      Set<String> ids = {};
-
-      for (var doc in querySnapshot.docs) {
-        var parkingSpace =
-            CarParkSpaceModel.fromMap(doc.data() as Map<String, dynamic>);
-        // Check if the parking space ID has already been added
-        if (!ids.contains(parkingSpace.id)) {
-          parkingSpaces.add(parkingSpace);
-          ids.add(parkingSpace.id.toString());
-        }
-      }
-
-      return parkingSpaces;
-    });
+    final userCollection =
+        FirebaseFirestore.instance.collection("parking_spaces");
+    return userCollection.snapshots().map((querySnapshot) => querySnapshot.docs
+        .map((e) => CarParkSpaceModel.fromMap(e.data() as Map<String, dynamic>))
+        .toSet() // convert to a set
+        .toList()); // convert back to a list
   }
 
   static Future<void> create(CarParkSpaceModel cps) async {
