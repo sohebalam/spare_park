@@ -34,7 +34,7 @@ class AppDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            title: const Text('Item 2'),
+            title: const Text('My Bookings'),
             onTap: () {
               // Update the state of the app
               // ...
@@ -42,6 +42,51 @@ class AppDrawer extends StatelessWidget {
               Navigator.pop(context);
             },
           ),
+          ListTile(
+            title: const Text('My Parking Spaces '),
+            onTap: () {
+              // Update the state of the app
+              // ...
+              // Then close the drawer
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            title: const Text('My Reviews'),
+            onTap: () {
+              // Update the state of the app
+              // ...
+              // Then close the drawer
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            title: const Text('Admin'),
+            onTap: () {
+              // Update the state of the app
+              // ...
+              // Then close the drawer
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            title: const Text('Logout'),
+            onTap: () {
+              // Update the state of the app
+              // ...
+              // Then close the drawer
+              Navigator.pop(context);
+            },
+          ),
+          // ListTile(
+          //   title: const Text('My Bookings'),
+          //   onTap: () {
+          //     // Update the state of the app
+          //     // ...
+          //     // Then close the drawer
+          //     Navigator.pop(context);
+          //   },
+          // ),
         ],
       ),
     );

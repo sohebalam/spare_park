@@ -200,7 +200,7 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
                   builder: (context, snapshot) {
                     if (snapshot.data == true) {
                       return Text(
-                        'You are logged in ${user!.email}',
+                        'You are logged in ${user?.email}',
                         style: TextStyle(fontSize: 20),
                       );
                     } else {
