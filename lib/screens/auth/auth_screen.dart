@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sparepark/screens/mapscreens/results_page.dart';
 import 'package:sparepark/services/auth_service.dart';
+import 'package:sparepark/shared/widgets/app_bar.dart';
+import 'package:sparepark/shared/widgets/drawer.dart';
 
 class AuthScreen extends StatefulWidget {
   final String prior_page;
@@ -99,6 +101,46 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
+  Future<void> signInFunc(
+    BuildContext context,
+  ) async {
+    GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+    if (googleUser == null) {
+      return;
+    }
+    final googleAuth = await googleUser.authentication;
+    final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+    UserCredential userCredential =
+        await FirebaseAuth.instance.signInWithCredential(credential);
+
+    // DocumentSnapshot userExist =
+    //     await firestore.collection('users').doc(userCredential.user!.uid).get();
+    // DocumentSnapshot userEmailExist = await firestore
+    //     .collection('users')
+    //     .doc(userCredential.user!.email)
+    //     .get();
+
+    DocumentSnapshot userExist =
+        await firestore.collection('users').doc(userCredential.user!.uid).get();
+    DocumentSnapshot userEmailExist = await firestore
+        .collection('users')
+        .doc(userCredential.user!.email)
+        .get();
+
+    if (userExist.exists || userEmailExist.exists) {
+      print("User Already Exists in Database");
+    } else {
+      await firestore.collection('users').doc(userCredential.user!.uid).set({
+        'email': userCredential.user!.email,
+        'name': userCredential.user!.displayName,
+        'image': userCredential.user!.photoURL,
+        'uid': userCredential.user!.uid,
+        'date': DateTime.now(),
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
@@ -106,99 +148,109 @@ class _AuthScreenState extends State<AuthScreen> {
     print('resutls:');
     print(widget.results);
     return Scaffold(
-      body: Center(
-        child: Column(
-          children: [
-            SizedBox(
-              height: 180,
-            ),
-            Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/parking.png'),
+      appBar: CustomAppBar(title: 'Login', isLoggedInStream: isLoggedInStream),
+      drawer: AppDrawer(),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 80,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/parking.png'),
+                  ),
+                ),
+                child: SizedBox(
+                  width: 200,
+                  height: 200,
+                  child: Image.asset('assets/parking.png'),
                 ),
               ),
-              child: SizedBox(
-                width: 200,
-                height: 200,
-                child: Image.asset('assets/parking.png'),
+              SizedBox(
+                height: 20,
               ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: emailController,
-                    decoration: InputDecoration(
-                      labelText: "Email",
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      controller: emailController,
+                      decoration: InputDecoration(
+                        labelText: "Email",
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      controller: passwordController,
+                      decoration: InputDecoration(
+                        labelText: "Password",
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      authService.signInWithEmailAndPassword(
+                        emailController.text,
+                        passwordController.text,
+                      );
+                    },
+                    child: Text('Login'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/register');
+                    },
+                    child: Text('Register'),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 70,
+              ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(0, 0, 0, 30),
+                child: Center(
+                  child: GoogleAuthButton(
+                    onPressed: () async {
+                      if (widget.prior_page == 'map_home') {
+                        await signInFunction(
+                          context,
+                          widget.location!,
+                          widget.results!,
+                          widget.startdatetime,
+                          widget.enddatetime,
+                        );
+                      } else {
+                        await signInFunc(
+                          context,
+                        );
+                      }
+                    },
+                    text: "Sign up with Google",
+                    style: AuthButtonStyle(
+                      width: 350,
+                      height: 60,
+                      iconType: AuthIconType.outlined,
+                      buttonColor: Colors.white,
+                      textStyle: TextStyle(
+                        fontSize: 12,
+                        color: Colors.black,
+                      ),
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: passwordController,
-                    decoration: InputDecoration(
-                      labelText: "Password",
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    authService.signInWithEmailAndPassword(
-                      emailController.text,
-                      passwordController.text,
-                    );
-                  },
-                  child: Text('Login'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/register');
-                  },
-                  child: Text('Register'),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 70,
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(0, 0, 0, 30),
-              child: Center(
-                child: GoogleAuthButton(
-                  onPressed: () async {
-                    await signInFunction(
-                      context,
-                      widget.location!,
-                      widget.results!,
-                      widget.startdatetime,
-                      widget.enddatetime,
-                    );
-                  },
-                  text: "Sign up with Google",
-                  style: AuthButtonStyle(
-                    width: 350,
-                    height: 60,
-                    iconType: AuthIconType.outlined,
-                    buttonColor: Colors.white,
-                    textStyle: TextStyle(
-                      fontSize: 12,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
