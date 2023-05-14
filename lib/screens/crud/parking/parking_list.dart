@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sparepark/services/auth_service.dart';
+import 'package:sparepark/shared/widgets/app_bar.dart';
 
 class ParkingPage extends StatefulWidget {
   final String userId;
@@ -19,16 +22,17 @@ class _ParkingPageState extends State<ParkingPage> {
 
     _ParkingStream = FirebaseFirestore.instance
         .collection('parking_spaces')
-        // .where('u_id', isEqualTo: widget.userId)
+        .where('u_id', isEqualTo: widget.userId)
         .snapshots();
   }
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+    final isLoggedInStream = authService.user!.map((user) => user != null);
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Parking Details'),
-      ),
+      appBar: CustomAppBar(
+          title: 'Parking Details', isLoggedInStream: isLoggedInStream),
       body: StreamBuilder<QuerySnapshot>(
         stream: _ParkingStream,
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {

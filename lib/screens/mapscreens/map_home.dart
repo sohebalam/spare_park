@@ -4,7 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:provider/provider.dart';
-import 'package:sparepark/auth_screen.dart';
+import 'package:sparepark/screens/auth/auth_screen.dart';
 import 'package:sparepark/screens/crud/parking/register_car_parking.dart';
 import 'package:sparepark/screens/mapscreens/results_page.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';

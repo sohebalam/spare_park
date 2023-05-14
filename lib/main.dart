@@ -5,6 +5,7 @@ import 'package:sparepark/screens/auth/register_screen.dart';
 import 'package:sparepark/screens/mapscreens/map_home.dart';
 import 'package:sparepark/services/auth_service.dart';
 import 'package:provider/provider.dart';
+import 'package:sparepark/shared/widgets/drawer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
