@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
@@ -37,6 +38,17 @@ class Booking extends StatefulWidget {
 
 class _BookingState extends State<Booking> {
   double _hourlyRate = 10;
+
+  late User? currentUser;
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Get the current user when the widget is first created
+    currentUser = FirebaseAuth.instance.currentUser;
+  }
+
   Completer<GoogleMapController> _controller = Completer();
   static final CameraPosition _kInitialPosition = CameraPosition(
     target: LatLng(51.5074, 0.1278),
@@ -56,7 +68,7 @@ class _BookingState extends State<Booking> {
     BookingModel booking = BookingModel(
       b_id: id,
       p_id: widget.cpsId,
-      u_id: "123",
+      u_id: currentUser!.uid,
       start_date_time: widget.startDateTime,
       end_date_time: widget.endDateTime,
       b_total: total,

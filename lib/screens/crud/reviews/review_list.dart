@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sparepark/services/auth_service.dart';
+import 'package:sparepark/shared/widgets/app_bar.dart';
 
 class ReviewListPage extends StatefulWidget {
   final String userId;
@@ -25,10 +28,11 @@ class _ReviewListPageState extends State<ReviewListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+    final isLoggedInStream = authService.user!.map((user) => user != null);
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Review Details'),
-      ),
+      appBar:
+          CustomAppBar(title: 'Reviews', isLoggedInStream: isLoggedInStream),
       body: StreamBuilder<QuerySnapshot>(
         stream: _ReviewStream,
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -87,12 +91,12 @@ class _ReviewListPageState extends State<ReviewListPage> {
                               },
                               child: Text('Delete'),
                             ),
-                            TextButton(
-                              onPressed: () {
-                                // TODO: Implement add review action
-                              },
-                              child: Text('Add Review'),
-                            ),
+                            // TextButton(
+                            //   onPressed: () {
+                            //     // TODO: Implement add review action
+                            //   },
+                            //   child: Text('Add Review'),
+                            // ),
                           ],
                         ),
                       ],

@@ -87,16 +87,17 @@ class _ParkingPageState extends State<ParkingPage> {
                             ),
                             TextButton(
                               onPressed: () {
+                                print('Address: ${parking['p_id']}');
                                 // TODO: Implement delete action
                               },
                               child: Text('Delete'),
                             ),
-                            TextButton(
-                              onPressed: () {
-                                // TODO: Implement add review action
-                              },
-                              child: Text('Add Review'),
-                            ),
+                            // TextButton(
+                            //   onPressed: () {
+                            //     // TODO: Implement add review action
+                            //   },
+                            //   child: Text('Add Review'),
+                            // ),
                           ],
                         ),
                       ],

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:http/http.dart' as http;
@@ -7,9 +8,9 @@ import 'dart:convert';
 import 'package:sparepark/models/review_model.dart';
 
 class ReviewPage extends StatefulWidget {
-  final String id;
+  final String b_id;
 
-  ReviewPage({required this.id});
+  ReviewPage({required this.b_id});
 
   @override
   _ReviewPageState createState() => _ReviewPageState();
@@ -21,6 +22,15 @@ class _ReviewPageState extends State<ReviewPage> {
   int _safetyRating = 0;
   int _rating = 0;
   bool _isLoading = false;
+  late User? currentUser;
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Get the current user when the widget is first created
+    currentUser = FirebaseAuth.instance.currentUser;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,8 +147,8 @@ class _ReviewPageState extends State<ReviewPage> {
     try {
       final review = Review(
         r_id: id,
-        b_id: '123',
-        u_id: '123',
+        b_id: widget.b_id,
+        u_id: currentUser!.uid,
         description: _description,
         rating: _rating,
         safetyRating: _safetyRating,

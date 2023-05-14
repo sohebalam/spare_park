@@ -280,7 +280,7 @@ class _ResultsPageState extends State<ResultsPage> {
                                   children: [
                                     Icon(Icons.email),
                                     SizedBox(height: 4),
-                                    Text("Book Now",
+                                    Text("Message",
                                         style: TextStyle(fontSize: 10)),
                                   ],
                                 ),

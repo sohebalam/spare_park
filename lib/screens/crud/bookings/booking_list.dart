@@ -1,5 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:sparepark/screens/crud/reviews/create_review.dart';
+import 'package:sparepark/services/auth_service.dart';
+import 'package:sparepark/shared/widgets/app_bar.dart';
 
 class BookingsPage extends StatefulWidget {
   final String userId;
@@ -25,10 +30,11 @@ class _BookingsPageState extends State<BookingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+    final isLoggedInStream = authService.user!.map((user) => user != null);
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Booking Details'),
-      ),
+      appBar:
+          CustomAppBar(title: 'Bookings', isLoggedInStream: isLoggedInStream),
       body: StreamBuilder<QuerySnapshot>(
         stream: _bookingsStream,
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -52,6 +58,12 @@ class _BookingsPageState extends State<BookingsPage> {
               itemCount: bookings.length,
               itemBuilder: (BuildContext context, int index) {
                 final booking = bookings[index];
+                final bookingDate = DateFormat('HH:mm a dd MMM yyyy')
+                    .format(booking['reg_date'].toDate());
+                final bookingStart = DateFormat('HH:mm a dd MMM yyyy')
+                    .format(booking['start_date_time'].toDate());
+                final bookingEnd = DateFormat('HH:mm a dd MMM yyyy')
+                    .format(booking['end_date_time'].toDate());
 
                 return Card(
                   child: Padding(
@@ -59,13 +71,13 @@ class _BookingsPageState extends State<BookingsPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Booking id: ${booking['b_id']}'),
-                        Text('User id: ${booking['u_id']}'),
-                        Text('Parking Space id: ${booking['p_id']}'),
-                        Text('Booking Date: ${booking['reg_date']}'),
-                        Text('Booking Start: ${booking['start_date_time']}'),
-                        Text('Booking End: ${booking['end_date_time']}'),
-                        Text('Total Price: ${booking['b_total']}'),
+                        // Text('Booking id: ${booking['b_id']}'),
+                        // Text('User id: ${booking['u_id']}'),
+                        // Text('Parking Space id: ${booking['p_id']}'),
+                        Text('Booking Date: $bookingDate'),
+                        Text('Booking Start: $bookingStart'),
+                        Text('Booking End: $bookingEnd'),
+                        Text('Total Price: £${booking['b_total']}'),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
@@ -89,7 +101,14 @@ class _BookingsPageState extends State<BookingsPage> {
                             ),
                             TextButton(
                               onPressed: () {
-                                // TODO: Implement add review action
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ReviewPage(
+                                      b_id: booking['b_id'],
+                                    ),
+                                  ),
+                                );
                               },
                               child: Text('Add Review'),
                             ),

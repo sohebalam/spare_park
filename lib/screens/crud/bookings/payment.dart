@@ -78,7 +78,7 @@ class _PaymentState extends State<Payment> {
             paymentSheetParameters: SetupPaymentSheetParameters(
               paymentIntentClientSecret: paymentIntent!['client_secret'],
               style: ThemeMode.dark,
-              merchantDisplayName: 'Adnan',
+              merchantDisplayName: 'Spare Park',
             ),
           )
           .then((_) {});
