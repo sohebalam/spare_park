@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sparepark/screens/crud/parking/edit_parking_space.dart';
 import 'package:sparepark/services/auth_service.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
 
@@ -15,6 +17,7 @@ class ParkingPage extends StatefulWidget {
 
 class _ParkingPageState extends State<ParkingPage> {
   late Stream<QuerySnapshot> _ParkingStream;
+  final currentUser = FirebaseAuth.instance.currentUser;
 
   @override
   void initState() {
@@ -81,7 +84,15 @@ class _ParkingPageState extends State<ParkingPage> {
                             ),
                             TextButton(
                               onPressed: () {
-                                // TODO: Implement edit action
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EditParkingSpace(
+                                      parking: parking,
+                                      user: currentUser!,
+                                    ),
+                                  ),
+                                );
                               },
                               child: Text('Edit'),
                             ),
