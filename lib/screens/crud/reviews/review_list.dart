@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sparepark/screens/crud/reviews/review_item.dart';
 import 'package:sparepark/services/auth_service.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
 
@@ -14,15 +15,15 @@ class ReviewListPage extends StatefulWidget {
 }
 
 class _ReviewListPageState extends State<ReviewListPage> {
-  late Stream<QuerySnapshot> _ReviewStream;
+  late Stream<QuerySnapshot> _reviewStream;
 
   @override
   void initState() {
     super.initState();
 
-    _ReviewStream = FirebaseFirestore.instance
+    _reviewStream = FirebaseFirestore.instance
         .collection('reviews')
-        // .where('u_id', isEqualTo: widget.userId)
+        .where('u_id', isEqualTo: widget.userId)
         .snapshots();
   }
 
@@ -30,11 +31,14 @@ class _ReviewListPageState extends State<ReviewListPage> {
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
     final isLoggedInStream = authService.user!.map((user) => user != null);
+
     return Scaffold(
-      appBar:
-          CustomAppBar(title: 'Reviews', isLoggedInStream: isLoggedInStream),
+      appBar: CustomAppBar(
+        title: 'Reviews',
+        isLoggedInStream: isLoggedInStream,
+      ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: _ReviewStream,
+        stream: _reviewStream,
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
             return Center(
@@ -48,65 +52,115 @@ class _ReviewListPageState extends State<ReviewListPage> {
             );
           }
 
-          final Review = snapshot.data!.docs;
+          final reviews = snapshot.data!.docs;
 
           return Padding(
             padding: const EdgeInsets.all(16.0),
             child: ListView.builder(
-              itemCount: Review.length,
+              itemCount: reviews.length,
               itemBuilder: (BuildContext context, int index) {
-                final review = Review[index];
+                final review = reviews[index];
 
-                return Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Description: ${review['description']}'),
-                        // Text('User id: ${Review['u_id']}'),
-                        // Text('Review Space id: ${Review['p_id']}'),
-                        // Text('Review Date: ${Review['reg_date']}'),
-                        // Text('Review Start: ${Review['start_date_time']}'),
-                        // Text('Review End: ${Review['end_date_time']}'),
-                        // Text('Total Price: ${Review['b_total']}'),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                return FutureBuilder<DocumentSnapshot>(
+                  future: FirebaseFirestore.instance
+                      .collection('bookings')
+                      .doc(review['b_id'])
+                      .get(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      return Center(
+                        child: Text('Error: ${snapshot.error}'),
+                      );
+                    }
+
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+
+                    final booking = snapshot.data!;
+
+                    return Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            TextButton(
-                              onPressed: () {
-                                // TODO: Implement view action
-                              },
-                              child: Text('View'),
+                            Text('Description: ${review['description']}'),
+                            Text('Review Space id: ${review['b_id']}'),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                TextButton(
+                                  onPressed: () {
+                                    String bookingId = review['b_id'];
+
+                                    // Use async/await instead of chaining promises
+                                    // to make the code more readable
+                                    _viewParkingSpace(bookingId, review);
+                                  },
+                                  child: Text('View'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    // TODO: Implement edit action
+                                  },
+                                  child: Text('Edit'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    // TODO: Implement delete action
+                                  },
+                                  child: Text('Delete'),
+                                ),
+                              ],
                             ),
-                            TextButton(
-                              onPressed: () {
-                                // TODO: Implement edit action
-                              },
-                              child: Text('Edit'),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                // TODO: Implement delete action
-                              },
-                              child: Text('Delete'),
-                            ),
-                            // TextButton(
-                            //   onPressed: () {
-                            //     // TODO: Implement add review action
-                            //   },
-                            //   child: Text('Add Review'),
-                            // ),
                           ],
                         ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  },
                 );
               },
             ),
           );
         },
+      ),
+    );
+  }
+
+  // Define a separate method to handle the "view" action
+  // so that the build method is not too cluttered
+  void _viewParkingSpace(String bookingId, review) async {
+    // Query the bookings collection using the booking id
+    final booking = await FirebaseFirestore.instance
+        .collection('bookings')
+        .doc(bookingId)
+        .get();
+
+    // Get the parking id from the booking
+    // print(booking?.id);
+    final parkingId = booking['p_id'];
+
+    // Query the parking spaces collection using the parking id
+    final parking = await FirebaseFirestore.instance
+        .collection('parking_spaces')
+        .doc(parkingId)
+        .get();
+
+    // Print the id of the parking space to the console
+    print(parking.id);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ReviewItem(
+          reviewId: review.id,
+          bookingId: bookingId,
+          parkingId: parkingId,
+        ),
       ),
     );
   }

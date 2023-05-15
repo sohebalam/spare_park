@@ -64,9 +64,9 @@ class _BookingState extends State<Booking> {
 
   void onSubmit() async {
     // Create a new booking model object
-    final id = FirebaseFirestore.instance.collection('bookings').doc().id;
+    // Create a new booking model object
     BookingModel booking = BookingModel(
-      b_id: id,
+      b_id: '', // Set b_id as an empty string initially
       p_id: widget.cpsId,
       u_id: currentUser!.uid,
       start_date_time: widget.startDateTime,
@@ -79,14 +79,17 @@ class _BookingState extends State<Booking> {
     final DocumentReference bookingRef = await FirebaseFirestore.instance
         .collection('bookings')
         .add(booking.toJson());
-    final String bookingId = bookingRef.id;
+
+    // Update the b_id field with the actual booking ID assigned by Firebase
+    await bookingRef.update({'b_id': bookingRef.id});
 
     // Show a success message with the booking ID
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Booking $bookingId created successfully'),
+        content: Text('Booking ${bookingRef.id} created successfully'),
       ),
     );
+    final String bookingId = bookingRef.id;
 
     Navigator.push(
       context,

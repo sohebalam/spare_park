@@ -74,7 +74,7 @@ class _BookingsPageState extends State<BookingsPage> {
                         // Text('Booking id: ${booking['b_id']}'),
                         // Text('User id: ${booking['u_id']}'),
                         // Text('Parking Space id: ${booking['p_id']}'),
-                        Text('Booking Date: $bookingDate'),
+                        Text('Booked Date: $bookingDate'),
                         Text('Booking Start: $bookingStart'),
                         Text('Booking End: $bookingEnd'),
                         Text('Total Price: £${booking['b_total']}'),
