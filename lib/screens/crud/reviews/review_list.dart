@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:sparepark/screens/crud/reviews/review_item.dart';
 import 'package:sparepark/services/auth_service.dart';
@@ -33,6 +34,7 @@ class _ReviewListPageState extends State<ReviewListPage> {
     final isLoggedInStream = authService.user!.map((user) => user != null);
 
     return Scaffold(
+      key: _scaffoldMessengerKey,
       appBar: CustomAppBar(
         title: 'Reviews',
         isLoggedInStream: isLoggedInStream,
@@ -111,7 +113,8 @@ class _ReviewListPageState extends State<ReviewListPage> {
                                 ),
                                 TextButton(
                                   onPressed: () {
-                                    // TODO: Implement delete action
+                                    String reviewId = review.id;
+                                    _deleteReview(context, reviewId);
                                   },
                                   child: Text('Delete'),
                                 ),
@@ -161,6 +164,33 @@ class _ReviewListPageState extends State<ReviewListPage> {
           bookingId: bookingId,
           parkingId: parkingId,
         ),
+      ),
+    );
+  }
+}
+
+final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>();
+
+void _deleteReview(BuildContext context, String reviewId) async {
+  try {
+    // Delete the review from the 'reviews' collection
+    await FirebaseFirestore.instance
+        .collection('reviews')
+        .doc(reviewId)
+        .delete();
+
+    // Show a success message
+    _scaffoldMessengerKey.currentState?.showSnackBar(
+      SnackBar(
+        content: Text('Review deleted successfully'),
+      ),
+    );
+  } catch (error) {
+    // Show an error message
+    _scaffoldMessengerKey.currentState?.showSnackBar(
+      SnackBar(
+        content: Text('Error deleting the review: $error'),
       ),
     );
   }
