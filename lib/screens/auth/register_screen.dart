@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sparepark/services/auth_service.dart';
 import 'package:provider/provider.dart';
+import 'package:sparepark/shared/widgets/TextField.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
+import 'package:sparepark/shared/widgets/errorMessage.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -18,14 +20,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  bool _isLoading = false;
   final picker = ImagePicker();
   File? _image;
   String? _error;
+  String? _errorMessage;
   bool submitted = false;
 
   void _registerUser() async {
     setState(() {
       submitted = true;
+    });
+
+    if (_image == null) {
+      setState(() {
+        _errorMessage = 'Please select an image.';
+        _isLoading = false;
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoading = true; // Set loading state
     });
 
     if (_image == null) {
@@ -76,9 +92,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       );
     }
+    setState(() {
+      _isLoading = false; // Reset loading state
+    });
   }
 
-  // rest of the code remains the same
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
@@ -119,6 +137,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       setState(() {
         if (pickedFile != null) {
           _image = File(pickedFile.path);
+          _errorMessage = null;
         } else {
           print('No image selected.');
         }
@@ -194,9 +213,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(
                 height: 16.0,
               ),
-              ElevatedButton(
-                onPressed: _registerUser,
-                child: const Text('Register'),
+              if (_isLoading) Center(child: CircularProgressIndicator()),
+              buildErrorMessage(context, _errorMessage),
+              AbsorbPointer(
+                absorbing: _isLoading,
+                child: ElevatedButton(
+                  onPressed: _registerUser,
+                  child: const Text('Register'),
+                ),
               ),
             ],
           ),

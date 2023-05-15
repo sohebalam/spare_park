@@ -30,6 +30,7 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
   final _descriptionController = TextEditingController();
   final _postcodeOptions = <String>[];
   final picker = ImagePicker();
+  bool _isLoading = false;
 
   File? _image;
 
@@ -110,6 +111,9 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
     User? user = FirebaseAuth.instance.currentUser;
     void _submitForm() async {
       if (_formKey.currentState!.validate()) {
+        setState(() {
+          _isLoading = true; // Set loading state
+        });
         // Check if user is logged in
         final authService = Provider.of<AuthService>(context, listen: false);
         // final user = await authService.getCurrentUser();
@@ -180,6 +184,9 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
           );
         }
       }
+      setState(() {
+        _isLoading = false; // Reset loading state
+      });
     }
 
     return Scaffold(
@@ -208,13 +215,6 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
                           padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
                           child: Stack(
                             children: [
-                              // Text(
-                              //   'Please login to register your Parking Space',
-                              //   style: TextStyle(fontSize: 20),
-                              // ),
-                              // SizedBox(
-                              //   height: 16.0,
-                              // ),
                               Row(
                                 children: [
                                   Expanded(
@@ -275,10 +275,6 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
                   },
                 ),
               ),
-              // Visibility(
-              //   visible: !isLoggedIn,
-              //   child:
-              // ),
             ],
           ),
           Padding(
@@ -410,10 +406,14 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
                 SizedBox(
                   height: 16.0,
                 ),
+                if (_isLoading) Center(child: CircularProgressIndicator()),
                 Center(
-                  child: ElevatedButton(
-                    onPressed: _submitForm,
-                    child: Text('Submit'),
+                  child: AbsorbPointer(
+                    absorbing: _isLoading,
+                    child: ElevatedButton(
+                      onPressed: _submitForm,
+                      child: Text('Submit'),
+                    ),
                   ),
                 ),
               ],
