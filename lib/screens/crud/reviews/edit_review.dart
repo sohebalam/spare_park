@@ -2,42 +2,51 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:provider/provider.dart';
+import 'package:sparepark/services/auth_service.dart';
+import 'package:sparepark/shared/style/contstants.dart';
+import 'package:sparepark/shared/widgets/app_bar.dart';
 
-import 'package:sparepark/models/review_model.dart';
+class EditReviewPage extends StatefulWidget {
+  final QueryDocumentSnapshot<Object?> review;
 
-class ReviewPage extends StatefulWidget {
-  final String b_id;
-
-  ReviewPage({required this.b_id});
+  EditReviewPage({required this.review});
 
   @override
-  _ReviewPageState createState() => _ReviewPageState();
+  _EditReviewPageState createState() => _EditReviewPageState();
 }
 
-class _ReviewPageState extends State<ReviewPage> {
+class _EditReviewPageState extends State<EditReviewPage> {
   final _formKey = GlobalKey<FormState>();
   late String _description;
   int _safetyRating = 0;
   int _rating = 0;
   bool _isLoading = false;
   late User? currentUser;
-  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
     // Get the current user when the widget is first created
     currentUser = FirebaseAuth.instance.currentUser;
+    _initializeFields();
+  }
+
+  void _initializeFields() {
+    final review = widget.review;
+
+    _description = review.get('description') ?? '';
+    _safetyRating = review.get('safety_rating') ?? 0;
+    _rating = review.get('rating') ?? 0;
   }
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+    final isLoggedInStream = authService.user!.map((user) => user != null);
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Review'),
-      ),
+      appBar: CustomAppBar(
+          title: 'Update Review', isLoggedInStream: isLoggedInStream),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -62,10 +71,6 @@ class _ReviewPageState extends State<ReviewPage> {
                           empty: Icon(Icons.star_border, color: Colors.amber),
                         ),
                         itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                        // itemBuilder: (context, _) => Icon(
-                        //   Icons.star,
-                        //   color: Colors.amber,
-                        // ),
                         onRatingUpdate: (rating) {
                           setState(() {
                             _safetyRating = rating.toInt();
@@ -100,6 +105,7 @@ class _ReviewPageState extends State<ReviewPage> {
                           labelText: 'Description',
                           border: OutlineInputBorder(),
                         ),
+                        initialValue: _description,
                         maxLines: 5,
                         onSaved: (value) {
                           _description = value ?? '';
@@ -111,19 +117,21 @@ class _ReviewPageState extends State<ReviewPage> {
                           return null;
                         },
                       ),
-                      // Add a submit button
                       SizedBox(height: 16.0),
                       SizedBox(
                         child: ElevatedButton(
-                          onPressed: () {
-                            // Validate and save the form
-                            if (_formKey.currentState!.validate()) {
-                              _formKey.currentState!.save();
-                              _submitReview();
-                            }
-                          },
-                          child: Text('Submit'),
-                        ),
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                _formKey.currentState!.save();
+                                _editReview();
+                              }
+                            },
+                            child: Text('Submit'),
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                Constants().primaryColor,
+                              ),
+                            )),
                         width: double.infinity,
                       ),
                     ],
@@ -134,28 +142,57 @@ class _ReviewPageState extends State<ReviewPage> {
     );
   }
 
-  void _submitReview() async {
+  Future<void> _editReview() async {
     setState(() {
       _isLoading = true;
     });
-    final id = FirebaseFirestore.instance.collection('reviews').doc().id;
     try {
-      final review = Review(
-        r_id: id,
-        b_id: widget.b_id,
-        u_id: currentUser!.uid,
-        description: _description,
-        rating: _rating,
-        safetyRating: _safetyRating,
-        date: DateTime.now(),
-      );
+      // Perform the actual editing of the review using the provided data
+      final review = widget.review;
+      await review.reference.update({
+        'description': _description,
+        'safety_rating': _safetyRating, // updated field
+        'rating': _rating, // updated field
+      });
 
-      // Add the review to the "reviews" collection in Firestore
-      await FirebaseFirestore.instance
-          .collection('reviews')
-          .add(review.toJson());
-    } catch (e) {
-      print('Error submitting review: $e');
+      // Show a success message and navigate back to the previous screen
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Success'),
+            content: Text('Review edited successfully'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (error) {
+      // Show an error message if editing fails
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('Failed to edit the review. Please try again.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
     } finally {
       setState(() {
         _isLoading = false;

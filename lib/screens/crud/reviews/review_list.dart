@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
+import 'package:sparepark/screens/crud/reviews/edit_review.dart';
 import 'package:sparepark/screens/crud/reviews/review_item.dart';
 import 'package:sparepark/services/auth_service.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
@@ -107,7 +108,13 @@ class _ReviewListPageState extends State<ReviewListPage> {
                                 ),
                                 TextButton(
                                   onPressed: () {
-                                    // TODO: Implement edit action
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            EditReviewPage(review: review),
+                                      ),
+                                    );
                                   },
                                   child: Text('Edit'),
                                 ),
