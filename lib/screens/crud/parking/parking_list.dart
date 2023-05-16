@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sparepark/screens/crud/parking/edit_parking_space.dart';
+import 'package:sparepark/screens/crud/parking/view_parking_space.dart';
 import 'package:sparepark/services/auth_service.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
 
@@ -78,7 +79,15 @@ class _ParkingPageState extends State<ParkingPage> {
                           children: [
                             TextButton(
                               onPressed: () {
-                                // TODO: Implement view action
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ViewParkingSpace(
+                                      parking: parking,
+                                      user: currentUser!,
+                                    ),
+                                  ),
+                                );
                               },
                               child: Text('View'),
                             ),
