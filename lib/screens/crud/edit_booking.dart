@@ -20,8 +20,8 @@ DateTime roundToNearest15Minutes(DateTime dateTime) {
       roundedMinutes);
 }
 
-class ViewBooking extends StatefulWidget {
-  const ViewBooking({
+class EditBooking extends StatefulWidget {
+  const EditBooking({
     Key? key,
     required this.cpsId,
     required this.startDateTime,
@@ -34,10 +34,10 @@ class ViewBooking extends StatefulWidget {
   final DateTime endDateTime;
 
   @override
-  _ViewBookingState createState() => _ViewBookingState();
+  _EditBookingState createState() => _EditBookingState();
 }
 
-class _ViewBookingState extends State<ViewBooking> {
+class _EditBookingState extends State<EditBooking> {
   double _hourlyRate = 10;
 
   late User? currentUser;
@@ -251,11 +251,11 @@ class _ViewBookingState extends State<ViewBooking> {
                     fontSize: 24,
                   ),
                 ),
-                SizedBox(height: 26),
-                // ElevatedButton(
-                //   onPressed: onSubmit,
-                //   child: Text('Submit Booking'),
-                // ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: onSubmit,
+                  child: Text('Submit Booking'),
+                ),
               ],
             ),
           ),
