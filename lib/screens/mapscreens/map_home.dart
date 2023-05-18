@@ -60,6 +60,7 @@ class _MapHomeState extends State<MapHome> {
     final currentUser = FirebaseAuth.instance.currentUser;
 
     nearestSpaces.forEach((space) {
+      // print(space.p_id);
       if (space.u_id != currentUser?.uid) {
         results.add([
           space.p_id,
@@ -69,7 +70,7 @@ class _MapHomeState extends State<MapHome> {
           space.u_id,
         ]);
       }
-      // print(results);
+      print(results);
     });
 
     if (currentUser == null) {

@@ -44,6 +44,9 @@ class _ResultsPageState extends State<ResultsPage> {
   @override
   void initState() {
     super.initState();
+    print('widget.results.length');
+    print(widget.results.length);
+
     filteredResults = removeDuplicates(widget.results);
     FirebaseAuth.instance.authStateChanges().listen((user) {
       setState(() {
@@ -54,7 +57,6 @@ class _ResultsPageState extends State<ResultsPage> {
       print('Currently logged in user: ${user?.uid}');
     });
 
-    print(widget.results.length);
     // WidgetsBinding.instance?.addPostFrameCallback((_) {
     //   final mostNortheastSpace = widget.results.reduce((curr, next) =>
     //       curr[1] > next[1] || (curr[1] == next[1] && curr[2] > next[2])

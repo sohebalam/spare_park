@@ -26,6 +26,7 @@ class ViewBooking extends StatefulWidget {
     required this.cpsId,
     required this.startDateTime,
     required this.endDateTime,
+    required b_id,
   }) : super(key: key);
 
   final String cpsId;

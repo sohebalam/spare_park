@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:sparepark/screens/crud/bookings/view_booking.dart';
 import 'package:sparepark/screens/crud/reviews/create_review.dart';
 import 'package:sparepark/services/auth_service.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
@@ -83,7 +84,19 @@ class _BookingsPageState extends State<BookingsPage> {
                           children: [
                             TextButton(
                               onPressed: () {
-                                // TODO: Implement view action
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ViewBooking(
+                                      b_id: booking['b_id'],
+                                      cpsId: booking['p_id'],
+                                      endDateTime:
+                                          booking['end_date_time'].toDate(),
+                                      startDateTime:
+                                          booking['start_date_time'].toDate(),
+                                    ),
+                                  ),
+                                );
                               },
                               child: Text('View'),
                             ),
