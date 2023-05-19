@@ -97,7 +97,17 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
       );
     } else {
-      // handle other cases
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ResultsPage(
+            location: widget.location!,
+            results: widget.results!,
+            startdatetime: widget.startdatetime!,
+            enddatetime: widget.enddatetime!,
+          ),
+        ),
+      );
     }
   }
 
