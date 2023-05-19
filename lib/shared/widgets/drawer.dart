@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sparepark/screens/auth/auth_screen.dart';
 import 'package:sparepark/screens/chat/chat_list.dart';
+import 'package:sparepark/screens/crud/admin/booking_adminlist.dart';
+import 'package:sparepark/screens/crud/admin/parking_adminlist.dart';
+import 'package:sparepark/screens/crud/admin/review_adminlist.dart';
+import 'package:sparepark/screens/crud/admin/users_adminlist.dart';
 import 'package:sparepark/screens/crud/bookings/booking_list.dart';
 import 'package:sparepark/screens/crud/parking/parking_list.dart';
 import 'package:sparepark/screens/crud/parking/register_car_parking.dart';
@@ -310,25 +314,49 @@ class _AppDrawerState extends State<AppDrawer> {
                                 ListTile(
                                   title: const Text('Users List'),
                                   onTap: () {
-                                    // Handle navigation to the users list page
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            UsersAdminListPage(),
+                                      ),
+                                    );
                                   },
                                 ),
                                 ListTile(
                                   title: const Text('Parking Spaces List'),
                                   onTap: () {
-                                    // Handle navigation to the parking spaces list page
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ParkingAdminListPage(),
+                                      ),
+                                    );
                                   },
                                 ),
                                 ListTile(
                                   title: const Text('Bookings List'),
                                   onTap: () {
-                                    // Handle navigation to the bookings list page
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            BookingAdminListPage(),
+                                      ),
+                                    );
                                   },
                                 ),
                                 ListTile(
                                   title: const Text('Reviews List'),
                                   onTap: () {
-                                    // Handle navigation to the reviews list page
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ReviewAdminListPage(),
+                                      ),
+                                    );
                                   },
                                 ),
                               ],
