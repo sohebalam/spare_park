@@ -61,7 +61,7 @@ class _AdminUserProfilePageState extends State<AdminUserProfilePage> {
     // Check if the user has any parking spaces associated with their user ID in the parking_spaces collection
     final QuerySnapshot parkingSpacesSnapshot = await FirebaseFirestore.instance
         .collection('parking_spaces')
-        .where('u_id', isEqualTo: currentUser!.uid)
+        .where('u_id', isEqualTo: widget.userId)
         .get();
 
     // Check if any of the parking spaces associated with the user have been booked in the bookings collection

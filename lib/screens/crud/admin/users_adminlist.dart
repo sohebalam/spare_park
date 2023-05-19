@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
@@ -17,12 +18,64 @@ class UsersAdminListPage extends StatefulWidget {
 
 class _UsersAdminListPageState extends State<UsersAdminListPage> {
   late Stream<QuerySnapshot> _usersStream;
+  User? currentUser;
+  bool isLoading = true;
+  bool canDelete = true;
 
   @override
   void initState() {
     super.initState();
 
     _usersStream = FirebaseFirestore.instance.collection('users').snapshots();
+  }
+
+  Future<void> retrieveUserData(String userId) async {
+    if (currentUser!.providerData[0].providerId == 'password') {
+      // Custom user login, retrieve the user document
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      // Get the value of the 'name' and 'image' fields from the user document
+    }
+  }
+
+  Future<void> checkBookedParkingSpaces(String userId) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    // Check if the user has any parking spaces associated with their user ID in the parking_spaces collection
+    final QuerySnapshot parkingSpacesSnapshot = await FirebaseFirestore.instance
+        .collection('parking_spaces')
+        .where('u_id', isEqualTo: userId)
+        .get();
+
+    // Check if any of the parking spaces associated with the user have been booked in the bookings collection
+    for (final DocumentSnapshot parkingSpaceDoc in parkingSpacesSnapshot.docs) {
+      final String parkingSpaceId = parkingSpaceDoc.id;
+      final QuerySnapshot bookingsSnapshot = await FirebaseFirestore.instance
+          .collection('bookings')
+          .where('p_id', isEqualTo: parkingSpaceId)
+          .limit(1)
+          .get();
+
+      // If a booking exists for the parking space, the user cannot be deleted
+      if (bookingsSnapshot.docs.isNotEmpty) {
+        setState(() {
+          canDelete = false;
+          isLoading = false;
+        });
+        return;
+      }
+    }
+
+    // If no bookings are found for any parking spaces associated with the user, the user can be deleted
+    setState(() {
+      canDelete = true;
+      isLoading = false;
+    });
   }
 
   @override
@@ -85,9 +138,10 @@ class _UsersAdminListPageState extends State<UsersAdminListPage> {
                               child: Text('Edit'),
                             ),
                             TextButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 String userId = user.id;
-                                _deleteUser(context, userId);
+                                await checkBookedParkingSpaces(userId);
+                                canDelete ? _deleteUser(context, userId) : null;
                               },
                               child: Text('Delete'),
                             ),
