@@ -124,7 +124,7 @@ class _ViewBookingState extends State<ViewBooking> {
       markerId: MarkerId(widget.cpsId),
       position: LatLng(latitude, longitude),
       infoWindow: InfoWindow(
-        title: widget.cpsId,
+        title: spaceData['address'],
         snippet: 'This is a parking space',
       ),
       icon: bitmapDescriptor,

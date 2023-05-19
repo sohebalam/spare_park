@@ -30,6 +30,13 @@ class _BookingsPageState extends State<BookingsPage> {
         .snapshots();
   }
 
+  Future<DocumentSnapshot> getParkingSpace(String parkingSpaceId) {
+    return FirebaseFirestore.instance
+        .collection('parking_spaces')
+        .doc(parkingSpaceId)
+        .get();
+  }
+
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
@@ -73,6 +80,31 @@ class _BookingsPageState extends State<BookingsPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        FutureBuilder<DocumentSnapshot>(
+                          future: getParkingSpace(booking['p_id']),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<DocumentSnapshot> snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return CircularProgressIndicator();
+                            }
+
+                            if (snapshot.hasError || !snapshot.hasData) {
+                              return Text(
+                                  'Error: Unable to retrieve parking space information');
+                            }
+
+                            final parkingSpaceData =
+                                snapshot.data!.data() as Map<String, dynamic>?;
+                            final address = parkingSpaceData?['address'];
+
+                            if (address == null) {
+                              return Text('Address not available');
+                            }
+
+                            return Text('Address: $address');
+                          },
+                        ),
                         // Text('Booking id: ${booking['b_id']}'),
                         // Text('User id: ${booking['u_id']}'),
                         // Text('Parking Space id: ${booking['p_id']}'),
