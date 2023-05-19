@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:sparepark/main.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sparepark/screens/mapscreens/map_home.dart';
 import 'package:sparepark/screens/mapscreens/results_page.dart';
 import 'package:sparepark/services/auth_service.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
@@ -100,12 +101,7 @@ class _AuthScreenState extends State<AuthScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ResultsPage(
-            location: widget.location!,
-            results: widget.results!,
-            startdatetime: widget.startdatetime!,
-            enddatetime: widget.enddatetime!,
-          ),
+          builder: (context) => MapHome(),
         ),
       );
     }

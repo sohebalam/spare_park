@@ -8,6 +8,7 @@ import 'package:sparepark/screens/crud/bookings/booking_list.dart';
 import 'package:sparepark/screens/crud/parking/parking_list.dart';
 import 'package:sparepark/screens/crud/parking/register_car_parking.dart';
 import 'package:sparepark/screens/crud/reviews/review_list.dart';
+import 'package:sparepark/screens/crud/user/profile.dart';
 import 'package:sparepark/services/auth_service.dart';
 import 'package:sparepark/shared/style/contstants.dart';
 // import 'package:your_app_name/utils/constants.dart';
@@ -26,6 +27,8 @@ class _AppDrawerState extends State<AppDrawer> {
   late Stream<QuerySnapshot> _bookingsStream;
   late Stream<QuerySnapshot> _ParkingStream;
   late Stream<QuerySnapshot> _ReviewStream;
+  String userName = '';
+  late Stream<bool> isLoggedInStream;
 
   Future<void> getMessageCount() async {
     print("Finding messages for current user");
@@ -71,40 +74,85 @@ class _AppDrawerState extends State<AppDrawer> {
         .collection('reviews')
         .where('u_id', isEqualTo: currentUser?.uid)
         .snapshots();
+
+    if (currentUser != null) {
+      retrieveUserName();
+    }
+  }
+
+  Stream<DocumentSnapshot> getUserStream(String userId) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .snapshots();
+  }
+
+  Future<void> retrieveUserName() async {
+    if (currentUser!.providerData[0].providerId == 'password') {
+      // Custom user login, retrieve the user document
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser!.uid)
+          .get();
+
+      // Get the value of the 'name' field from the user document
+      final userData = userDoc.data() as Map<String, dynamic>?;
+      setState(() {
+        userName = userData?['name'] ?? '';
+      });
+    } else {
+      // Social login, use 'displayName' field
+      setState(() {
+        userName = currentUser!.displayName ?? '';
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // final authService = Provider.of<AuthService>(context);
-    // final isLoggedInStream = authService.user!.map((user) => user != null);
+    final authService = Provider.of<AuthService>(context);
+    final isLoggedInStream = authService.user!.map((user) => user != null);
+
     return Drawer(
-        child: ListView(
-            // Important: Remove any padding from the ListView.
-            padding: EdgeInsets.zero,
-            children: [
+      child: ListView(
+        // Important: Remove any padding from the ListView.
+        padding: EdgeInsets.zero,
+        children: [
           DrawerHeader(
             decoration: BoxDecoration(
               color: Constants().primaryColor,
             ),
-            child: currentUser != null
-                ? Text('${currentUser!.displayName}')
-                : null,
+            child: StreamBuilder<bool>(
+              stream: isLoggedInStream,
+              builder: (context, snapshot) {
+                if (snapshot.hasData && snapshot.data!) {
+                  return Text('$userName');
+                }
+                return Text('');
+              },
+            ),
           ),
-          currentUser != null
-              ? const Text('')
-              : ListTile(
-                  title: const Text('Login'),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AuthScreen(
-                          prior_page: 'Drawer',
-                        ),
+          StreamBuilder<bool>(
+            stream: isLoggedInStream,
+            builder: (context, snapshot) {
+              if (snapshot.hasData && snapshot.data!) {
+                return const Text('');
+              }
+              return ListTile(
+                title: const Text('Login'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AuthScreen(
+                        prior_page: 'Drawer',
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
           ListTile(
             title: const Text('Register Parking Space'),
             onTap: () {
@@ -116,107 +164,190 @@ class _AppDrawerState extends State<AppDrawer> {
               );
             },
           ),
-          if (currentUser != null)
-            Column(children: [
-              ListTile(
-                title: Row(
+          StreamBuilder<bool>(
+            stream: isLoggedInStream,
+            builder: (context, snapshot) {
+              if (snapshot.hasData && snapshot.data!) {
+                return Column(
                   children: [
-                    const Text('Messages'),
-                    SizedBox(width: 8),
-                    MessageAvatar(messageCount: messageCount),
-                  ],
-                ),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ChatList(),
-                    ),
-                  );
-                },
-              ),
-              StreamBuilder<QuerySnapshot>(
-                stream: _bookingsStream,
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return Container(); // Return an empty container if there are no parking spaces
-                  }
-                  return ListTile(
-                    title: const Text('My Bookings'),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              BookingsPage(userId: currentUser!.uid.toString()),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
-              StreamBuilder<QuerySnapshot>(
-                stream: _ParkingStream,
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return Container(); // Return an empty container if there are no parking spaces
-                  }
-                  return ListTile(
-                    title: const Text('My Parking Spaces'),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              ParkingPage(userId: currentUser!.uid.toString()),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
-              StreamBuilder<QuerySnapshot>(
-                stream: _ReviewStream,
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return Container(); // Return an empty container if there are no parking spaces
-                  }
-                  return ListTile(
-                    title: const Text('My Reviews'),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ReviewListPage(
-                              userId: currentUser!.uid.toString()),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
-              StreamBuilder<QuerySnapshot>(
-                  stream: _ParkingStream,
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                      return Container(); // Return an empty container if there are no parking spaces
-                    }
-                    return ListTile(
-                      title: const Text('Admin'),
+                    ListTile(
+                      title: Row(
+                        children: [
+                          const Text('Profile'),
+                          SizedBox(width: 8),
+                        ],
+                      ),
                       onTap: () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) =>
-                        //         // ADMIN PAGES
-                        //         ReviewListPage(userId: currentUser!.uid.toString()),
-                        //   ),
-                        // );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => UserProfilePage(),
+                          ),
+                        );
                       },
-                    );
-                  })
-            ])
-        ]));
+                    ),
+                    ListTile(
+                      title: Row(
+                        children: [
+                          const Text('Messages'),
+                          SizedBox(width: 8),
+                          MessageAvatar(messageCount: messageCount),
+                        ],
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ChatList(),
+                          ),
+                        );
+                      },
+                    ),
+                    StreamBuilder<QuerySnapshot>(
+                      stream: _bookingsStream,
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return Container();
+                        }
+                        return ListTile(
+                          title: const Text('My Bookings'),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BookingsPage(
+                                  userId: currentUser!.uid.toString(),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    StreamBuilder<QuerySnapshot>(
+                      stream: _ParkingStream,
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return Container();
+                        }
+                        return ListTile(
+                          title: const Text('My Parking Spaces'),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ParkingPage(
+                                  userId: currentUser!.uid.toString(),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    StreamBuilder<QuerySnapshot>(
+                      stream: _ReviewStream,
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return Container();
+                        }
+                        return ListTile(
+                          title: const Text('My Reviews'),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ReviewListPage(
+                                  userId: currentUser!.uid.toString(),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    StreamBuilder<DocumentSnapshot>(
+                      stream: currentUser != null
+                          ? getUserStream(currentUser!.uid)
+                          : null,
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData || !snapshot.data!.exists) {
+                          return Container();
+                        }
+                        final userDoc = snapshot.data!;
+                        final userData =
+                            userDoc.data() as Map<String, dynamic>?;
+                        final isUserAdmin = userData?['isAdmin'] ?? false;
+
+                        if (isUserAdmin) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.grey,
+                                width: 1.0,
+                              ),
+                              borderRadius: BorderRadius.circular(4.0),
+                            ),
+                            margin: EdgeInsets.only(
+                              left: 16.0,
+                              right: 16.0,
+                              top: 8.0,
+                            ),
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
+                                  child: Center(
+                                    child: Text(
+                                      'Admin',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                ListTile(
+                                  title: const Text('Users List'),
+                                  onTap: () {
+                                    // Handle navigation to the users list page
+                                  },
+                                ),
+                                ListTile(
+                                  title: const Text('Parking Spaces List'),
+                                  onTap: () {
+                                    // Handle navigation to the parking spaces list page
+                                  },
+                                ),
+                                ListTile(
+                                  title: const Text('Bookings List'),
+                                  onTap: () {
+                                    // Handle navigation to the bookings list page
+                                  },
+                                ),
+                                ListTile(
+                                  title: const Text('Reviews List'),
+                                  onTap: () {
+                                    // Handle navigation to the reviews list page
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        } else {
+                          return Container(); // User is not an admin, return an empty container
+                        }
+                      },
+                    ),
+                  ],
+                );
+              }
+              return Container();
+            },
+          ),
+        ],
+      ),
+    );
   }
 }
 
