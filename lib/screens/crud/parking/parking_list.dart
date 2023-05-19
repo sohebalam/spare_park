@@ -108,16 +108,11 @@ class _ParkingPageState extends State<ParkingPage> {
                             TextButton(
                               onPressed: () {
                                 print('Address: ${parking['p_id']}');
-                                // TODO: Implement delete action
+                                String parkingId = parking.id;
+                                _deleteParking(context, parkingId);
                               },
                               child: Text('Delete'),
                             ),
-                            // TextButton(
-                            //   onPressed: () {
-                            //     // TODO: Implement add review action
-                            //   },
-                            //   child: Text('Add Review'),
-                            // ),
                           ],
                         ),
                       ],
@@ -130,5 +125,57 @@ class _ParkingPageState extends State<ParkingPage> {
         },
       ),
     );
+  }
+
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
+
+  void _deleteParking(BuildContext context, String parkingId) async {
+    try {
+      // Delete the parking space from the 'parking_spaces' collection
+      await FirebaseFirestore.instance
+          .collection('parking_spaces')
+          .doc(parkingId)
+          .delete();
+
+      // Delete the bookings associated with the parking space
+      await FirebaseFirestore.instance
+          .collection('bookings')
+          .where('p_id', isEqualTo: parkingId)
+          .get()
+          .then((querySnapshot) {
+        querySnapshot.docs.forEach((bookingDoc) async {
+          String bookingId = bookingDoc.id;
+
+          // Delete the reviews connected to the booking
+          await FirebaseFirestore.instance
+              .collection('reviews')
+              .where('b_id', isEqualTo: bookingId)
+              .get()
+              .then((querySnapshot) {
+            querySnapshot.docs.forEach((reviewDoc) {
+              reviewDoc.reference.delete();
+            });
+          });
+
+          // Delete the booking
+          bookingDoc.reference.delete();
+        });
+      });
+
+      // Show a success message
+      _scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(
+          content: Text('Parking deleted successfully'),
+        ),
+      );
+    } catch (error) {
+      // Show an error message
+      _scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(
+          content: Text('Error deleting the Parking: $error'),
+        ),
+      );
+    }
   }
 }

@@ -121,7 +121,8 @@ class _BookingsPageState extends State<BookingsPage> {
                             ),
                             TextButton(
                               onPressed: () {
-                                // TODO: Implement delete action
+                                String bookingId = booking.id;
+                                _deleteBooking(context, bookingId);
                               },
                               child: Text('Delete'),
                             ),
@@ -150,5 +151,43 @@ class _BookingsPageState extends State<BookingsPage> {
         },
       ),
     );
+  }
+
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
+
+  void _deleteBooking(BuildContext context, String bookingId) async {
+    try {
+      // Delete the review from the 'reviews' collection
+      await FirebaseFirestore.instance
+          .collection('bookings')
+          .doc(bookingId)
+          .delete();
+
+      // Delete the reviews connected to the booking
+      await FirebaseFirestore.instance
+          .collection('reviews')
+          .where('b_id', isEqualTo: bookingId)
+          .get()
+          .then((querySnapshot) {
+        querySnapshot.docs.forEach((reviewDoc) {
+          reviewDoc.reference.delete();
+        });
+      });
+
+      // Show a success message
+      _scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(
+          content: Text('Booking deleted successfully'),
+        ),
+      );
+    } catch (error) {
+      // Show an error message
+      _scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(
+          content: Text('Error deleting the Booking: $error'),
+        ),
+      );
+    }
   }
 }
