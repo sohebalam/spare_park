@@ -7,9 +7,9 @@ import 'package:geolocator/geolocator.dart';
 
 class DB_CarPark {
   static Stream<List<CarParkSpaceModel>> read() {
-    final userCollection =
+    final spaceCollection =
         FirebaseFirestore.instance.collection("parking_spaces");
-    return userCollection.snapshots().map((querySnapshot) => querySnapshot.docs
+    return spaceCollection.snapshots().map((querySnapshot) => querySnapshot.docs
         .map((e) => CarParkSpaceModel.fromMap(e.data() as Map<String, dynamic>))
         .toSet() // convert to a set
         .toList()); // convert back to a list

@@ -113,7 +113,7 @@ class _ResultsPageState extends State<ResultsPage> {
           await _getBytesFromCanvas(item[3].toString()),
         ),
         infoWindow: InfoWindow(
-          title: "${i + 1}",
+          title: "${item[4]}",
         ),
       );
       setState(() {
