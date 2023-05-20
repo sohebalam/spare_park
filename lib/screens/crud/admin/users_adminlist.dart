@@ -201,6 +201,35 @@ void _deleteUser(BuildContext context, String userId) async {
     // Delete the user from the 'users' collection
     await FirebaseFirestore.instance.collection('users').doc(userId).delete();
 
+// Delete the bookings from the 'bookings'  collection for the user
+    await FirebaseFirestore.instance
+        .collection('parking_spaces')
+        .where('u_id', isEqualTo: userId)
+        .get()
+        .then((QuerySnapshot snapshot) {
+      snapshot.docs.forEach((DocumentSnapshot doc) {
+        doc.reference.delete();
+      });
+    });
+    await FirebaseFirestore.instance
+        .collection('bookings')
+        .where('u_id', isEqualTo: userId)
+        .get()
+        .then((QuerySnapshot snapshot) {
+      snapshot.docs.forEach((DocumentSnapshot doc) {
+        doc.reference.delete();
+      });
+    });
+    await FirebaseFirestore.instance
+        .collection('reviews')
+        .where('u_id', isEqualTo: userId)
+        .get()
+        .then((QuerySnapshot snapshot) {
+      snapshot.docs.forEach((DocumentSnapshot doc) {
+        doc.reference.delete();
+      });
+    });
+
     // Show a success message
     _scaffoldMessengerKey.currentState?.showSnackBar(
       SnackBar(
