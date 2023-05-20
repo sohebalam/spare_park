@@ -56,6 +56,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     try {
       final user = await authService.createUserWithEmailAndPassword(
+        context,
         emailController.text,
         passwordController.text,
         _image!,

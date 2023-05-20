@@ -47,6 +47,7 @@ class CustomLoginDialog extends StatelessWidget {
               onPressed: () {
                 if (_formKey1.currentState!.validate()) {
                   authService.signInWithEmailAndPassword(
+                    context,
                     emailController.text,
                     passwordController.text,
                   );

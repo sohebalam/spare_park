@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:sparepark/main.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sparepark/screens/auth/register_screen.dart';
 import 'package:sparepark/screens/mapscreens/map_home.dart';
 import 'package:sparepark/screens/mapscreens/results_page.dart';
 import 'package:sparepark/services/auth_service.dart';
@@ -59,13 +60,6 @@ class _AuthScreenState extends State<AuthScreen> {
     UserCredential userCredential =
         await FirebaseAuth.instance.signInWithCredential(credential);
 
-    // DocumentSnapshot userExist =
-    //     await firestore.collection('users').doc(userCredential.user!.uid).get();
-    // DocumentSnapshot userEmailExist = await firestore
-    //     .collection('users')
-    //     .doc(userCredential.user!.email)
-    //     .get();
-
     DocumentSnapshot userExist =
         await firestore.collection('users').doc(userCredential.user!.uid).get();
     DocumentSnapshot userEmailExist = await firestore
@@ -86,19 +80,21 @@ class _AuthScreenState extends State<AuthScreen> {
     }
 
     if (widget.prior_page == 'map_home') {
-      Navigator.push(
+      print('prior_page value: ${widget.prior_page}');
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => ResultsPage(
-            location: widget.location!,
-            results: widget.results!,
-            startdatetime: widget.startdatetime!,
-            enddatetime: widget.enddatetime!,
+            location: location!,
+            results: results!,
+            startdatetime: startdatetime!,
+            enddatetime: enddatetime!,
           ),
         ),
       );
     } else {
-      Navigator.push(
+      print('here nav');
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => MapHome(),
@@ -107,51 +103,23 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
-  Future<void> signInFunc(
-    BuildContext context,
-  ) async {
-    GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-    if (googleUser == null) {
-      return;
-    }
-    final googleAuth = await googleUser.authentication;
-    final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
-    UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithCredential(credential);
-
-    // DocumentSnapshot userExist =
-    //     await firestore.collection('users').doc(userCredential.user!.uid).get();
-    // DocumentSnapshot userEmailExist = await firestore
-    //     .collection('users')
-    //     .doc(userCredential.user!.email)
-    //     .get();
-
-    DocumentSnapshot userExist =
-        await firestore.collection('users').doc(userCredential.user!.uid).get();
-    DocumentSnapshot userEmailExist = await firestore
-        .collection('users')
-        .doc(userCredential.user!.email)
-        .get();
-
-    if (userExist.exists || userEmailExist.exists) {
-      print("User Already Exists in Database");
-    } else {
-      await firestore.collection('users').doc(userCredential.user!.uid).set({
-        'email': userCredential.user!.email,
-        'name': userCredential.user!.displayName,
-        'image': userCredential.user!.photoURL,
-        'uid': userCredential.user!.uid,
-        'date': DateTime.now(),
-      });
-    }
+  Future<void> signInFunc(BuildContext context) async {
+    // Perform custom sign-in logic here
+    // Replace the code below with your own custom sign-in implementation
+    // Once the user is authenticated, navigate to the desired page
+    // Example:
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MapHome(),
+      ),
+    );
   }
 
-  @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
     final isLoggedInStream = authService.user!.map((user) => user != null);
-    print('resutls:');
+    print('results:');
     print(widget.results);
     return Scaffold(
       appBar: CustomAppBar(title: 'Login', isLoggedInStream: isLoggedInStream),
@@ -160,9 +128,7 @@ class _AuthScreenState extends State<AuthScreen> {
         child: Center(
           child: Column(
             children: [
-              SizedBox(
-                height: 80,
-              ),
+              SizedBox(height: 80),
               Container(
                 decoration: BoxDecoration(
                   image: DecorationImage(
@@ -175,9 +141,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   child: Image.asset('assets/parking.png'),
                 ),
               ),
-              SizedBox(
-                height: 20,
-              ),
+              SizedBox(height: 20),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -199,29 +163,65 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
+                  SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
-                      authService.signInWithEmailAndPassword(
-                        emailController.text,
-                        passwordController.text,
-                      );
+                      if (emailController.text.length > 6 &&
+                          passwordController.text.length > 6) {
+                        authService.signInWithEmailAndPassword(
+                          context,
+                          emailController.text,
+                          passwordController.text,
+                          prior_page: widget.prior_page,
+                          location: widget.location,
+                          results: widget.results,
+                          startdatetime: widget.startdatetime,
+                          enddatetime: widget.enddatetime,
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              "Email and password must be at least 6 characters long.",
+                            ),
+                          ),
+                        );
+                      }
                     },
                     child: Text('Login'),
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/register');
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RegisterScreen(
+                              // prior_page: widget.prior_page,
+                              // location: widget.location,
+                              // results: widget.results,
+                              // startdatetime: widget.startdatetime,
+                              // enddatetime: widget.enddatetime,
+                              ),
+                        ),
+                      );
+
+                      // Navigator.pushNamed(
+                      //   context,
+                      //   '/register',
+                      //   arguments: {
+                      //     'prior_page': widget.prior_page,
+                      //     'location': widget.location,
+                      //     'results': widget.results,
+                      //     'startdatetime': widget.startdatetime,
+                      //     'enddatetime': widget.enddatetime,
+                      //   }, // Pass the prior_page argument as a Map
+                      // );
                     },
                     child: Text('Register'),
                   ),
                 ],
               ),
-              SizedBox(
-                height: 70,
-              ),
+              SizedBox(height: 70),
               Padding(
                 padding: EdgeInsets.fromLTRB(0, 0, 0, 30),
                 child: Center(
@@ -230,15 +230,13 @@ class _AuthScreenState extends State<AuthScreen> {
                       if (widget.prior_page == 'map_home') {
                         await signInFunction(
                           context,
-                          widget.location!,
-                          widget.results!,
+                          widget.location,
+                          widget.results,
                           widget.startdatetime,
                           widget.enddatetime,
                         );
                       } else {
-                        await signInFunc(
-                          context,
-                        );
+                        await signInFunc(context);
                       }
                     },
                     text: "Sign up with Google",
