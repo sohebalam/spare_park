@@ -113,7 +113,7 @@ class _ResultsPageState extends State<ResultsPage> {
           await _getBytesFromCanvas(item[3].toString()),
         ),
         infoWindow: InfoWindow(
-          title: "${item[4]}",
+          title: "${i + 5}",
         ),
       );
       setState(() {
@@ -247,10 +247,12 @@ class _ResultsPageState extends State<ResultsPage> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => Booking(
-                                        startDateTime: widget.startdatetime,
-                                        endDateTime: widget.enddatetime,
-                                        cpsId: result[0],
-                                      ),
+                                          startDateTime: widget.startdatetime,
+                                          endDateTime: widget.enddatetime,
+                                          cpsId: result[0],
+                                          image: result[6],
+                                          address: result[5],
+                                          postcode: result[7]),
                                     ),
                                   );
                                 },

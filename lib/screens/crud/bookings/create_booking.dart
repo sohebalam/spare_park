@@ -12,6 +12,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart' as http;
 
 DateTime roundToNearest15Minutes(DateTime dateTime) {
   final minutes = dateTime.minute;
@@ -26,8 +27,14 @@ class Booking extends StatefulWidget {
     required this.cpsId,
     required this.startDateTime,
     required this.endDateTime,
+    required this.image,
+    required this.address,
+    required this.postcode,
   }) : super(key: key);
 
+  final String image;
+  final String postcode;
+  final String address;
   final String cpsId;
   final DateTime startDateTime;
   final DateTime endDateTime;
@@ -115,8 +122,14 @@ class _BookingState extends State<Booking> {
     final latitude = spaceData['latitude'] as double;
     final longitude = spaceData['longitude'] as double;
 
-    final ByteData data = await rootBundle.load('assets/carpark1.jpg');
-    final Uint8List resizedBytes = await _resizeImage(data, 200, 150);
+    final imageUrl = widget.image;
+    final response = await http.get(Uri.parse(imageUrl));
+    final data = response.bodyBytes;
+    final ByteData byteData = ByteData.view(data.buffer);
+    final Uint8List resizedBytes = await _resizeImage(byteData, 200, 150);
+
+    // final ByteData data = await rootBundle.load('assets/carpark1.jpg');
+    // final Uint8List resizedBytes = await _resizeImage(data, 200, 150);
 
     final BitmapDescriptor bitmapDescriptor =
         BitmapDescriptor.fromBytes(resizedBytes);
@@ -125,8 +138,8 @@ class _BookingState extends State<Booking> {
       markerId: MarkerId(widget.cpsId),
       position: LatLng(latitude, longitude),
       infoWindow: InfoWindow(
-        title: widget.cpsId,
-        snippet: 'This is a parking space',
+        title: widget.address,
+        snippet: widget.postcode,
       ),
       icon: bitmapDescriptor,
     );

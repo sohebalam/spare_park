@@ -70,6 +70,7 @@ dependencies:
   page_transition: ^2.0.9
   lottie: ^2.3.2
   provider: ^6.0.0
+  image: ^4.0.17
 
 dev_dependencies:
   flutter_test:

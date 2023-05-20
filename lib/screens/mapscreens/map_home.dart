@@ -65,6 +65,8 @@ class _MapHomeState extends State<MapHome> {
           space.hourlyRate,
           space.u_id,
           space.address,
+          space.p_image,
+          space.postcode,
         ]);
       }
     });
@@ -129,104 +131,6 @@ class _MapHomeState extends State<MapHome> {
 
     return filteredResults;
   }
-
-  // void _newFunction(
-  //   double latitude,
-  //   double longitude,
-  // ) async {
-  //   final carParkService = DB_CarPark();
-  //   final nearestSpaces = await DB_CarPark.getNearestSpaces(
-  //     latitude: latitude,
-  //     longitude: longitude,
-  //     startdatetime: _selectedDateTimeStart,
-  //     enddatetime: _selectedDateTimeEnd,
-  //   );
-  //   // print(nearestSpaces);
-
-  //   List<List<dynamic>> results = [];
-  //   final currentUser = FirebaseAuth.instance.currentUser;
-
-  //   nearestSpaces.forEach((space) {
-  //     // print(space.p_id);
-  //     if (space.u_id != currentUser?.uid) {
-  //       results.add([
-  //         space.p_id,
-  //         space.latitude,
-  //         space.longitude,
-  //         space.hourlyRate,
-  //         space.u_id,
-  //       ]);
-  //     }
-  //     print(results);
-  //   });
-
-  //   void filterBookings(List<dynamic> nearestSpaces, DateTime startdatetime,
-  //       DateTime enddatetime) async {
-  //     final bookingsSnapshot =
-  //         await FirebaseFirestore.instance.collection('bookings').get();
-
-  //     List<List<dynamic>> results = [];
-
-  //     for (var space in nearestSpaces) {
-  //       final matchingBookings = bookingsSnapshot.docs.where((booking) =>
-  //           booking.data()['spaceId'] == space.p_id &&
-  //           booking.data()['startdatetime'].toDate().isBefore(enddatetime) &&
-  //           booking.data()['enddatetime'].toDate().isAfter(startdatetime));
-
-  //       if (matchingBookings.isEmpty) {
-  //         results.add([
-  //           space.p_id,
-  //           space.latitude,
-  //           space.longitude,
-  //           space.hourlyRate,
-  //           space.u_id,
-  //         ]);
-  //       }
-  //     }
-  //   }
-
-  //   if (currentUser == null) {
-  //     Navigator.pushReplacement(
-  //       context,
-  //       MaterialPageRoute(
-  //           builder: (context) => AuthScreen(
-  //                 prior_page: 'map_home',
-  //                 location: LatLng(latitude!, longitude!),
-  //                 results: results,
-  //                 latitude: _currentPosition.latitude,
-  //                 longitude: _currentPosition.longitude,
-  //                 startdatetime: _selectedDateTimeStart,
-  //                 enddatetime: _selectedDateTimeEnd,
-  //               )),
-  //     );
-  //   } else {
-  //     nearestSpaces.forEach((space) {
-  //       if (space.u_id != currentUser.uid) {
-  //         results.add([
-  //           space.p_id,
-  //           space.latitude,
-  //           space.longitude,
-  //           space.hourlyRate,
-  //           space.u_id,
-  //         ]);
-  //       }
-  //     });
-
-  //     Navigator.push(
-  //       context,
-  //       MaterialPageRoute(
-  //         builder: (context) => ResultsPage(
-  //           location: LatLng(latitude!, longitude!),
-  //           results: results,
-  //           latitude: _currentPosition.latitude,
-  //           longitude: _currentPosition.longitude,
-  //           startdatetime: _selectedDateTimeStart,
-  //           enddatetime: _selectedDateTimeEnd,
-  //         ),
-  //       ),
-  //     );
-  //   }
-  // }
 
   getLocation() async {
     LocationPermission permission;
