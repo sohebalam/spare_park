@@ -141,7 +141,9 @@ class _UsersAdminListPageState extends State<UsersAdminListPage> {
                               onPressed: () async {
                                 String userId = user.id;
                                 await checkBookedParkingSpaces(userId);
-                                canDelete ? _deleteUser(context, userId) : null;
+                                canDelete
+                                    ? _deleteUser(context, userId)
+                                    : showDeleteDialog(context, userId);
                               },
                               child: Text('Delete'),
                             ),
@@ -157,6 +159,37 @@ class _UsersAdminListPageState extends State<UsersAdminListPage> {
         },
       ),
     );
+  }
+}
+
+void showDeleteDialog(BuildContext context, String userId) async {
+  final bool canDelete = await showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Delete User'),
+        content: Text(
+            'This user has a booked parking space. Are you sure you want to delete?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(false); // User chose to cancel
+            },
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(true); // User chose to delete
+            },
+            child: Text('OK'),
+          ),
+        ],
+      );
+    },
+  );
+
+  if (canDelete != null && canDelete) {
+    _deleteUser(context, userId);
   }
 }
 
