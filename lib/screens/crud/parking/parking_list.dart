@@ -109,7 +109,8 @@ class _ParkingPageState extends State<ParkingPage> {
                               onPressed: () {
                                 print('Address: ${parking['p_id']}');
                                 String parkingId = parking.id;
-                                _deleteParking(context, parkingId);
+                                // _deleteParking(context, parkingId);
+                                showDeleteDialog(context, parkingId);
                               },
                               child: Text('Delete'),
                             ),
@@ -176,6 +177,36 @@ class _ParkingPageState extends State<ParkingPage> {
           content: Text('Error deleting the Parking: $error'),
         ),
       );
+    }
+  }
+
+  void showDeleteDialog(BuildContext context, String parkingId) async {
+    final bool canDelete = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete Booking'),
+          content: Text('Are you sure you want to delete?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // User chose to cancel
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // User chose to delete
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (canDelete != null && canDelete) {
+      _deleteParking(context, parkingId);
     }
   }
 }

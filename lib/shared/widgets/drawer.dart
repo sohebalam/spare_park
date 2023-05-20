@@ -14,7 +14,9 @@ import 'package:sparepark/screens/crud/parking/parking_list.dart';
 import 'package:sparepark/screens/crud/parking/register_car_parking.dart';
 import 'package:sparepark/screens/crud/reviews/review_list.dart';
 import 'package:sparepark/screens/crud/user/profile.dart';
+import 'package:sparepark/screens/mapscreens/map_home.dart';
 import 'package:sparepark/services/auth_service.dart';
+import 'package:sparepark/shared/functions.dart';
 import 'package:sparepark/shared/style/contstants.dart';
 // import 'package:your_app_name/utils/constants.dart';
 // import 'package:your_app_name/views/register_parking_space.dart';
@@ -120,7 +122,6 @@ class _AppDrawerState extends State<AppDrawer> {
 
     return Drawer(
       child: ListView(
-        // Important: Remove any padding from the ListView.
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
@@ -236,14 +237,16 @@ class _AppDrawerState extends State<AppDrawer> {
                         return ListTile(
                           title: const Text('My Bookings'),
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => BookingsPage(
-                                  userId: currentUser!.uid.toString(),
+                            if (currentUser != null) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => BookingsPage(
+                                    userId: currentUser!.uid.toString(),
+                                  ),
                                 ),
-                              ),
-                            );
+                              );
+                            }
                           },
                         );
                       },
@@ -383,8 +386,37 @@ class _AppDrawerState extends State<AppDrawer> {
                             ),
                           );
                         } else {
-                          return Container(); // User is not an admin, return an empty container
+                          return Container();
                         }
+                      },
+                    ),
+                    StreamBuilder<bool>(
+                      stream: isLoggedInStream,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData && snapshot.data!) {
+                          return Column(
+                            children: [
+                              ListTile(
+                                title: Row(
+                                  children: [
+                                    const Text('Logout'),
+                                    SizedBox(width: 8),
+                                  ],
+                                ),
+                                onTap: () {
+                                  disconnect();
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => MapHome(),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          );
+                        }
+                        return Container();
                       },
                     ),
                   ],

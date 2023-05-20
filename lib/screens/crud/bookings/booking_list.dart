@@ -154,7 +154,8 @@ class _BookingsPageState extends State<BookingsPage> {
                             TextButton(
                               onPressed: () {
                                 String bookingId = booking.id;
-                                _deleteBooking(context, bookingId);
+                                // _deleteBooking(context, bookingId);
+                                showDeleteDialog(context, bookingId);
                               },
                               child: Text('Delete'),
                             ),
@@ -220,6 +221,36 @@ class _BookingsPageState extends State<BookingsPage> {
           content: Text('Error deleting the Booking: $error'),
         ),
       );
+    }
+  }
+
+  void showDeleteDialog(BuildContext context, String bookingId) async {
+    final bool canDelete = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete Booking'),
+          content: Text('Are you sure you want to delete?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // User chose to cancel
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // User chose to delete
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (canDelete != null && canDelete) {
+      _deleteBooking(context, bookingId);
     }
   }
 }

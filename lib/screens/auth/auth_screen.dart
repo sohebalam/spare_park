@@ -103,11 +103,37 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
-  Future<void> signInFunc(BuildContext context) async {
-    // Perform custom sign-in logic here
-    // Replace the code below with your own custom sign-in implementation
-    // Once the user is authenticated, navigate to the desired page
-    // Example:
+  Future<void> signInFunc(
+    BuildContext context,
+  ) async {
+    GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+    if (googleUser == null) {
+      return;
+    }
+    final googleAuth = await googleUser.authentication;
+    final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+    UserCredential userCredential =
+        await FirebaseAuth.instance.signInWithCredential(credential);
+
+    DocumentSnapshot userExist =
+        await firestore.collection('users').doc(userCredential.user!.uid).get();
+    DocumentSnapshot userEmailExist = await firestore
+        .collection('users')
+        .doc(userCredential.user!.email)
+        .get();
+
+    if (userExist.exists || userEmailExist.exists) {
+      print("User Already Exists in Database");
+    } else {
+      await firestore.collection('users').doc(userCredential.user!.uid).set({
+        'email': userCredential.user!.email,
+        'name': userCredential.user!.displayName,
+        'image': userCredential.user!.photoURL,
+        'uid': userCredential.user!.uid,
+        'date': DateTime.now(),
+      });
+    }
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -115,6 +141,19 @@ class _AuthScreenState extends State<AuthScreen> {
       ),
     );
   }
+
+  // Future<void> signInFunc(BuildContext context) async {
+  //   // Perform custom sign-in logic here
+  //   // Replace the code below with your own custom sign-in implementation
+  //   // Once the user is authenticated, navigate to the desired page
+  //   // Example:
+  //   Navigator.pushReplacement(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => MapHome(),
+  //     ),
+  //   );
+  // }
 
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);

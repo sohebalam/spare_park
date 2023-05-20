@@ -153,7 +153,8 @@ class _ReviewListPageState extends State<ReviewListPage> {
                                 TextButton(
                                   onPressed: () {
                                     String reviewId = review.id;
-                                    _deleteReview(context, reviewId);
+                                    // _deleteReview(context, reviewId);
+                                    showDeleteDialog(context, reviewId);
                                   },
                                   child: Text('Delete'),
                                 ),
@@ -171,6 +172,36 @@ class _ReviewListPageState extends State<ReviewListPage> {
         },
       ),
     );
+  }
+
+  void showDeleteDialog(BuildContext context, String reviewId) async {
+    final bool canDelete = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete Booking'),
+          content: Text('Are you sure you want to delete?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // User chose to cancel
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // User chose to delete
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (canDelete != null && canDelete) {
+      _deleteReview(context, reviewId);
+    }
   }
 
   // Define a separate method to handle the "view" action
