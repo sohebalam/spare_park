@@ -119,7 +119,7 @@ class _ReviewPageState extends State<ReviewPage> {
                             // Validate and save the form
                             if (_formKey.currentState!.validate()) {
                               _formKey.currentState!.save();
-                              _submitReview();
+                              isLoading ? null : _submitReview();
                             }
                           },
                           child: Text('Submit'),
@@ -154,6 +154,12 @@ class _ReviewPageState extends State<ReviewPage> {
       await FirebaseFirestore.instance
           .collection('reviews')
           .add(review.toJson());
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Booking created successfully'),
+        ),
+      );
     } catch (e) {
       print('Error submitting review: $e');
     } finally {

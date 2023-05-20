@@ -411,7 +411,7 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
                   child: AbsorbPointer(
                     absorbing: _isLoading,
                     child: ElevatedButton(
-                      onPressed: _submitForm,
+                      onPressed: _isLoading ? null : _submitForm,
                       child: Text('Submit'),
                     ),
                   ),

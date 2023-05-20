@@ -216,12 +216,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               if (_isLoading) Center(child: CircularProgressIndicator()),
               buildErrorMessage(context, _errorMessage),
-              AbsorbPointer(
-                absorbing: _isLoading,
-                child: ElevatedButton(
-                  onPressed: _registerUser,
-                  child: const Text('Register'),
-                ),
+              ElevatedButton(
+                onPressed: _isLoading ? null : _registerUser,
+                child: const Text('Register'),
               ),
             ],
           ),

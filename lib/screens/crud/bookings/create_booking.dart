@@ -63,6 +63,7 @@ class _BookingState extends State<Booking> {
   }
 
   void onSubmit() async {
+    isLoading = true;
     // Create a new booking model object
     // Create a new booking model object
     BookingModel booking = BookingModel(
@@ -100,6 +101,7 @@ class _BookingState extends State<Booking> {
         ),
       ),
     );
+    isLoading = false;
   }
 
   Future<Marker> _getMarker() async {
@@ -252,7 +254,7 @@ class _BookingState extends State<Booking> {
                 ),
                 SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: onSubmit,
+                  onPressed: isLoading ? null : onSubmit,
                   child: Text('Submit Booking'),
                 ),
               ],
