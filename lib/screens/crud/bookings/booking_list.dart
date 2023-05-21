@@ -102,77 +102,89 @@ class _BookingsPageState extends State<BookingsPage> {
                               return Text('Address not available');
                             }
 
-                            return Text('Address: $address');
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Address: $address'),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => ViewBooking(
+                                              bookingId: booking['b_id'],
+                                              cpsId: booking['p_id'],
+                                              endDateTime:
+                                                  booking['end_date_time']
+                                                      .toDate(),
+                                              startDateTime:
+                                                  booking['start_date_time']
+                                                      .toDate(),
+                                              address: address,
+                                              postcode:
+                                                  parkingSpaceData?['postcode'],
+                                              image:
+                                                  parkingSpaceData?['p_image'],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: Text('View'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => EditBooking(
+                                              bookingId: booking['b_id'],
+                                              cpsId: booking['p_id'],
+                                              endDateTime:
+                                                  booking['end_date_time']
+                                                      .toDate(),
+                                              startDateTime:
+                                                  booking['start_date_time']
+                                                      .toDate(),
+                                              address: address,
+                                              postcode:
+                                                  parkingSpaceData?['postcode'],
+                                              image:
+                                                  parkingSpaceData?['p_image'],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: Text('Edit'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        String bookingId = booking.id;
+                                        // _deleteBooking(context, bookingId);
+                                        showDeleteDialog(context, bookingId);
+                                      },
+                                      child: Text('Delete'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => ReviewPage(
+                                              b_id: booking['b_id'],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: Text('Add Review'),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            );
                           },
-                        ),
-                        // Text('Booking id: ${booking['b_id']}'),
-                        // Text('User id: ${booking['u_id']}'),
-                        // Text('Parking Space id: ${booking['p_id']}'),
-                        Text('Booked Date: $bookingDate'),
-                        Text('Booking Start: $bookingStart'),
-                        Text('Booking End: $bookingEnd'),
-                        Text('Total Price: £${booking['b_total']}'),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ViewBooking(
-                                      // b_id: booking['b_id'],
-                                      cpsId: booking['p_id'],
-                                      endDateTime:
-                                          booking['end_date_time'].toDate(),
-                                      startDateTime:
-                                          booking['start_date_time'].toDate(),
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: Text('View'),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => EditBooking(
-                                      bookingId: booking['b_id'],
-                                      cpsId: booking['p_id'],
-                                      endDateTime:
-                                          booking['end_date_time'].toDate(),
-                                      startDateTime:
-                                          booking['start_date_time'].toDate(),
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: Text('Edit'),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                String bookingId = booking.id;
-                                // _deleteBooking(context, bookingId);
-                                showDeleteDialog(context, bookingId);
-                              },
-                              child: Text('Delete'),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ReviewPage(
-                                      b_id: booking['b_id'],
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: Text('Add Review'),
-                            ),
-                          ],
                         ),
                       ],
                     ),
