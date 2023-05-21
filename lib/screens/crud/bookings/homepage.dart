@@ -48,10 +48,10 @@ class _MyHomePageState extends State<MyHomePage> {
       icon: BitmapDescriptor.defaultMarker,
     );
 
-    final resizedImage = await _resizeImage(widget.image, 200, 150);
+    final resizedBytes = await _loadImageData(widget.image);
     final customMarker = MarkerData(
       marker: marker,
-      child: _customMarker(resizedImage, Colors.red),
+      child: _customMarker(resizedBytes, Colors.red),
     );
 
     setState(() {
@@ -60,17 +60,28 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<Uint8List> _loadImageData(String imagePath) async {
-    final response = await http.get(Uri.parse(imagePath));
-    final data = response.bodyBytes;
+    if (imagePath.isEmpty) {
+      // Load a local image instead
+      final ByteData localImageData =
+          await rootBundle.load('assets/carpark1.jpg');
+      return localImageData.buffer.asUint8List();
+    }
 
-    final compressedData = await FlutterImageCompress.compressWithList(
-      data,
-      minHeight: 200,
-      minWidth: 150,
-      quality: 90,
-    );
-
-    return Uint8List.fromList(compressedData);
+    try {
+      final response = await http.get(Uri.parse(imagePath));
+      final data = response.bodyBytes;
+      final compressedData = await FlutterImageCompress.compressWithList(
+        data,
+        minHeight: 200,
+        minWidth: 150,
+        quality: 90,
+      );
+      return Uint8List.fromList(compressedData);
+    } catch (e) {
+      // Handle the exception and return an empty marker
+      print('Error loading image: $e');
+      return Uint8List(0);
+    }
   }
 
   @override
