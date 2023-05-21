@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_map_markers/custom_map_markers.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -7,15 +8,27 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:ui' as ui;
 
+import 'package:intl/intl.dart';
+import 'package:sparepark/models/booking_model.dart';
+import 'package:sparepark/screens/crud/bookings/payment.dart';
+
 class MyHomePage extends StatefulWidget {
   MyHomePage({
     Key? key,
     required this.cpsId,
     required this.image,
+    required this.postcode,
+    required this.address,
+    required this.startDateTime,
+    required this.endDateTime,
   }) : super(key: key);
 
   final String cpsId;
   final String image;
+  final String postcode;
+  final String address;
+  final DateTime startDateTime;
+  final DateTime endDateTime;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -24,11 +37,62 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late List<MarkerData> _customMarkers = [];
   late GoogleMapController _mapController;
+  double _hourlyRate = 10;
+  late User? currentUser;
+  bool isLoading = false;
+
+  double get total {
+    final hours = widget.endDateTime.difference(widget.startDateTime).inHours;
+    return hours * _hourlyRate;
+  }
 
   @override
   void initState() {
     super.initState();
+    currentUser = FirebaseAuth.instance.currentUser;
     _fetchMarkerData();
+  }
+
+  void onSubmit() async {
+    isLoading = true;
+    // Create a new booking model object
+    // Create a new booking model object
+    BookingModel booking = BookingModel(
+      b_id: '', // Set b_id as an empty string initially
+      p_id: widget.cpsId,
+      u_id: currentUser!.uid,
+      start_date_time: widget.startDateTime,
+      end_date_time: widget.endDateTime,
+      b_total: total,
+      reg_date: DateTime.now(),
+    );
+
+    // Add the booking to Firebase
+    final DocumentReference bookingRef = await FirebaseFirestore.instance
+        .collection('bookings')
+        .add(booking.toJson());
+
+    // Update the b_id field with the actual booking ID assigned by Firebase
+    await bookingRef.update({'b_id': bookingRef.id});
+
+    // Show a success message with the booking ID
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Booking ${bookingRef.id} created successfully'),
+      ),
+    );
+    final String bookingId = bookingRef.id;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Payment(
+          b_id: bookingId,
+          total: total,
+        ),
+      ),
+    );
+    isLoading = false;
   }
 
   Future<void> _fetchMarkerData() async {
@@ -41,6 +105,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final latitude = spaceData['latitude'] as double;
     final longitude = spaceData['longitude'] as double;
+    final hourlyRate =
+        spaceData['hourlyRate'] as double; // Fetch hourlyRate from database
+
+    setState(() {
+      _hourlyRate = hourlyRate; // Update the hourlyRate value
+    });
+
     final markerId = MarkerId(widget.cpsId);
     final marker = Marker(
       markerId: markerId,
@@ -87,33 +158,98 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            if (_customMarkers.isNotEmpty) {
-              _customMarkers.removeLast();
-            }
-          });
-        },
-      ),
-      body: CustomGoogleMapMarkerBuilder(
-        customMarkers: _customMarkers,
-        builder: (BuildContext context, Set<Marker>? markers) {
-          if (markers == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          return GoogleMap(
-            initialCameraPosition: const CameraPosition(
-              target: LatLng(51.654827, -0.083599),
-              zoom: 14.4746,
+      body: Column(
+        children: [
+          Expanded(
+            child: CustomGoogleMapMarkerBuilder(
+              customMarkers: _customMarkers,
+              builder: (BuildContext context, Set<Marker>? markers) {
+                if (markers == null) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                return GoogleMap(
+                  initialCameraPosition: const CameraPosition(
+                    target: LatLng(51.654827, -0.083599),
+                    zoom: 14.4746,
+                  ),
+                  markers: markers,
+                  onMapCreated: (GoogleMapController controller) {
+                    _mapController = controller;
+                    _animateToMarker();
+                  },
+                );
+              },
             ),
-            markers: markers,
-            onMapCreated: (GoogleMapController controller) {
-              _mapController = controller;
-              _animateToMarker();
-            },
-          );
-        },
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(0, 0, 8, 0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          padding:
+                              EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                DateFormat('HH:mm dd MMM yy')
+                                    .format(widget.startDateTime),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          padding:
+                              EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                DateFormat('HH:mm dd MMM yy')
+                                    .format(widget.endDateTime),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                Text(
+                  'Total: £${total.toStringAsFixed(2)}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                  ),
+                ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: isLoading ? null : onSubmit,
+                  child: Text('Submit Booking'),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

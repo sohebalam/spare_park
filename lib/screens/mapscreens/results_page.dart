@@ -248,12 +248,12 @@ class _ResultsPageState extends State<ResultsPage> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => MyHomePage(
-                                        // startDateTime: widget.startdatetime,
-                                        // endDateTime: widget.enddatetime,
+                                        startDateTime: widget.startdatetime,
+                                        endDateTime: widget.enddatetime,
                                         cpsId: result[0],
                                         image: result[6],
-                                        // address: result[5],
-                                        // postcode: result[7],
+                                        address: result[5],
+                                        postcode: result[7],
                                       ),
                                     ),
                                   );
