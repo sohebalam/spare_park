@@ -3,6 +3,7 @@ import 'package:custom_map_markers/custom_map_markers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -29,8 +30,8 @@ class EditBooking extends StatefulWidget {
   final String image;
   final String postcode;
   final String address;
-  final DateTime startDateTime;
-  final DateTime endDateTime;
+  DateTime startDateTime;
+  DateTime endDateTime;
 
   @override
   State<EditBooking> createState() => _EditBookingState();
@@ -163,6 +164,21 @@ class _EditBookingState extends State<EditBooking> {
 
   @override
   Widget build(BuildContext context) {
+    widget.startDateTime = roundToNearest15Minutes(widget.startDateTime);
+    widget.endDateTime = roundToNearest15Minutes(widget.endDateTime);
+
+    TextEditingController startDateController = TextEditingController(
+      text: DateFormat('HH:mm dd MMM yy').format(widget.startDateTime),
+    );
+    TextEditingController endDateController = TextEditingController(
+      text: DateFormat('HH:mm dd MMM yy').format(widget.endDateTime),
+    );
+
+    startDateController.text =
+        DateFormat('HH:mm dd MMM yy').format(widget.startDateTime);
+    endDateController.text =
+        DateFormat('HH:mm dd MMM yy').format(widget.endDateTime);
+
     return Scaffold(
       body: Column(
         children: [
@@ -194,47 +210,111 @@ class _EditBookingState extends State<EditBooking> {
                 Row(
                   children: [
                     Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(0, 0, 8, 0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          padding:
-                              EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                DateFormat('HH:mm dd MMM yy')
-                                    .format(widget.startDateTime),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Center(
+                            child: Text(
+                              'Start',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.normal,
                               ),
-                            ],
+                            ),
                           ),
-                        ),
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 0, horizontal: 16),
+                            child: TextFormField(
+                              controller: startDateController,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                // labelText: 'Start Date',
+                              ),
+                              onTap: () {
+                                DatePicker.showDateTimePicker(
+                                  context,
+                                  showTitleActions: true,
+                                  minTime: DateTime.now(),
+                                  maxTime: DateTime(2100),
+                                  onChanged: (date) {},
+                                  onConfirm: (date) {
+                                    setState(() {
+                                      widget.startDateTime = date;
+                                      startDateController.text =
+                                          DateFormat('HH:mm dd MMM yy')
+                                              .format(date);
+
+                                      // Set the endDateTime as one hour after the startDateTime
+                                      widget.endDateTime =
+                                          date.add(Duration(hours: 1));
+                                      endDateController.text =
+                                          DateFormat('HH:mm dd MMM yy')
+                                              .format(widget.endDateTime);
+                                    });
+                                  },
+                                  currentTime: widget.startDateTime,
+                                  locale: LocaleType.en,
+                                );
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                     ),
+                    SizedBox(width: 8), // Adjust the spacing as desired
                     Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          padding:
-                              EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                DateFormat('HH:mm dd MMM yy')
-                                    .format(widget.endDateTime),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Center(
+                            child: Text(
+                              'End',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.normal,
                               ),
-                            ],
+                            ),
                           ),
-                        ),
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 0, horizontal: 16),
+                            child: TextFormField(
+                              controller: endDateController,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                // labelText: 'End Date',
+                              ),
+                              onTap: () {
+                                DatePicker.showDateTimePicker(
+                                  context,
+                                  showTitleActions: true,
+                                  minTime: DateTime.now(),
+                                  maxTime: DateTime(2100),
+                                  onChanged: (date) {},
+                                  onConfirm: (date) {
+                                    setState(() {
+                                      widget.endDateTime = date;
+                                      endDateController.text =
+                                          DateFormat('HH:mm dd MMM yy')
+                                              .format(date);
+                                    });
+                                  },
+                                  currentTime: widget.endDateTime,
+                                  locale: LocaleType.en,
+                                );
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -309,4 +389,11 @@ class _EditBookingState extends State<EditBooking> {
       ],
     );
   }
+}
+
+DateTime roundToNearest15Minutes(DateTime dateTime) {
+  final minutes = dateTime.minute;
+  final roundedMinutes = (minutes / 15).round() * 15;
+  return DateTime(dateTime.year, dateTime.month, dateTime.day, dateTime.hour,
+      roundedMinutes);
 }
