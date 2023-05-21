@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sparepark/screens/chat/chat_page.dart';
 import 'package:sparepark/screens/crud/bookings/create_booking.dart';
-import 'package:sparepark/screens/crud/bookings/homepage.dart';
+import 'package:sparepark/screens/crud/bookings/create_booking.dart';
 import 'package:sparepark/screens/mapscreens/directions_page.dart';
 import 'package:sparepark/shared/functions.dart';
 
@@ -247,7 +247,7 @@ class _ResultsPageState extends State<ResultsPage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => MyHomePage(
+                                      builder: (context) => Booking(
                                         startDateTime: widget.startdatetime,
                                         endDateTime: widget.enddatetime,
                                         cpsId: result[0],
