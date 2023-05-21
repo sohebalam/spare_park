@@ -168,17 +168,33 @@ class _AuthScreenState extends State<AuthScreen> {
           child: Column(
             children: [
               SizedBox(height: 80),
-              Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/parking.png'),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 180, // Adjust the width as needed
+                    height: 180, // Adjust the height as needed
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/parking.png'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
-                ),
-                child: SizedBox(
-                  width: 200,
-                  height: 200,
-                  child: Image.asset('assets/parking.png'),
-                ),
+                  SizedBox(height: 16), // Add space between the image and text
+                  Padding(
+                    padding: EdgeInsets.only(
+                        right: 15), // Adjust the left padding as needed
+                    child: Text(
+                      'Spare Park',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               SizedBox(height: 20),
               Column(
