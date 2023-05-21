@@ -130,12 +130,27 @@ class AuthService {
           'image': downloadUrl,
           'uid': userDoc.id
         });
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MapHome(),
-          ),
-        );
+        if (prior_page == 'map_home') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ResultsPage(
+                location: location!,
+                results: results!,
+                startdatetime: startdatetime!,
+                enddatetime: enddatetime!,
+              ),
+            ),
+          );
+        } else {
+          print('here nav');
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MapHome(),
+            ),
+          );
+        }
         return _userFromFirebase(credential.user);
       } catch (e) {
         print(e.toString());

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter_platform_interface/src/types/location.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sparepark/services/auth_service.dart';
 import 'package:provider/provider.dart';
@@ -10,7 +11,20 @@ import 'package:sparepark/shared/widgets/app_bar.dart';
 import 'package:sparepark/shared/widgets/errorMessage.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
+  final String? prior_page; // Added the prior_page property
+  final LatLng? location;
+  final List<List>? results;
+  final DateTime? startdatetime;
+  final DateTime? enddatetime;
+
+  const RegisterScreen({
+    Key? key,
+    this.prior_page,
+    this.location,
+    this.results,
+    this.startdatetime,
+    this.enddatetime,
+  }) : super(key: key);
 
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
@@ -27,7 +41,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? _errorMessage;
   bool submitted = false;
 
-  void _registerUser() async {
+  _registerUser() async {
     setState(() {
       submitted = true;
     });
@@ -50,7 +64,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       });
       return;
     }
-
     // try {
     final authService = Provider.of<AuthService>(context, listen: false);
 
@@ -61,7 +74,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         passwordController.text,
         _image!,
         nameController.text,
-        // You can also pass other parameters like image and name here
+        prior_page: widget.prior_page,
+        location: widget.location,
+        results: widget.results,
+        startdatetime: widget.startdatetime,
+        enddatetime: widget.enddatetime,
       );
       if (user != null) {
         // User created successfully, show a success message

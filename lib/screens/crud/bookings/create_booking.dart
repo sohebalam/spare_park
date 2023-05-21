@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_map_markers/custom_map_markers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,6 +11,7 @@ import 'dart:ui' as ui;
 import 'package:intl/intl.dart';
 import 'package:sparepark/models/booking_model.dart';
 import 'package:sparepark/screens/crud/bookings/payment.dart';
+import 'package:sparepark/shared/style/contstants.dart';
 
 class Booking extends StatefulWidget {
   Booking({
@@ -127,7 +127,7 @@ class _BookingState extends State<Booking> {
     final resizedBytes = await _loadImageData(widget.image);
     final customMarker = MarkerData(
       marker: marker,
-      child: _customMarker(resizedBytes, Colors.red),
+      child: _customMarker(resizedBytes, Constants().primaryColor),
     );
 
     setState(() {

@@ -251,26 +251,14 @@ class _AuthScreenState extends State<AuthScreen> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => RegisterScreen(
-                              // prior_page: widget.prior_page,
-                              // location: widget.location,
-                              // results: widget.results,
-                              // startdatetime: widget.startdatetime,
-                              // enddatetime: widget.enddatetime,
-                              ),
+                            prior_page: widget.prior_page,
+                            location: widget.location,
+                            results: widget.results,
+                            startdatetime: widget.startdatetime,
+                            enddatetime: widget.enddatetime,
+                          ),
                         ),
                       );
-
-                      // Navigator.pushNamed(
-                      //   context,
-                      //   '/register',
-                      //   arguments: {
-                      //     'prior_page': widget.prior_page,
-                      //     'location': widget.location,
-                      //     'results': widget.results,
-                      //     'startdatetime': widget.startdatetime,
-                      //     'enddatetime': widget.enddatetime,
-                      //   }, // Pass the prior_page argument as a Map
-                      // );
                     },
                     child: Text('Register'),
                   ),
