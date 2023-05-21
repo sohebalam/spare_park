@@ -13,6 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:google_maps_flutter/google_maps_flutter.dart' show Marker;
 
 DateTime roundToNearest15Minutes(DateTime dateTime) {
   final minutes = dateTime.minute;
@@ -127,9 +128,6 @@ class _BookingState extends State<Booking> {
     final data = response.bodyBytes;
     final ByteData byteData = ByteData.view(data.buffer);
     final Uint8List resizedBytes = await _resizeImage(byteData, 200, 150);
-
-    // final ByteData data = await rootBundle.load('assets/carpark1.jpg');
-    // final Uint8List resizedBytes = await _resizeImage(data, 200, 150);
 
     final BitmapDescriptor bitmapDescriptor =
         BitmapDescriptor.fromBytes(resizedBytes);
