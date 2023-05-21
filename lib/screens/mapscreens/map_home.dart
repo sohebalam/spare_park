@@ -226,8 +226,8 @@ class _MapHomeState extends State<MapHome> {
               markers: _markers,
             ),
       bottomSheet: Container(
-        padding: const EdgeInsets.all(8.0),
-        color: Colors.grey[300],
+        padding: const EdgeInsets.all(10.0),
+        color: Colors.white,
         height: MediaQuery.of(context).size.height / 3,
         child: Column(
           children: [
