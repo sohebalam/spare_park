@@ -204,7 +204,7 @@ class _EditBookingState extends State<EditBooking> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(6.0),
             child: Column(
               children: [
                 Row(
@@ -229,38 +229,45 @@ class _EditBookingState extends State<EditBooking> {
                             ),
                             padding: EdgeInsets.symmetric(
                                 vertical: 0, horizontal: 16),
-                            child: TextFormField(
-                              controller: startDateController,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                // labelText: 'Start Date',
-                              ),
-                              onTap: () {
-                                DatePicker.showDateTimePicker(
-                                  context,
-                                  showTitleActions: true,
-                                  minTime: DateTime.now(),
-                                  maxTime: DateTime(2100),
-                                  onChanged: (date) {},
-                                  onConfirm: (date) {
-                                    setState(() {
-                                      widget.startDateTime = date;
-                                      startDateController.text =
-                                          DateFormat('HH:mm dd MMM yy')
-                                              .format(date);
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: startDateController,
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      // labelText: 'Start Date',
+                                    ),
+                                    onTap: () {
+                                      DatePicker.showDateTimePicker(
+                                        context,
+                                        showTitleActions: true,
+                                        minTime: DateTime.now(),
+                                        maxTime: DateTime(2100),
+                                        onChanged: (date) {},
+                                        onConfirm: (date) {
+                                          setState(() {
+                                            widget.startDateTime = date;
+                                            startDateController.text =
+                                                DateFormat('HH:mm dd MMM yy')
+                                                    .format(date);
 
-                                      // Set the endDateTime as one hour after the startDateTime
-                                      widget.endDateTime =
-                                          date.add(Duration(hours: 1));
-                                      endDateController.text =
-                                          DateFormat('HH:mm dd MMM yy')
-                                              .format(widget.endDateTime);
-                                    });
-                                  },
-                                  currentTime: widget.startDateTime,
-                                  locale: LocaleType.en,
-                                );
-                              },
+                                            // Set the endDateTime as one hour after the startDateTime
+                                            widget.endDateTime =
+                                                date.add(Duration(hours: 1));
+                                            endDateController.text =
+                                                DateFormat('HH:mm dd MMM yy')
+                                                    .format(widget.endDateTime);
+                                          });
+                                        },
+                                        currentTime: widget.startDateTime,
+                                        locale: LocaleType.en,
+                                      );
+                                    },
+                                  ),
+                                ),
+                                Icon(Icons.keyboard_arrow_down),
+                              ],
                             ),
                           ),
                         ],
@@ -287,32 +294,37 @@ class _EditBookingState extends State<EditBooking> {
                             ),
                             padding: EdgeInsets.symmetric(
                                 vertical: 0, horizontal: 16),
-                            child: TextFormField(
-                              controller: endDateController,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                // labelText: 'End Date',
-                              ),
-                              onTap: () {
-                                DatePicker.showDateTimePicker(
-                                  context,
-                                  showTitleActions: true,
-                                  minTime: DateTime.now(),
-                                  maxTime: DateTime(2100),
-                                  onChanged: (date) {},
-                                  onConfirm: (date) {
-                                    setState(() {
-                                      widget.endDateTime = date;
-                                      endDateController.text =
-                                          DateFormat('HH:mm dd MMM yy')
-                                              .format(date);
-                                    });
+                            child: Row(children: [
+                              Expanded(
+                                child: TextFormField(
+                                  controller: endDateController,
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    // labelText: 'End Date',
+                                  ),
+                                  onTap: () {
+                                    DatePicker.showDateTimePicker(
+                                      context,
+                                      showTitleActions: true,
+                                      minTime: DateTime.now(),
+                                      maxTime: DateTime(2100),
+                                      onChanged: (date) {},
+                                      onConfirm: (date) {
+                                        setState(() {
+                                          widget.endDateTime = date;
+                                          endDateController.text =
+                                              DateFormat('HH:mm dd MMM yy')
+                                                  .format(date);
+                                        });
+                                      },
+                                      currentTime: widget.endDateTime,
+                                      locale: LocaleType.en,
+                                    );
                                   },
-                                  currentTime: widget.endDateTime,
-                                  locale: LocaleType.en,
-                                );
-                              },
-                            ),
+                                ),
+                              ),
+                              Icon(Icons.keyboard_arrow_down),
+                            ]),
                           ),
                         ],
                       ),
