@@ -211,9 +211,9 @@ class _MapHomeState extends State<MapHome> {
 
     return Scaffold(
       appBar: CustomAppBar(
-        title: 'Map',
-        isLoggedInStream: isLoggedInStream,
-      ),
+          title: 'Map',
+          isLoggedInStream: isLoggedInStream,
+          padding: EdgeInsets.fromLTRB(0, 0, 1, 0)),
       drawer: AppDrawer(),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
