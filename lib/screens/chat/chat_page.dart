@@ -111,45 +111,80 @@ class _ChatPageState extends State<ChatPage> {
                     topLeft: Radius.circular(25),
                     topRight: Radius.circular(25)),
               ),
-              child: StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection("users")
-                      .doc(widget.currentUserId)
-                      .collection('messages')
-                      .doc(widget.u_id)
-                      .collection('chats')
-                      .orderBy("date", descending: true)
-                      .snapshots(),
-                  builder: (context, AsyncSnapshot snapshot) {
-                    if (snapshot.hasData) {
-                      if (snapshot.data.docs.length < 1) {
-                        return Center(
-                          child: Text("Say Hi"),
-                        );
-                      }
-                      return ListView.builder(
-                        itemCount: snapshot.data.docs.length,
-                        reverse: true,
-                        physics: BouncingScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          bool isMe = snapshot.data.docs[index]['senderId'] ==
-                              widget.currentUserId;
-                          DateTime date =
-                              snapshot.data.docs[index]['date'].toDate();
-                          String datetime =
-                              DateFormat('MMM d, h:mm a').format(date);
-                          String message = snapshot.data.docs[index]['message'];
-                          return SingleMessage(
-                            friendName: _otherUserName,
-                            datetime: datetime,
-                            message: message,
-                            isMe: isMe,
-                          );
-                        },
-                      );
-                    }
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('messages')
+                    .orderBy('date',
+                        descending: !(widget.currentUserId == widget.u_id))
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
                     return Center(child: CircularProgressIndicator());
-                  }),
+                  }
+
+                  return ListView.builder(
+                    reverse: true,
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, index) {
+                      DocumentSnapshot message = snapshot.data!.docs[index];
+                      bool isCurrentUser =
+                          (message['senderId'] == widget.currentUserId);
+
+                      return ListTile(
+                        title: Text(
+                          message['message'],
+                          textAlign:
+                              isCurrentUser ? TextAlign.right : TextAlign.left,
+                        ),
+                        subtitle: Text(
+                          message['date'].toDate().toString(),
+                          textAlign:
+                              isCurrentUser ? TextAlign.right : TextAlign.left,
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+
+              // child: StreamBuilder(
+              //     stream: FirebaseFirestore.instance
+              //         .collection("messages")
+              //         .where('senderId', isEqualTo: widget.currentUserId)
+              //         .where('receiverId', isEqualTo: widget.u_id)
+              //         .orderBy("date", descending: true)
+              //         .snapshots(),
+              //     builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              //       if (snapshot.hasData) {
+              //         if (snapshot.data!.docs.isEmpty) {
+              //           return Center(
+              //             child: Text("Say Hi"),
+              //           );
+              //         }
+              //         return ListView.builder(
+              //           itemCount: snapshot.data!.docs.length,
+              //           reverse: true,
+              //           physics: BouncingScrollPhysics(),
+              //           itemBuilder: (context, index) {
+              //             bool isMe = snapshot.data!.docs[index]['senderId'] ==
+              //                 widget.currentUserId;
+              //             DateTime date =
+              //                 snapshot.data!.docs[index]['date'].toDate();
+              //             String datetime =
+              //                 DateFormat('MMM d, h:mm a').format(date);
+              //             String message =
+              //                 snapshot.data!.docs[index]['message'];
+              //             return SingleMessage(
+              //               friendName: _otherUserName,
+              //               datetime: datetime,
+              //               message: message,
+              //               isMe: isMe,
+              //             );
+              //           },
+              //         );
+              //       }
+              //       return Center(child: CircularProgressIndicator());
+              //     }),
             ),
           ),
           if (widget.currentUserId != null || widget.u_id != null)

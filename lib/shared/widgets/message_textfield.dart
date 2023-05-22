@@ -35,52 +35,65 @@ class _MessageTextFieldState extends State<MessageTextField> {
           ),
           IconButton(
             icon: Icon(Icons.send),
+            // onPressed: () async {
+            //   String message = _controller.text.trim();
+            //   if (message.isNotEmpty) {
+            //     _controller.clear();
+            //     await FirebaseFirestore.instance
+            //         .collection('users')
+            //         .doc(widget.currentId)
+            //         .collection('messages')
+            //         .doc(widget.friendId)
+            //         .collection('chats')
+            //         .add({
+            //       "senderId": widget.currentId,
+            //       "receiverId": widget.friendId,
+            //       "message": message,
+            //       "type": "text",
+            //       "date": DateTime.now(),
+            //     }).then((value) {
+            //       FirebaseFirestore.instance
+            //           .collection('users')
+            //           .doc(widget.currentId)
+            //           .collection('messages')
+            //           .doc(widget.friendId)
+            //           .set({
+            //         'last_msg': message,
+            //       });
+            //     });
+
+            //     await FirebaseFirestore.instance
+            //         .collection('users')
+            //         .doc(widget.friendId)
+            //         .collection('messages')
+            //         .doc(widget.currentId)
+            //         .collection("chats")
+            //         .add({
+            //       "senderId": widget.currentId,
+            //       "receiverId": widget.friendId,
+            //       "message": message,
+            //       "type": "text",
+            //       "date": DateTime.now(),
+            //     }).then((value) {
+            //       FirebaseFirestore.instance
+            //           .collection('users')
+            //           .doc(widget.friendId)
+            //           .collection('messages')
+            //           .doc(widget.currentId)
+            //           .set({"last_msg": message});
+            //     });
+            //   }
+            // },
             onPressed: () async {
               String message = _controller.text.trim();
               if (message.isNotEmpty) {
                 _controller.clear();
-                await FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(widget.currentId)
-                    .collection('messages')
-                    .doc(widget.friendId)
-                    .collection('chats')
-                    .add({
+                await FirebaseFirestore.instance.collection('messages').add({
                   "senderId": widget.currentId,
                   "receiverId": widget.friendId,
                   "message": message,
                   "type": "text",
                   "date": DateTime.now(),
-                }).then((value) {
-                  FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(widget.currentId)
-                      .collection('messages')
-                      .doc(widget.friendId)
-                      .set({
-                    'last_msg': message,
-                  });
-                });
-
-                await FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(widget.friendId)
-                    .collection('messages')
-                    .doc(widget.currentId)
-                    .collection("chats")
-                    .add({
-                  "senderId": widget.currentId,
-                  "receiverId": widget.friendId,
-                  "message": message,
-                  "type": "text",
-                  "date": DateTime.now(),
-                }).then((value) {
-                  FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(widget.friendId)
-                      .collection('messages')
-                      .doc(widget.currentId)
-                      .set({"last_msg": message});
                 });
               }
             },
