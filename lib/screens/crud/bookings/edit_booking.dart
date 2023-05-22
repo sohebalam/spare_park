@@ -23,13 +23,14 @@ class EditBooking extends StatefulWidget {
     required this.address,
     required this.startDateTime,
     required this.endDateTime,
-    required bookingId,
+    required this.bookingId,
   }) : super(key: key);
 
   final String cpsId;
   final String image;
   final String postcode;
   final String address;
+  final String bookingId;
   DateTime startDateTime;
   DateTime endDateTime;
 
@@ -56,46 +57,71 @@ class _EditBookingState extends State<EditBooking> {
     _fetchMarkerData();
   }
 
-  void onSubmit() async {
-    isLoading = true;
-    // Create a new booking model object
-    // Create a new booking model object
-    BookingModel booking = BookingModel(
-      b_id: '', // Set b_id as an empty string initially
-      p_id: widget.cpsId,
-      u_id: currentUser!.uid,
-      start_date_time: widget.startDateTime,
-      end_date_time: widget.endDateTime,
-      b_total: total,
-      reg_date: DateTime.now(),
-    );
+  void editBooking() async {
+    // Round the startDateTime and endDateTime to the nearest 15 minutes
+    final roundedStartDateTime = roundToNearest15Minutes(widget.startDateTime);
+    final roundedEndDateTime = roundToNearest15Minutes(widget.endDateTime);
+    print('herebefore');
 
-    // Add the booking to Firebase
-    final DocumentReference bookingRef = await FirebaseFirestore.instance
-        .collection('bookings')
-        .add(booking.toJson());
+    Future<void> checkBookingOverlap() async {
+      final QuerySnapshot bookingsSnapshot = await FirebaseFirestore.instance
+          .collection('bookings')
+          .where('p_id', isEqualTo: widget.cpsId)
+          .get();
 
-    // Update the b_id field with the actual booking ID assigned by Firebase
-    await bookingRef.update({'b_id': bookingRef.id});
+      final List<DocumentSnapshot> bookings = bookingsSnapshot.docs;
 
-    // Show a success message with the booking ID
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Booking ${bookingRef.id} created successfully'),
-      ),
-    );
-    final String bookingId = bookingRef.id;
+      print('here');
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Payment(
-          b_id: bookingId,
-          total: total,
-        ),
-      ),
-    );
-    isLoading = false;
+      // Loop through each booking and check for overlap
+      for (final booking in bookings) {
+        final DateTime existingStartDateTime =
+            booking['start_date_time'].toDate();
+        final DateTime existingEndDateTime = booking['end_date_time'].toDate();
+
+        if (roundedStartDateTime.isBefore(existingEndDateTime) &&
+            roundedEndDateTime.isAfter(existingStartDateTime)) {
+          // Overlapping booking found
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                  'There is already a booking with the given date and time.'),
+            ),
+          );
+          return; // Break out of the function
+        }
+      }
+
+      // No overlapping booking found, continue with booking process
+      // ... Your booking logic goes here ...
+      final QuerySnapshot bookingSnapshot = await FirebaseFirestore.instance
+          .collection('bookings')
+          .where('b_id', isEqualTo: widget.bookingId)
+          .limit(1)
+          .get();
+
+      if (bookingSnapshot.docs.isNotEmpty) {
+        final DocumentSnapshot bookingDoc = bookingSnapshot.docs.first;
+
+        // Update the booking fields
+        await bookingDoc.reference.update({
+          'start_date_time': roundedStartDateTime.toString(),
+          'end_date_time': roundedEndDateTime.toString(),
+          'b_total': total,
+          'reg_date': DateTime.now(),
+        });
+
+        // Show a success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Booking ${widget.bookingId} updated successfully'),
+          ),
+        );
+      }
+    }
+
+    // Call the checkBookingOverlap function to perform the overlap check
+    await checkBookingOverlap();
   }
 
   Future<void> _fetchMarkerData() async {
@@ -266,7 +292,35 @@ class _EditBookingState extends State<EditBooking> {
                                     },
                                   ),
                                 ),
-                                Icon(Icons.keyboard_arrow_down),
+                                GestureDetector(
+                                  onTap: () {
+                                    DatePicker.showDateTimePicker(
+                                      context,
+                                      showTitleActions: true,
+                                      minTime: DateTime.now(),
+                                      maxTime: DateTime(2100),
+                                      onChanged: (date) {},
+                                      onConfirm: (date) {
+                                        setState(() {
+                                          widget.startDateTime = date;
+                                          startDateController.text =
+                                              DateFormat('HH:mm dd MMM yy')
+                                                  .format(date);
+
+                                          // Set the endDateTime as one hour after the startDateTime
+                                          widget.endDateTime =
+                                              date.add(Duration(hours: 1));
+                                          endDateController.text =
+                                              DateFormat('HH:mm dd MMM yy')
+                                                  .format(widget.endDateTime);
+                                        });
+                                      },
+                                      currentTime: widget.startDateTime,
+                                      locale: LocaleType.en,
+                                    );
+                                  },
+                                  child: Icon(Icons.keyboard_arrow_down),
+                                ),
                               ],
                             ),
                           ),
@@ -294,37 +348,49 @@ class _EditBookingState extends State<EditBooking> {
                             ),
                             padding: EdgeInsets.symmetric(
                                 vertical: 0, horizontal: 16),
-                            child: Row(children: [
-                              Expanded(
-                                child: TextFormField(
-                                  controller: endDateController,
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    // labelText: 'End Date',
-                                  ),
-                                  onTap: () {
-                                    DatePicker.showDateTimePicker(
-                                      context,
-                                      showTitleActions: true,
-                                      minTime: DateTime.now(),
-                                      maxTime: DateTime(2100),
-                                      onChanged: (date) {},
-                                      onConfirm: (date) {
-                                        setState(() {
-                                          widget.endDateTime = date;
-                                          endDateController.text =
-                                              DateFormat('HH:mm dd MMM yy')
-                                                  .format(date);
-                                        });
-                                      },
-                                      currentTime: widget.endDateTime,
-                                      locale: LocaleType.en,
-                                    );
+                            child: GestureDetector(
+                              onTap: () {
+                                DatePicker.showDateTimePicker(
+                                  context,
+                                  showTitleActions: true,
+                                  minTime: DateTime.now(),
+                                  maxTime: DateTime(2100),
+                                  onChanged: (date) {},
+                                  onConfirm: (date) {
+                                    setState(() {
+                                      widget.endDateTime = date;
+                                      endDateController.text =
+                                          DateFormat('HH:mm dd MMM yy')
+                                              .format(date);
+                                    });
                                   },
-                                ),
+                                  currentTime: widget.endDateTime,
+                                  locale: LocaleType.en,
+                                );
+                              },
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: TextFormField(
+                                      controller: endDateController,
+                                      decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        // labelText: 'End Date',
+                                      ),
+                                      onTap: () {
+                                        showDateTimePicker(endDateController);
+                                      },
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      showDateTimePicker(endDateController);
+                                    },
+                                    child: Icon(Icons.keyboard_arrow_down),
+                                  ),
+                                ],
                               ),
-                              Icon(Icons.keyboard_arrow_down),
-                            ]),
+                            ),
                           ),
                         ],
                       ),
@@ -341,7 +407,7 @@ class _EditBookingState extends State<EditBooking> {
                 ),
                 SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: isLoading ? null : onSubmit,
+                  onPressed: isLoading ? null : editBooking,
                   child: Text('Submit Booking'),
                 ),
               ],
@@ -399,6 +465,24 @@ class _EditBookingState extends State<EditBooking> {
           ),
         ),
       ],
+    );
+  }
+
+  void showDateTimePicker(TextEditingController controller) {
+    DatePicker.showDateTimePicker(
+      context,
+      showTitleActions: true,
+      minTime: DateTime.now(),
+      maxTime: DateTime(2100),
+      onChanged: (date) {},
+      onConfirm: (date) {
+        setState(() {
+          widget.endDateTime = date;
+          controller.text = DateFormat('HH:mm dd MMM yy').format(date);
+        });
+      },
+      currentTime: widget.endDateTime,
+      locale: LocaleType.en,
     );
   }
 }
