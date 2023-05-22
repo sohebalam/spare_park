@@ -127,21 +127,28 @@ class _ChatPageState extends State<ChatPage> {
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
                       DocumentSnapshot message = snapshot.data!.docs[index];
+                      String datetime = DateFormat('MMM d, h:mm a')
+                          .format(message['date'].toDate());
                       bool isCurrentUser =
                           (message['senderId'] == widget.currentUserId);
-
-                      return ListTile(
-                        title: Text(
-                          message['message'],
-                          textAlign:
-                              isCurrentUser ? TextAlign.right : TextAlign.left,
-                        ),
-                        subtitle: Text(
-                          message['date'].toDate().toString(),
-                          textAlign:
-                              isCurrentUser ? TextAlign.right : TextAlign.left,
-                        ),
+                      return SingleMessage(
+                        friendName: _otherUserName,
+                        datetime: datetime,
+                        message: message['message'],
+                        isMe: isCurrentUser,
                       );
+                      // return ListTile(
+                      //   title: Text(
+                      //     message['message'],
+                      //     textAlign:
+                      //         isCurrentUser ? TextAlign.right : TextAlign.left,
+                      //   ),
+                      //   subtitle: Text(
+                      //     message['date'].toDate().toString(),
+                      //     textAlign:
+                      //         isCurrentUser ? TextAlign.right : TextAlign.left,
+                      //   ),
+                      // );
                     },
                   );
                 },
