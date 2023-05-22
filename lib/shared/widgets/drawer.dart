@@ -39,28 +39,24 @@ class _AppDrawerState extends State<AppDrawer> {
   String userPhoto = '';
   late Stream<bool> isLoggedInStream;
 
-  Future<void> getMessageCount() async {
-    print("Finding messages for current user");
+  Future<int> countReceivedChats(String userId) async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('messages')
+        .get();
 
-    if (currentUser == null) {
-      print("Current user is null");
-      return;
+    int totalCount = 0;
+
+    for (final doc in querySnapshot.docs) {
+      final chatSnapshot = await doc.reference.collection('chats').get();
+      final receivedChats = chatSnapshot.docs
+          .where((chat) => chat['receiverId'] == userId)
+          .toList();
+      totalCount += receivedChats.length;
     }
 
-    Stream<int> messageCountStream() {
-      return FirebaseFirestore.instance
-          .collection('users')
-          .doc(currentUser!.uid)
-          .collection('messages')
-          .snapshots()
-          .map((snapshot) => snapshot.docs.length);
-    }
-
-    messageCountStream().listen((count) {
-      setState(() {
-        messageCount = count;
-      });
-    });
+    return totalCount;
   }
 
   @override
@@ -85,7 +81,21 @@ class _AppDrawerState extends State<AppDrawer> {
         .snapshots();
 
     if (currentUser != null) {
+      countReceivedChats(currentUser!.uid);
       retrieveUserData();
+    }
+  }
+
+  Future<void> getMessageCount() async {
+    print("Finding messages for current user");
+    if (currentUser != null) {
+      int count = await countReceivedChats(
+        currentUser!.uid,
+      );
+
+      setState(() {
+        messageCount = count;
+      });
     }
   }
 

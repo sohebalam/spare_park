@@ -6,6 +6,7 @@ import 'package:google_maps_flutter_platform_interface/src/types/location.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sparepark/services/auth_service.dart';
 import 'package:provider/provider.dart';
+import 'package:sparepark/shared/style/contstants.dart';
 import 'package:sparepark/shared/widgets/TextField.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
 import 'package:sparepark/shared/widgets/errorMessage.dart';
@@ -210,9 +211,33 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(
                 height: 16.0,
               ),
-              TextButton(
-                onPressed: _getImage,
-                child: const Text('Select an image'),
+              // TextButton(
+              //   onPressed: _getImage,
+              //   child: const Text('Select an image'),
+              // ),
+              GestureDetector(
+                onTap: _getImage,
+                child: Container(
+                  height: 50.0,
+                  decoration: BoxDecoration(
+                    color: Constants().tertiaryColor,
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.camera_alt,
+                        color: Colors.white,
+                      ),
+                      SizedBox(width: 8.0),
+                      Text(
+                        'Select Image',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
               ),
               const SizedBox(
                 height: 16.0,
@@ -233,9 +258,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               if (_isLoading) Center(child: CircularProgressIndicator()),
               buildErrorMessage(context, _errorMessage),
-              ElevatedButton(
-                onPressed: _isLoading ? null : _registerUser,
-                child: const Text('Register'),
+              // ElevatedButton(
+              //   onPressed: _isLoading ? null : _registerUser,
+              //   child: const Text('Register'),
+              // ),
+              Container(
+                height: 40.0,
+                width: double.infinity, // Span the button across the screen
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : _registerUser,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Constants()
+                        .primaryColor, // Set a different color for the button
+                  ),
+                  child: const Text('Register'),
+                ),
               ),
             ],
           ),

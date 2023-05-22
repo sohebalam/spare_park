@@ -10,6 +10,7 @@ import 'package:sparepark/screens/auth/register_screen.dart';
 import 'package:sparepark/screens/mapscreens/map_home.dart';
 import 'package:sparepark/screens/mapscreens/results_page.dart';
 import 'package:sparepark/services/auth_service.dart';
+import 'package:sparepark/shared/style/contstants.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
 import 'package:sparepark/shared/widgets/drawer.dart';
 
@@ -220,6 +221,10 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   SizedBox(height: 20),
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Constants()
+                          .primaryColor, // Set a different color for the button
+                    ),
                     onPressed: () {
                       if (emailController.text.length > 6 &&
                           passwordController.text.length > 6) {
@@ -243,7 +248,9 @@ class _AuthScreenState extends State<AuthScreen> {
                         );
                       }
                     },
-                    child: Text('Login'),
+                    child: Text(
+                      'Login',
+                    ),
                   ),
                   TextButton(
                     onPressed: () {
@@ -260,7 +267,10 @@ class _AuthScreenState extends State<AuthScreen> {
                         ),
                       );
                     },
-                    child: Text('Register'),
+                    child: Text('Register',
+                        style: TextStyle(
+                          color: Constants().primaryColor,
+                        )),
                   ),
                 ],
               ),
