@@ -146,45 +146,6 @@ class _ChatPageState extends State<ChatPage> {
                   );
                 },
               ),
-
-              // child: StreamBuilder(
-              //     stream: FirebaseFirestore.instance
-              //         .collection("messages")
-              //         .where('senderId', isEqualTo: widget.currentUserId)
-              //         .where('receiverId', isEqualTo: widget.u_id)
-              //         .orderBy("date", descending: true)
-              //         .snapshots(),
-              //     builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              //       if (snapshot.hasData) {
-              //         if (snapshot.data!.docs.isEmpty) {
-              //           return Center(
-              //             child: Text("Say Hi"),
-              //           );
-              //         }
-              //         return ListView.builder(
-              //           itemCount: snapshot.data!.docs.length,
-              //           reverse: true,
-              //           physics: BouncingScrollPhysics(),
-              //           itemBuilder: (context, index) {
-              //             bool isMe = snapshot.data!.docs[index]['senderId'] ==
-              //                 widget.currentUserId;
-              //             DateTime date =
-              //                 snapshot.data!.docs[index]['date'].toDate();
-              //             String datetime =
-              //                 DateFormat('MMM d, h:mm a').format(date);
-              //             String message =
-              //                 snapshot.data!.docs[index]['message'];
-              //             return SingleMessage(
-              //               friendName: _otherUserName,
-              //               datetime: datetime,
-              //               message: message,
-              //               isMe: isMe,
-              //             );
-              //           },
-              //         );
-              //       }
-              //       return Center(child: CircularProgressIndicator());
-              //     }),
             ),
           ),
           if (widget.currentUserId != null || widget.u_id != null)
