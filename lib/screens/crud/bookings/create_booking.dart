@@ -88,6 +88,8 @@ class _BookingState extends State<Booking> {
       context,
       MaterialPageRoute(
         builder: (context) => Payment(
+          address: widget.address,
+          postcode: widget.postcode,
           b_id: bookingId,
           total: total,
         ),

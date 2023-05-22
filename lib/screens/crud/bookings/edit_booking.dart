@@ -105,8 +105,8 @@ class _EditBookingState extends State<EditBooking> {
 
         // Update the booking fields
         await bookingDoc.reference.update({
-          'start_date_time': roundedStartDateTime.toString(),
-          'end_date_time': roundedEndDateTime.toString(),
+          'start_date_time': roundedStartDateTime,
+          'end_date_time': roundedEndDateTime,
           'b_total': total,
           'reg_date': DateTime.now(),
         });

@@ -12,11 +12,15 @@ import 'package:sparepark/shared/widgets/app_bar.dart';
 class Payment extends StatefulWidget {
   final String b_id;
   final double total;
+  final String address;
+  final String postcode;
 
   const Payment({
     Key? key,
     required this.b_id,
     required this.total,
+    required this.address,
+    required this.postcode,
   }) : super(key: key);
 
   @override
@@ -40,7 +44,16 @@ class _PaymentState extends State<Payment> {
           children: [
             Center(
               child: Text(
-                '£${widget.total}',
+                '${widget.address}',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Center(
+              child: Text(
+                '${widget.postcode}',
                 style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
@@ -49,18 +62,40 @@ class _PaymentState extends State<Payment> {
             ),
             SizedBox(height: 16),
             Center(
-              child: TextButton(
-                child: Text(
-                  'Make Payment',
-                  style: TextStyle(
-                    color: Constants().primaryColor,
-                    fontWeight: FontWeight.bold,
-                  ),
+              child: Text(
+                '£${widget.total}',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+            Center(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Constants().primaryColor,
                 ),
                 onPressed: () async {
                   await makePayment();
                 },
+                child: Text('Make Payment'),
               ),
+
+              // child: ElevatedButton(
+              //   style: ButtonStyle(backgroundColor: Constants().primaryColor),
+              //   child: Text(
+              //     'Make Payment',
+              //     style: TextStyle(
+              //       color: Constants().primaryColor,
+              //       fontWeight: FontWeight.bold,
+              //     ),
+              //   ),
+              //   onPressed: () async {
+              //     await makePayment();
+              //   },
+              // ),
             ),
           ],
         ));

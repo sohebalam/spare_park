@@ -85,16 +85,16 @@ class _ViewBookingState extends State<ViewBooking> {
     );
     final String bookingId = bookingRef.id;
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Payment(
-          b_id: bookingId,
-          total: total,
-        ),
-      ),
-    );
-    isLoading = false;
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => Payment(
+    //       b_id: bookingId,
+    //       total: total,
+    //     ),
+    //   ),
+    // );
+    // isLoading = false;
   }
 
   Future<void> _fetchMarkerData() async {
