@@ -272,17 +272,24 @@ class _EditParkingSpaceState extends State<EditParkingSpace> {
                                         child: Container(
                                           height: 40.0,
                                           decoration: BoxDecoration(
-                                            color: Colors.grey[200],
+                                            color: Constants().tertiaryColor,
                                             borderRadius:
-                                                BorderRadius.circular(8.0),
+                                                BorderRadius.circular(4.0),
                                           ),
                                           child: Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: [
-                                              Icon(Icons.camera_alt),
+                                              Icon(
+                                                Icons.camera_alt,
+                                                color: Colors.white,
+                                              ),
                                               SizedBox(width: 8.0),
-                                              Text('Change Image'),
+                                              Text(
+                                                'Select Image',
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ),
                                             ],
                                           ),
                                         ),

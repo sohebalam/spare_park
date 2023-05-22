@@ -13,6 +13,7 @@ import 'package:sparepark/shared/carpark_space_db_helper.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:auth_buttons/auth_buttons.dart';
 import 'package:sparepark/shared/functions.dart';
+import 'package:sparepark/shared/style/contstants.dart';
 import 'package:sparepark/shared/widgets/loginDialog.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
 
@@ -385,9 +386,33 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
                 SizedBox(
                   height: 16.0,
                 ),
-                TextButton(
-                  onPressed: _getImage,
-                  child: Text('Select an image'),
+                // TextButton(
+                //   onPressed: _getImage,
+                //   child: Text('Select an image'),
+                // ),
+                GestureDetector(
+                  onTap: _getImage,
+                  child: Container(
+                    height: 50.0,
+                    decoration: BoxDecoration(
+                      color: Constants().tertiaryColor,
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.camera_alt,
+                          color: Colors.white,
+                        ),
+                        SizedBox(width: 8.0),
+                        Text(
+                          'Select Image',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
                 SizedBox(
                   height: 16.0,
@@ -407,13 +432,15 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
                   height: 16.0,
                 ),
                 if (_isLoading) Center(child: CircularProgressIndicator()),
-                Center(
-                  child: AbsorbPointer(
-                    absorbing: _isLoading,
-                    child: ElevatedButton(
-                      onPressed: _isLoading ? null : _submitForm,
-                      child: Text('Submit'),
+                Container(
+                  width: double.infinity, // Span the button across the screen
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : _submitForm,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Constants()
+                          .primaryColor, // Set a different color for the button
                     ),
+                    child: Text('Submit'),
                   ),
                 ),
               ],

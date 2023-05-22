@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:sparepark/services/auth_service.dart';
+import 'package:sparepark/shared/style/contstants.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
 
 class UserProfilePage extends StatefulWidget {
@@ -142,6 +143,10 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     ElevatedButton(
                       onPressed: canDelete ? deleteUser : null,
                       child: Text('Delete Account'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Constants()
+                            .primaryColor, // Set a different color for the button
+                      ),
                     ),
                     if (canDelete == false)
                       Padding(

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,7 @@ class _AppDrawerState extends State<AppDrawer> {
   late Stream<QuerySnapshot> _ParkingStream;
   late Stream<QuerySnapshot> _ReviewStream;
   String userName = '';
+  String userPhoto = '';
   late Stream<bool> isLoggedInStream;
 
   Future<void> getMessageCount() async {
@@ -83,7 +85,7 @@ class _AppDrawerState extends State<AppDrawer> {
         .snapshots();
 
     if (currentUser != null) {
-      retrieveUserName();
+      retrieveUserData();
     }
   }
 
@@ -94,7 +96,7 @@ class _AppDrawerState extends State<AppDrawer> {
         .snapshots();
   }
 
-  Future<void> retrieveUserName() async {
+  Future<void> retrieveUserData() async {
     if (currentUser!.providerData[0].providerId == 'password') {
       // Custom user login, retrieve the user document
       final userDoc = await FirebaseFirestore.instance
@@ -102,15 +104,17 @@ class _AppDrawerState extends State<AppDrawer> {
           .doc(currentUser!.uid)
           .get();
 
-      // Get the value of the 'name' field from the user document
+      // Get the value of the 'name' and 'image' fields from the user document
       final userData = userDoc.data() as Map<String, dynamic>?;
       setState(() {
         userName = userData?['name'] ?? '';
+        userPhoto = userData?['image'] ?? '';
       });
     } else {
       // Social login, use 'displayName' field
       setState(() {
         userName = currentUser!.displayName ?? '';
+        userPhoto = currentUser!.photoURL ?? '';
       });
     }
   }
@@ -131,10 +135,32 @@ class _AppDrawerState extends State<AppDrawer> {
             child: StreamBuilder<bool>(
               stream: isLoggedInStream,
               builder: (context, snapshot) {
-                if (snapshot.hasData && snapshot.data!) {
-                  return Text('$userName');
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child:
+                        CircularProgressIndicator(), // Replace with your loading spinner widget
+                  );
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else if (snapshot.data == true) {
+                  return Center(
+                    child: Column(
+                      children: [
+                        CircleAvatar(
+                          radius: 45,
+                          backgroundImage: NetworkImage(userPhoto ?? ''),
+                        ),
+                        SizedBox(height: 15),
+                        Text(
+                          '$userName',
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  return Text('');
                 }
-                return Text('');
               },
             ),
           ),

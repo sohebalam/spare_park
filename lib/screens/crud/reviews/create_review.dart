@@ -3,9 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'dart:convert';
 
 import 'package:sparepark/models/review_model.dart';
+import 'package:sparepark/services/auth_service.dart';
+import 'package:sparepark/shared/style/contstants.dart';
+import 'package:sparepark/shared/widgets/app_bar.dart';
 
 class ReviewPage extends StatefulWidget {
   final String b_id;
@@ -34,10 +38,10 @@ class _ReviewPageState extends State<ReviewPage> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+    final isLoggedInStream = authService.user!.map((user) => user != null);
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Review'),
-      ),
+      appBar: CustomAppBar(title: 'Review', isLoggedInStream: isLoggedInStream),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -123,6 +127,10 @@ class _ReviewPageState extends State<ReviewPage> {
                             }
                           },
                           child: Text('Submit'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Constants()
+                                .primaryColor, // Set a different color for the button
+                          ),
                         ),
                         width: double.infinity,
                       ),

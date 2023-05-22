@@ -1,73 +1,61 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
+import 'package:sparepark/screens/auth/auth_screen.dart';
 import 'package:sparepark/screens/chat/chat_page.dart';
 import 'package:sparepark/services/auth_service.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
+// import 'package:sparepark/chat_screen.dart';
+// import 'package:sparepark/models/user_model.dart';
 
-// class ChatList extends StatelessWidget {
-//   User? currentUser = FirebaseAuth.instance.currentUser;
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Messages List'),
-//       ),
-//       body: StreamBuilder<QuerySnapshot>(
-//         stream: FirebaseFirestore.instance.collection('messages').snapshots(),
-//         builder: (context, snapshot) {
-//           if (!snapshot.hasData) {
-//             return Center(child: CircularProgressIndicator());
-//           }
+class ChatList extends StatefulWidget {
+  @override
+  _ChatListState createState() => _ChatListState();
+}
 
-//           // Group messages by receiverId
-//           Map<String, List<DocumentSnapshot>> conversations = {};
-//           List<DocumentSnapshot> messages = snapshot.data!.docs;
-//           for (DocumentSnapshot message in messages) {
-//             String receiverId = message['receiverId'];
-//             if (!conversations.containsKey(receiverId)) {
-//               conversations[receiverId] = [];
-//             }
-//             conversations[receiverId]!.add(message);
-//           }
+class _ChatListState extends State<ChatList> {
+  late User? currentUser;
+  bool isLoading = false;
 
-//           // Build conversation list
-//           List<Widget> conversationList = conversations.keys.map((receiverId) {
-//             List<DocumentSnapshot> conversationMessages =
-//                 conversations[receiverId]!;
-//             DocumentSnapshot lastMessage = conversationMessages.last;
+  @override
+  void initState() {
+    super.initState();
+    // Get the current user when the widget is first created
+    currentUser = FirebaseAuth.instance.currentUser;
+  }
 
-//             return ListTile(
-//               title: Text(receiverId),
-//               subtitle: Text(lastMessage['message']),
+  Future<void> getMessageCount() async {
+    print("Finding messages for current user");
 
-//               onTap: () {
-//                 // Navigate to the conversation page with the given receiverId
-//                 Navigator.push(
-//                   context,
-//                   MaterialPageRoute(
-//                     builder: (context) => ChatPage(
-//                       currentUserId: receiverId,
-//                       u_id: currentUser!.uid,
-//                     ),
-//                   ),
-//                 );
-//               },
-//             );
-//           }).toList();
+    if (currentUser == null) {
+      print("Current user is null");
+      return;
+    }
 
-//           return ListView(
-//             children: conversationList,
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }
-class ChatList extends StatelessWidget {
-  User? currentUser = FirebaseAuth.instance.currentUser;
+    setState(() {
+      isLoading = true;
+    });
+
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(currentUser!.uid)
+        .collection("messages")
+        .doc(currentUser!.uid)
+        .collection("chats")
+        .get();
+
+    List<String> messages = [];
+    snapshot.docs.forEach((doc) {
+      messages.add(doc['message']);
+    });
+
+    setState(() {
+      isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,91 +64,84 @@ class ChatList extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(
           title: 'Conversations', isLoggedInStream: isLoggedInStream),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('messages').snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(currentUser!.uid)
+            .collection('messages')
+            .snapshots(),
+        builder: (context, AsyncSnapshot snapshot) {
+          if (isLoading) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
           }
-
-          // Group messages by receiverId
-          Map<String, List<DocumentSnapshot>> conversations = {};
-          List<DocumentSnapshot> messages = snapshot.data!.docs;
-          for (DocumentSnapshot message in messages) {
-            String receiverId = message['receiverId'];
-            if (!conversations.containsKey(receiverId)) {
-              conversations[receiverId] = [];
+          if (snapshot.hasData) {
+            if (snapshot.data.docs.length < 1) {
+              return Center(
+                child: Text("No Chats Available !"),
+              );
             }
-            conversations[receiverId]!.add(message);
-          }
-
-          // Build conversation list
-          List<Widget> conversationList = conversations.keys.map((receiverId) {
-            List<DocumentSnapshot> conversationMessages =
-                conversations[receiverId]!;
-            DocumentSnapshot lastMessage = conversationMessages.last;
-
-            return FutureBuilder(
-              future: FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(receiverId)
-                  .get(),
-              builder:
-                  (context, AsyncSnapshot<DocumentSnapshot> asyncSnapshot) {
-                if (asyncSnapshot.hasData) {
-                  var friend =
-                      asyncSnapshot.data!.data() as Map<String, dynamic>;
-                  return ListTile(
-                    leading: ClipRRect(
-                      borderRadius: BorderRadius.circular(80),
-                      child: CachedNetworkImage(
-                        imageUrl: friend['image'] as String,
-                        placeholder: (context, url) =>
-                            CircularProgressIndicator(),
-                        errorWidget: (context, url, error) => Icon(
-                          Icons.error,
-                        ),
-                        height: 50,
-                      ),
-                    ),
-                    title: Text(friend['name'] as String),
-                    subtitle: Container(
-                      child: Text(
-                        lastMessage['message'] as String,
-                        style: TextStyle(color: Colors.grey),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                    ),
-                    onTap: () {
-                      // Navigate to the conversation page with the given receiverId
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ChatPage(
-                            currentUserId: currentUser!.uid,
-                            u_id: receiverId,
+            return ListView.builder(
+              itemCount: snapshot.data.docs.length,
+              itemBuilder: (context, index) {
+                var friendId = snapshot.data.docs[index].id;
+                var lastMsg = snapshot.data.docs[index]['last_msg'];
+                return FutureBuilder(
+                  future: FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(friendId)
+                      .get(),
+                  builder: (context, AsyncSnapshot asyncSnapshot) {
+                    if (asyncSnapshot.hasData) {
+                      var friend = asyncSnapshot.data;
+                      return ListTile(
+                        leading: Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: CachedNetworkImageProvider(
+                                  friend['image'] as String),
+                            ),
                           ),
                         ),
+                        title: Text(friend['name']),
+                        subtitle: Container(
+                          child: Text(
+                            "$lastMsg",
+                            style: TextStyle(color: Colors.grey),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ChatPage(
+                                u_id: friend.id,
+                                currentUserId: currentUser!.uid,
+                                // friend: User.fromSnapshot(friend),
+                              ),
+                            ),
+                          );
+                        },
                       );
-                    },
-                  );
-                } else if (asyncSnapshot.hasError) {
-                  return ListTile(
-                    title: Text('Error loading data'),
-                  );
-                } else {
-                  return ListTile(
-                    title: Text('Loading...'),
-                  );
-                }
+                    } else {
+                      return Container();
+                    }
+                  },
+                );
               },
             );
-          }).toList();
-
-          return ListView(
-            children: conversationList,
-          );
+          } else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
         },
       ),
     );
