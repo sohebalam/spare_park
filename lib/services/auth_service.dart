@@ -12,25 +12,26 @@ import 'package:sparepark/screens/mapscreens/results_page.dart';
 
 class AuthService {
   final auth.FirebaseAuth _firebaseAuth = auth.FirebaseAuth.instance;
-  final StreamController<User?> _userController = StreamController<User?>();
+  final StreamController<UserModel?> _userController =
+      StreamController<UserModel?>();
 
-  Future<void> disconnect() async {
+  Future<void> disconnect(BuildContext context) async {
     await _firebaseAuth.signOut();
     _userController.add(null);
   }
 
-  User? _userFromFirebase(auth.User? user) {
+  UserModel? _userFromFirebase(auth.User? user) {
     if (user == null) {
       return null;
     }
-    return User(uid: user.uid, email: user.email ?? "");
+    return UserModel(uid: user.uid, email: user.email ?? "");
   }
 
-  Stream<User?>? get user {
+  Stream<UserModel?>? get user {
     return _firebaseAuth.authStateChanges().map(_userFromFirebase);
   }
 
-  Future<User?> signInWithEmailAndPassword(
+  Future<UserModel?> signInWithEmailAndPassword(
       BuildContext context, String email, String password,
       {String? prior_page,
       LatLng? location,
@@ -91,7 +92,7 @@ class AuthService {
     return emailRegex.hasMatch(email);
   }
 
-  Future<User?> createUserWithEmailAndPassword(
+  Future<UserModel?> createUserWithEmailAndPassword(
     BuildContext context,
     String email,
     String password,

@@ -174,12 +174,24 @@ class _AppDrawerState extends State<AppDrawer> {
               },
             ),
           ),
+          ListTile(
+            title: const Text('Home'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MapHome(),
+                ),
+              );
+            },
+          ),
           StreamBuilder<bool>(
             stream: isLoggedInStream,
             builder: (context, snapshot) {
               if (snapshot.hasData && snapshot.data!) {
                 return const Text('');
               }
+
               return ListTile(
                 title: const Text('Login'),
                 onTap: () {

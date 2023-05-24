@@ -211,10 +211,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(
                 height: 16.0,
               ),
-              // TextButton(
-              //   onPressed: _getImage,
-              //   child: const Text('Select an image'),
-              // ),
+
               GestureDetector(
                 onTap: _getImage,
                 child: Container(

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'dart:typed_data';
@@ -5,11 +6,16 @@ import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:sparepark/models/user_model.dart';
 import 'package:sparepark/screens/chat/chat_page.dart';
 import 'package:sparepark/screens/crud/bookings/create_booking.dart';
 import 'package:sparepark/screens/crud/bookings/create_booking.dart';
 import 'package:sparepark/screens/mapscreens/directions_page.dart';
+import 'package:sparepark/services/auth_service.dart';
 import 'package:sparepark/shared/functions.dart';
+import 'package:sparepark/shared/widgets/app_bar.dart';
+import 'package:sparepark/shared/widgets/drawer.dart';
 
 class ResultsPage extends StatefulWidget {
   final LatLng location;
@@ -51,34 +57,16 @@ class _ResultsPageState extends State<ResultsPage> {
     filteredResults = removeDuplicates(widget.results);
     FirebaseAuth.instance.authStateChanges().listen((user) {
       setState(() {
-        _currentUser = user;
-        _currentUserId = _currentUser!.uid;
+        // _currentUser = user;
+        if (user != null) {
+          _currentUser = user;
+          _currentUserId = _currentUser!.uid;
+        } else {
+          _currentUser = null;
+          _currentUserId = '';
+        }
       });
-      print('Currently logged in user: ${user?.uid}');
-      print('Currently logged in user: ${user?.uid}');
     });
-
-    // WidgetsBinding.instance?.addPostFrameCallback((_) {
-    //   final mostNortheastSpace = widget.results.reduce((curr, next) =>
-    //       curr[1] > next[1] || (curr[1] == next[1] && curr[2] > next[2])
-    //           ? curr
-    //           : next);
-
-    //   final mostSouthwestSpace = widget.results.reduce((curr, next) =>
-    //       curr[1] < next[1] || (curr[1] == next[1] && curr[2] < next[2])
-    //           ? curr
-    //           : next);
-
-    //   controller?.animateCamera(
-    //     CameraUpdate.newLatLngBounds(
-    //       LatLngBounds(
-    //         northeast: LatLng(mostNortheastSpace[1], mostNortheastSpace[2]),
-    //         southwest: LatLng(mostSouthwestSpace[1], mostSouthwestSpace[2]),
-    //       ),
-    //       100.0,
-    //     ),
-    //   );
-    // });
   }
 
   List<List<dynamic>> removeDuplicates(List<List<dynamic>> list) {
@@ -172,8 +160,14 @@ class _ResultsPageState extends State<ResultsPage> {
   @override
   Widget build(BuildContext context) {
     // print('results: ${widget.results}');
-
+    final authService = Provider.of<AuthService>(context);
+    final isLoggedInStream = authService.user!.map((user) => user != null);
     return Scaffold(
+      drawer: AppDrawer(),
+      appBar: CustomAppBar(
+          title: 'Map',
+          isLoggedInStream: isLoggedInStream,
+          padding: EdgeInsets.fromLTRB(0, 0, 1, 0)),
       body: Column(
         children: [
           Expanded(
