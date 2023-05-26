@@ -43,6 +43,7 @@ class _AuthScreenState extends State<AuthScreen> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  bool _obscureText = true;
 
   Future<void> signInFunction(
     BuildContext context,
@@ -215,8 +216,23 @@ class _AuthScreenState extends State<AuthScreen> {
                     child: TextField(
                       controller: passwordController,
                       decoration: InputDecoration(
-                        labelText: "Password",
-                      ),
+                          labelText: "Password",
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscureText
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: _obscureText
+                                  ? Colors.grey
+                                  : Constants().primaryColor,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _obscureText = !_obscureText;
+                              });
+                            },
+                          )),
+                      obscureText: _obscureText,
                     ),
                   ),
                   SizedBox(height: 20),

@@ -41,6 +41,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? _error;
   String? _errorMessage;
   bool submitted = false;
+  bool _obscureText = true;
 
   _registerUser() async {
     setState(() {
@@ -199,13 +200,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextField(
+                  obscureText: _obscureText,
                   controller: passwordController,
                   decoration: InputDecoration(
-                    labelText: 'Password',
-                    errorText: !submitted || passwordController.text.isNotEmpty
-                        ? null
-                        : 'Please enter your password.',
-                  ),
+                      labelText: 'Password',
+                      errorText:
+                          !submitted || passwordController.text.isNotEmpty
+                              ? null
+                              : 'Please enter your password.',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureText
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: _obscureText
+                              ? Colors.grey
+                              : Constants().primaryColor,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureText = !_obscureText;
+                          });
+                        },
+                      )),
                 ),
               ),
               const SizedBox(

@@ -189,7 +189,7 @@ class _AppDrawerState extends State<AppDrawer> {
             stream: isLoggedInStream,
             builder: (context, snapshot) {
               if (snapshot.hasData && snapshot.data!) {
-                return const Text('');
+                return Container();
               }
 
               return ListTile(

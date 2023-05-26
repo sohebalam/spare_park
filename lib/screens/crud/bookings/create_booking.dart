@@ -9,9 +9,13 @@ import 'package:http/http.dart' as http;
 import 'dart:ui' as ui;
 
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:sparepark/models/booking_model.dart';
 import 'package:sparepark/screens/crud/bookings/payment.dart';
+import 'package:sparepark/services/auth_service.dart';
 import 'package:sparepark/shared/style/contstants.dart';
+import 'package:sparepark/shared/widgets/app_bar.dart';
+import 'package:sparepark/shared/widgets/drawer.dart';
 
 class Booking extends StatefulWidget {
   Booking({
@@ -164,7 +168,13 @@ class _BookingState extends State<Booking> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+    final isLoggedInStream = authService.user?.map((user) => user != null);
     return Scaffold(
+      appBar: CustomAppBar(
+          title: 'Booking',
+          isLoggedInStream: isLoggedInStream ?? Stream<bool>.empty()),
+      drawer: AppDrawer(),
       body: Column(
         children: [
           Expanded(
@@ -248,11 +258,16 @@ class _BookingState extends State<Booking> {
                     fontSize: 24,
                   ),
                 ),
-                SizedBox(height: 16),
+                SizedBox(height: 14),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Constants()
+                        .primaryColor, // Set a different color for the button
+                  ),
                   onPressed: isLoading ? null : onSubmit,
                   child: Text('Submit Booking'),
                 ),
+                SizedBox(height: 10),
               ],
             ),
           ),
