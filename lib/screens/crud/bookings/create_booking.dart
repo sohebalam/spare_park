@@ -135,10 +135,11 @@ class _BookingState extends State<Booking> {
       marker: marker,
       child: _customMarker(resizedBytes, Constants().primaryColor),
     );
-
-    setState(() {
-      _customMarkers = [customMarker];
-    });
+    if (mounted) {
+      setState(() {
+        _customMarkers = [customMarker];
+      });
+    }
   }
 
   Future<Uint8List> _loadImageData(String imagePath) async {

@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'dart:typed_data';
@@ -7,15 +6,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:sparepark/models/user_model.dart';
-import 'package:sparepark/screens/chat/chat_page.dart';
-import 'package:sparepark/screens/crud/bookings/create_booking.dart';
+import 'package:sparepark/screens/auth/login.dart';
 import 'package:sparepark/screens/crud/bookings/create_booking.dart';
 import 'package:sparepark/screens/mapscreens/directions_page.dart';
 import 'package:sparepark/services/auth_service.dart';
 import 'package:sparepark/shared/functions.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
-import 'package:sparepark/shared/widgets/drawer.dart';
 
 class ResultsPage extends StatefulWidget {
   final LatLng location;
@@ -163,7 +159,7 @@ class _ResultsPageState extends State<ResultsPage> {
     final authService = Provider.of<AuthService>(context);
     final isLoggedInStream = authService.user!.map((user) => user != null);
     return Scaffold(
-      drawer: AppDrawer(),
+      // drawer: AppDrawer(),
       appBar: CustomAppBar(
           title: 'Map',
           isLoggedInStream: isLoggedInStream,
@@ -238,19 +234,38 @@ class _ResultsPageState extends State<ResultsPage> {
                               child: TextButton(
                                 onPressed: () {
                                   // Book the selected space
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => Booking(
-                                        startDateTime: widget.startdatetime,
-                                        endDateTime: widget.enddatetime,
-                                        cpsId: result[0],
-                                        image: result[6],
-                                        address: result[5],
-                                        postcode: result[7],
+
+                                  if (_currentUser == null) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => AuthScreen(
+                                          priorPage: 'results_page',
+                                          startdatetime: widget.startdatetime,
+                                          enddatetime: widget.enddatetime,
+                                          cpsId: result[0],
+                                          address: result[4],
+                                          postcode: result[5],
+                                          image: result[6],
+                                        ),
                                       ),
-                                    ),
-                                  );
+                                    );
+                                  } else {
+                                    print('heresadas');
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => Booking(
+                                          startDateTime: widget.startdatetime,
+                                          endDateTime: widget.enddatetime,
+                                          cpsId: result[0],
+                                          address: result[4],
+                                          postcode: result[5],
+                                          image: result[6],
+                                        ),
+                                      ),
+                                    );
+                                  }
                                 },
                                 child: Column(
                                   children: [
@@ -266,15 +281,15 @@ class _ResultsPageState extends State<ResultsPage> {
                               width: 80,
                               child: TextButton(
                                 onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ChatPage(
-                                        u_id: result[4],
-                                        currentUserId: _currentUserId,
-                                      ),
-                                    ),
-                                  );
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //     builder: (context) => ChatPage(
+                                  //       u_id: result[4],
+                                  //       currentUserId: _currentUserId,
+                                  //     ),
+                                  //   ),
+                                  // );
                                 },
                                 child: Column(
                                   children: [
