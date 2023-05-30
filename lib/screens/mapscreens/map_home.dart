@@ -62,7 +62,8 @@ class _MapHomeState extends State<MapHome> {
         space.hourlyRate,
         space.postcode,
         space.address,
-        space.p_image
+        space.p_image,
+        space.u_id,
       ]);
     }
 

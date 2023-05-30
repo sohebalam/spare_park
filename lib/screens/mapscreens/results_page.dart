@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:sparepark/screens/auth/login.dart';
+import 'package:sparepark/screens/chat/chat_page.dart';
 import 'package:sparepark/screens/crud/bookings/create_booking.dart';
 import 'package:sparepark/screens/mapscreens/directions_page.dart';
 import 'package:sparepark/services/auth_service.dart';
@@ -240,7 +241,7 @@ class _ResultsPageState extends State<ResultsPage> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => AuthScreen(
-                                          priorPage: 'results_page',
+                                          routePage: 'booking_page',
                                           startdatetime: widget.startdatetime,
                                           enddatetime: widget.enddatetime,
                                           cpsId: result[0],
@@ -251,7 +252,6 @@ class _ResultsPageState extends State<ResultsPage> {
                                       ),
                                     );
                                   } else {
-                                    print('heresadas');
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
@@ -281,15 +281,34 @@ class _ResultsPageState extends State<ResultsPage> {
                               width: 80,
                               child: TextButton(
                                 onPressed: () {
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //     builder: (context) => ChatPage(
-                                  //       u_id: result[4],
-                                  //       currentUserId: _currentUserId,
-                                  //     ),
-                                  //   ),
-                                  // );
+                                  print('Book');
+                                  if (_currentUser == null) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => AuthScreen(
+                                          routePage: 'chat_page',
+                                          startdatetime: widget.startdatetime,
+                                          enddatetime: widget.enddatetime,
+                                          cpsId: result[0],
+                                          address: result[4],
+                                          postcode: result[5],
+                                          image: result[6],
+                                          u_id: result[7],
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ChatPage(
+                                          u_id: result[7],
+                                          currentUserId: _currentUserId,
+                                        ),
+                                      ),
+                                    );
+                                  }
                                 },
                                 child: Column(
                                   children: [

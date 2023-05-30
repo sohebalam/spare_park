@@ -1,7 +1,12 @@
 import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:sparepark/services/auth_service.dart';
+import 'package:sparepark/shared/style/contstants.dart';
+import 'package:sparepark/shared/widgets/app_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DirectionsPage extends StatefulWidget {
@@ -9,7 +14,7 @@ class DirectionsPage extends StatefulWidget {
   final LatLng selectedLocation;
   String? cpsId;
 
-  DirectionsPage({super.key, 
+  DirectionsPage({
     required this.currentLocation,
     required this.selectedLocation,
     required cpsId,
@@ -20,8 +25,10 @@ class DirectionsPage extends StatefulWidget {
 }
 
 class _DirectionsPageState extends State<DirectionsPage> {
-  final Set<Marker> _markers = {};
-  final Set<Polyline> _polylines = {};
+  Set<Marker> _markers = {};
+  Set<Polyline> _polylines = {};
+
+  final bool isLoggedIn = FirebaseAuth.instance.currentUser != null;
 
   @override
   void initState() {
@@ -30,13 +37,13 @@ class _DirectionsPageState extends State<DirectionsPage> {
     // Add markers for current location and selected location
     _markers.add(
       Marker(
-        markerId: const MarkerId('current_location'),
+        markerId: MarkerId('current_location'),
         position: widget.currentLocation,
       ),
     );
     _markers.add(
       Marker(
-        markerId: const MarkerId('selected_location'),
+        markerId: MarkerId('selected_location'),
         position: widget.selectedLocation,
       ),
     );
@@ -75,7 +82,7 @@ class _DirectionsPageState extends State<DirectionsPage> {
   void _fetchDirections() async {
     print('fetching directions');
     print(widget.cpsId);
-    const apiKey = 'AIzaSyCY8J7h0Q-5Q1UDP9aY0EOy_WZBPESNBBg';
+    final apiKey = 'AIzaSyCY8J7h0Q-5Q1UDP9aY0EOy_WZBPESNBBg';
     final origin =
         '${widget.currentLocation.latitude},${widget.currentLocation.longitude}';
     final destination =
@@ -91,7 +98,7 @@ class _DirectionsPageState extends State<DirectionsPage> {
       final decodedPoints = decodePolyline(points);
 
       final polyline = Polyline(
-        polylineId: const PolylineId('route'),
+        polylineId: PolylineId('route'),
         color: Colors.blue,
         width: 5,
         points: decodedPoints,
@@ -118,9 +125,12 @@ class _DirectionsPageState extends State<DirectionsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+    final isLoggedInStream = authService.user!.map((user) => user != null);
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Directions'),
+        appBar: CustomAppBar(
+          title: 'Directions',
+          isLoggedInStream: isLoggedInStream,
         ),
         body: Stack(
           children: [
@@ -140,11 +150,11 @@ class _DirectionsPageState extends State<DirectionsPage> {
                 child: Container(
                   width: 50,
                   height: 50,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.blue,
+                    color: Constants().primaryColor,
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Icon(
                       Icons.navigation_outlined,
                       color: Colors.white,
