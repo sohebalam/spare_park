@@ -341,53 +341,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           color: Constants().primaryColor,
                         )),
                   ),
-                  // ElevatedButton(
-                  //   style: ElevatedButton.styleFrom(
-                  //     primary: Constants().primaryColor,
-                  //     shape: RoundedRectangleBorder(
-                  //       borderRadius: BorderRadius.circular(18.0),
-                  //     ),
-                  //   ),
-                  //   onPressed: () {
-                  //     _login(routePage: widget.routePage!);
-                  //   },
-                  //   child: Padding(
-                  //     padding: EdgeInsets.symmetric(
-                  //       horizontal: 20,
-                  //       vertical: 10,
-                  //     ),
-                  //     child: Text(
-                  //       "Login",
-                  //       style: TextStyle(
-                  //         fontSize: 20,
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
-                  // SizedBox(height: 10),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.center,
-                  //   children: [
-                  //     Text("Don't have an account? "),
-                  //     GestureDetector(
-                  //       onTap: () {
-                  //         Navigator.push(
-                  //           context,
-                  //           MaterialPageRoute(
-                  //             builder: (context) => RegisterScreen(),
-                  //           ),
-                  //         );
-                  //       },
-                  //       child: Text(
-                  //         "Sign Up",
-                  //         style: TextStyle(
-                  //           color: Constants().primaryColor,
-                  //           fontWeight: FontWeight.bold,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
+
                   SizedBox(height: 10),
                   _errorMessage.isNotEmpty
                       ? Text(
@@ -399,7 +353,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       : Container(),
                 ],
               ),
-              SizedBox(height: 70),
+              SizedBox(height: 50),
               Padding(
                   padding: EdgeInsets.fromLTRB(0, 0, 0, 30),
                   child: Center(
