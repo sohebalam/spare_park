@@ -131,7 +131,7 @@ class _PaymentState extends State<Payment> {
                       Icons.check_circle,
                       color: Colors.green,
                     ),
-                    Text("Payment Successfull"),
+                    Text("Payment Successful"),
                   ],
                 ),
               ],

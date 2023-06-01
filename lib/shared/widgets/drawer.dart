@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sparepark/screens/auth/auth_screen.dart';
+import 'package:sparepark/screens/auth/login.dart';
 import 'package:sparepark/screens/auth/register_screen.dart';
 import 'package:sparepark/screens/chat/chat_list.dart';
 import 'package:sparepark/screens/crud/admin/booking_adminlist.dart';
@@ -199,7 +199,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => AuthScreen(
-                        prior_page: 'Drawer',
+                        routePage: 'Drawer',
                       ),
                     ),
                   );

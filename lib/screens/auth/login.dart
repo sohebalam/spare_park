@@ -18,9 +18,9 @@ import 'package:sparepark/shared/style/contstants.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
 
 class AuthScreen extends StatefulWidget {
-  late DateTime startdatetime;
-  late DateTime enddatetime;
-  late String cpsId;
+  late DateTime? startdatetime;
+  late DateTime? enddatetime;
+  late String? cpsId;
   late String? routePage;
   late String? address;
   late String? image;
@@ -28,16 +28,17 @@ class AuthScreen extends StatefulWidget {
 
   late String? u_id;
 
-  AuthScreen(
-      {super.key,
-      required this.startdatetime,
-      required this.enddatetime,
-      required this.cpsId,
-      this.routePage,
-      required this.address,
-      required this.image,
-      required this.postcode,
-      this.u_id});
+  AuthScreen({
+    super.key,
+    this.startdatetime,
+    this.enddatetime,
+    this.cpsId,
+    this.routePage,
+    this.address,
+    this.image,
+    this.postcode,
+    this.u_id,
+  });
 
   @override
   _AuthScreenState createState() => _AuthScreenState();
@@ -110,7 +111,7 @@ class _AuthScreenState extends State<AuthScreen> {
           ),
         ),
       );
-    } else {
+    } else if (widget.routePage == 'booking_page') {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -122,6 +123,13 @@ class _AuthScreenState extends State<AuthScreen> {
             image: image!,
             postcode: postcode!,
           ),
+        ),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MapHome(),
         ),
       );
     }
@@ -159,15 +167,24 @@ class _AuthScreenState extends State<AuthScreen> {
 
     print('dcdsmkfcds');
     if (userCredential != null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ChatPage(
-            u_id: u_id!,
-            currentUserId: userCredential.user!.uid,
+      if (widget.routePage == 'chat_page') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatPage(
+              u_id: u_id!,
+              currentUserId: userCredential.user!.uid,
+            ),
           ),
-        ),
-      );
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MapHome(),
+          ),
+        );
+      }
     }
   }
 
@@ -185,9 +202,9 @@ class _AuthScreenState extends State<AuthScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => Booking(
-              startDateTime: widget.startdatetime,
-              endDateTime: widget.enddatetime,
-              cpsId: widget.cpsId,
+              startDateTime: widget.startdatetime!,
+              endDateTime: widget.enddatetime!,
+              cpsId: widget.cpsId!,
               address: '',
               image: '',
               postcode: '',
@@ -363,9 +380,9 @@ class _AuthScreenState extends State<AuthScreen> {
                           await signInFunction(
                             context,
                             widget.routePage,
-                            startDateTime: widget.startdatetime,
-                            endDateTime: widget.enddatetime,
-                            cpsId: widget.cpsId,
+                            startDateTime: widget.startdatetime!,
+                            endDateTime: widget.enddatetime!,
+                            cpsId: widget.cpsId!,
                             address: widget.address,
                             postcode: widget.postcode,
                             image: widget.image,

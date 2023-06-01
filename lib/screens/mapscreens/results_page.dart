@@ -48,8 +48,6 @@ class _ResultsPageState extends State<ResultsPage> {
   @override
   void initState() {
     super.initState();
-    print('widget.results.length');
-    print(widget.results.length);
 
     filteredResults = removeDuplicates(widget.results);
     FirebaseAuth.instance.authStateChanges().listen((user) {
@@ -162,7 +160,7 @@ class _ResultsPageState extends State<ResultsPage> {
     return Scaffold(
       // drawer: AppDrawer(),
       appBar: CustomAppBar(
-          title: 'Map',
+          title: 'Results',
           isLoggedInStream: isLoggedInStream,
           padding: EdgeInsets.fromLTRB(0, 0, 1, 0)),
       body: Column(

@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
-import 'package:sparepark/screens/auth/auth_screen.dart';
 import 'package:sparepark/screens/chat/chat_page.dart';
 import 'package:sparepark/services/auth_service.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
