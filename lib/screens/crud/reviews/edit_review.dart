@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
-import 'package:sparepark/services/auth_service.dart';
+import 'package:sparepark/shared/auth_service.dart';
 import 'package:sparepark/shared/style/contstants.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
 

@@ -207,7 +207,7 @@ class _ViewBookingState extends State<ViewBooking> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                DateFormat('HH:mm dd MMM yy')
+                                DateFormat('HH:mm, dd MMM yy')
                                     .format(widget.startDateTime),
                               ),
                             ],
@@ -229,7 +229,7 @@ class _ViewBookingState extends State<ViewBooking> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                DateFormat('HH:mm dd MMM yy')
+                                DateFormat('HH:mm, dd MMM yy')
                                     .format(widget.endDateTime),
                               ),
                             ],

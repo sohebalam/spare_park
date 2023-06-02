@@ -34,9 +34,6 @@ Future signInFunction() async {
       'date': DateTime.now(),
     });
   }
-
-  // Navigator.pushAndRemoveUntil(context,
-  //     MaterialPageRoute(builder: (context) => ChatHome()), (route) => false);
 }
 
 final _auth = FirebaseAuth.instance;
@@ -60,18 +57,6 @@ String formatDateTime(DateTime dateTime) {
   String minute = dateTime.minute.toString().padLeft(2, '0');
   return '$day/$month/$year $hour:$minute';
 }
-
-// Widget textWidget(
-//     {required String text,
-//     double fontSize = 12,
-//     FontWeight fontWeight = FontWeight.normal,
-//     Color color = Colors.black}) {
-//   return Text(
-//     text,
-//     style: GoogleFonts.poppins(
-//         fontSize: fontSize, fontWeight: fontWeight, color: color),
-//   );
-// }
 
 List<DocumentSnapshot> findClosestParkingSpaces(
     double latitude, double longitude, List<DocumentSnapshot> parkingSpaces) {

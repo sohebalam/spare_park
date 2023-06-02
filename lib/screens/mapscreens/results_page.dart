@@ -10,7 +10,7 @@ import 'package:sparepark/screens/auth/login.dart';
 import 'package:sparepark/screens/chat/chat_page.dart';
 import 'package:sparepark/screens/crud/bookings/create_booking.dart';
 import 'package:sparepark/screens/mapscreens/directions_page.dart';
-import 'package:sparepark/services/auth_service.dart';
+import 'package:sparepark/shared/auth_service.dart';
 import 'package:sparepark/shared/functions.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
 
@@ -97,7 +97,7 @@ class _ResultsPageState extends State<ResultsPage> {
           await _getBytesFromCanvas(item[3].toString()),
         ),
         infoWindow: InfoWindow(
-          title: "${i + 5}",
+          title: "${i + 1}",
         ),
       );
       setState(() {

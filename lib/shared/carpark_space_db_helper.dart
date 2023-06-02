@@ -47,8 +47,6 @@ class DB_CarPark {
   static Future<List<CarParkSpaceModel>> getNearestSpaces({
     double? latitude,
     double? longitude,
-    required DateTime startdatetime,
-    required DateTime enddatetime,
   }) async {
     final carParkSpaces = await read().first;
     final position = Position(
@@ -82,8 +80,6 @@ class DB_CarPark {
       );
       return distance <= distanceThreshold;
     }).toList();
-
-    // print(filteredSpaces); // Add this line to print the list of filtered spaces
 
     filteredSpaces.sort((a, b) {
       final aPosition = Position(

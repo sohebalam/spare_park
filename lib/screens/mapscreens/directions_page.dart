@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:sparepark/services/auth_service.dart';
+import 'package:sparepark/shared/auth_service.dart';
 import 'package:sparepark/shared/style/contstants.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
 import 'package:url_launcher/url_launcher.dart';

@@ -12,7 +12,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:sparepark/models/booking_model.dart';
 import 'package:sparepark/screens/crud/bookings/payment.dart';
-import 'package:sparepark/services/auth_service.dart';
+import 'package:sparepark/shared/auth_service.dart';
 import 'package:sparepark/shared/style/contstants.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
 import 'package:sparepark/shared/widgets/drawer.dart';
@@ -219,7 +219,7 @@ class _BookingState extends State<Booking> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                DateFormat('HH:mm dd MMM yy')
+                                DateFormat('HH:mm, dd MMM yy')
                                     .format(widget.startDateTime),
                               ),
                             ],
@@ -241,7 +241,7 @@ class _BookingState extends State<Booking> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                DateFormat('HH:mm dd MMM yy')
+                                DateFormat('HH:mm, dd MMM yy')
                                     .format(widget.endDateTime),
                               ),
                             ],

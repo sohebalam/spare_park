@@ -12,6 +12,7 @@ import 'dart:ui' as ui;
 import 'package:intl/intl.dart';
 import 'package:sparepark/models/booking_model.dart';
 import 'package:sparepark/screens/crud/bookings/payment.dart';
+import 'package:sparepark/shared/functions.dart';
 import 'package:sparepark/shared/style/contstants.dart';
 
 class EditBooking extends StatefulWidget {
@@ -194,16 +195,16 @@ class _EditBookingState extends State<EditBooking> {
     widget.endDateTime = roundToNearest15Minutes(widget.endDateTime);
 
     TextEditingController startDateController = TextEditingController(
-      text: DateFormat('HH:mm dd MMM yy').format(widget.startDateTime),
+      text: DateFormat('HH:mm, dd MMM yy').format(widget.startDateTime),
     );
     TextEditingController endDateController = TextEditingController(
-      text: DateFormat('HH:mm dd MMM yy').format(widget.endDateTime),
+      text: DateFormat('HH:mm, dd MMM yy').format(widget.endDateTime),
     );
 
     startDateController.text =
-        DateFormat('HH:mm dd MMM yy').format(widget.startDateTime);
+        DateFormat('HH:mm, dd MMM yy').format(widget.startDateTime);
     endDateController.text =
-        DateFormat('HH:mm dd MMM yy').format(widget.endDateTime);
+        DateFormat('HH:mm, dd MMM yy').format(widget.endDateTime);
 
     return Scaffold(
       body: Column(
@@ -485,11 +486,4 @@ class _EditBookingState extends State<EditBooking> {
       locale: LocaleType.en,
     );
   }
-}
-
-DateTime roundToNearest15Minutes(DateTime dateTime) {
-  final minutes = dateTime.minute;
-  final roundedMinutes = (minutes / 15).round() * 15;
-  return DateTime(dateTime.year, dateTime.month, dateTime.day, dateTime.hour,
-      roundedMinutes);
 }

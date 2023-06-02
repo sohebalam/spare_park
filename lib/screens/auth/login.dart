@@ -13,7 +13,7 @@ import 'package:sparepark/screens/crud/bookings/create_booking.dart';
 // import 'package:sparepark/screens/booking/create_booking.dart';
 import 'package:sparepark/screens/mapscreens/map_home.dart';
 import 'package:sparepark/screens/mapscreens/results_page.dart';
-import 'package:sparepark/services/auth_service.dart';
+import 'package:sparepark/shared/auth_service.dart';
 import 'package:sparepark/shared/style/contstants.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
 

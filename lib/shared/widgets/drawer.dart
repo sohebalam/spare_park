@@ -16,7 +16,7 @@ import 'package:sparepark/screens/crud/parking/register_car_parking.dart';
 import 'package:sparepark/screens/crud/reviews/review_list.dart';
 import 'package:sparepark/screens/crud/user/profile.dart';
 import 'package:sparepark/screens/mapscreens/map_home.dart';
-import 'package:sparepark/services/auth_service.dart';
+import 'package:sparepark/shared/auth_service.dart';
 import 'package:sparepark/shared/functions.dart';
 import 'package:sparepark/shared/style/contstants.dart';
 // import 'package:your_app_name/utils/constants.dart';

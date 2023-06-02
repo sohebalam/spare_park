@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import 'dart:convert';
 
 import 'package:sparepark/models/review_model.dart';
-import 'package:sparepark/services/auth_service.dart';
+import 'package:sparepark/shared/auth_service.dart';
 import 'package:sparepark/shared/style/contstants.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
 

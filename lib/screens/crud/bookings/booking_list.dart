@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:sparepark/screens/crud/bookings/view_booking.dart';
 import 'package:sparepark/screens/crud/bookings/edit_booking.dart';
 import 'package:sparepark/screens/crud/reviews/create_review.dart';
-import 'package:sparepark/services/auth_service.dart';
+import 'package:sparepark/shared/auth_service.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
 
 class BookingsPage extends StatefulWidget {

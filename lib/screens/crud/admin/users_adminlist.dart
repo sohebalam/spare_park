@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:sparepark/screens/crud/reviews/edit_review.dart';
 import 'package:sparepark/screens/crud/reviews/view_review.dart';
 import 'package:sparepark/screens/crud/user/admin_profile.dart';
-import 'package:sparepark/services/auth_service.dart';
+import 'package:sparepark/shared/auth_service.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
 
 class UsersAdminListPage extends StatefulWidget {

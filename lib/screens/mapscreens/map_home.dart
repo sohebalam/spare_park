@@ -6,9 +6,10 @@ import 'package:google_maps_webservice/places.dart';
 import 'package:provider/provider.dart';
 import 'package:sparepark/screens/mapscreens/results_page.dart';
 import 'package:intl/intl.dart';
-import 'package:sparepark/services/auth_service.dart';
+import 'package:sparepark/shared/auth_service.dart';
 
 import 'package:sparepark/shared/carpark_space_db_helper.dart';
+import 'package:sparepark/shared/functions.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
 import 'package:sparepark/shared/widgets/drawer.dart';
 
@@ -23,38 +24,39 @@ class _MapHomeState extends State<MapHome> {
   late GoogleMapController mapController;
   // DateTime? _selectedDateTimeStart;
   // DateTime? _selectedDateTimeEnd;
+
+  // Initialize selected start and end datetimes with rounded current time
   DateTime _selectedDateTimeStart = roundToNearest15Minutes(DateTime.now());
   DateTime _selectedDateTimeEnd =
       roundToNearest15Minutes(DateTime.now().add(const Duration(hours: 1)));
+
   LatLng _currentPosition = const LatLng(0, 0);
   bool _isLoading = true;
   String? _selectedOption;
-  final _placesApiClient =
-      GoogleMapsPlaces(apiKey: 'AIzaSyCY8J7h0Q-5Q1UDP9aY0EOy_WZBPESNBBg');
+  final _placesApiClient = GoogleMapsPlaces(apiKey: 'YOUR_API_KEY');
   String _searchTerm = '';
   LatLng? location;
+
   @override
   void initState() {
     super.initState();
-    getLocation();
-    _selectedOption = 'Current Location';
+    getLocation(); // Get user's current location
+    _selectedOption = 'Current Location'; // Set default selected option
   }
 
-  void _newFunction(
+  void retrieveNearestSpaces(
     double? latitude,
     double? longitude,
   ) async {
-    final carParkService = DB_CarPark();
+    // Retrieve nearest parking spaces based on longitude and latitude
     final nearestSpaces = await DB_CarPark.getNearestSpaces(
       latitude: latitude,
       longitude: longitude,
-      startdatetime: _selectedDateTimeStart,
-      enddatetime: _selectedDateTimeEnd,
     );
+
     List<List<dynamic>> results = [];
     for (var space in nearestSpaces) {
-      print('her');
-      print(space);
+      // Add space information to the results list
       results.add([
         space.p_id,
         space.latitude,
@@ -67,6 +69,7 @@ class _MapHomeState extends State<MapHome> {
       ]);
     }
 
+    // Navigate to the results page with relevant data
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -82,6 +85,7 @@ class _MapHomeState extends State<MapHome> {
     );
   }
 
+  // Get user's current location
   getLocation() async {
     LocationPermission permission;
     permission = await Geolocator.requestPermission();
@@ -104,16 +108,20 @@ class _MapHomeState extends State<MapHome> {
   }
 
   List<Prediction> _predictions = [];
+
+  // Handle dropdown selection change
   void _onDropdownChanged(String? value) {
     setState(() {
       _selectedOption = value;
     });
 
     if (_selectedOption == 'Current Location') {
-      _newFunction(_currentPosition.latitude, _currentPosition.longitude);
+      retrieveNearestSpaces(
+          _currentPosition.latitude, _currentPosition.longitude);
     }
   }
 
+  // Handle search text field value change
   void _onSearchChanged(String value) async {
     if (value.isNotEmpty) {
       setState(() {
@@ -121,6 +129,7 @@ class _MapHomeState extends State<MapHome> {
         _searchTerm = value;
       });
 
+      // Autocomplete search term using Google Places API
       PlacesAutocompleteResponse response =
           await _placesApiClient.autocomplete(_searchTerm);
 
@@ -135,7 +144,9 @@ class _MapHomeState extends State<MapHome> {
     }
   }
 
+  // Handle prediction selection from the search results
   void _onPredictionSelected(Prediction prediction) async {
+    // Get detailed information about the selected place
     PlacesDetailsResponse details =
         await _placesApiClient.getDetailsByPlaceId(prediction.placeId ?? "");
 
@@ -144,7 +155,7 @@ class _MapHomeState extends State<MapHome> {
         details.result.geometry?.location.lat ?? 0.0,
         details.result.geometry?.location.lng ?? 0.0,
       );
-      _newFunction(location?.latitude, location?.longitude);
+      retrieveNearestSpaces(location?.latitude, location?.longitude);
     });
   }
 
@@ -186,6 +197,7 @@ class _MapHomeState extends State<MapHome> {
               children: [
                 GestureDetector(
                   onTap: () {
+                    // Show date-time picker for selecting start date and time
                     DatePicker.showDateTimePicker(
                       context,
                       showTitleActions: true,
@@ -236,6 +248,7 @@ class _MapHomeState extends State<MapHome> {
                 ),
                 GestureDetector(
                   onTap: () {
+                    // Show date-time picker for selecting end date and time
                     DatePicker.showDateTimePicker(
                       context,
                       showTitleActions: true,
@@ -246,10 +259,6 @@ class _MapHomeState extends State<MapHome> {
                         setState(() {
                           _selectedDateTimeEnd = date;
                         });
-                        print(
-                            'Start: ${DateFormat('hh:mm a dd/MM/yy').format(_selectedDateTimeStart)}');
-                        print(
-                            'End: ${DateFormat('hh:mm a dd/MM/yy').format(date)}');
                       },
                       currentTime: _selectedDateTimeEnd,
                       locale: LocaleType.en,
@@ -340,11 +349,4 @@ class _MapHomeState extends State<MapHome> {
       ),
     );
   }
-}
-
-DateTime roundToNearest15Minutes(DateTime dateTime) {
-  final minutes = dateTime.minute;
-  final roundedMinutes = (minutes / 15).round() * 15;
-  return DateTime(dateTime.year, dateTime.month, dateTime.day, dateTime.hour,
-      roundedMinutes);
 }

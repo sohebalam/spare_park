@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:sparepark/firebase_options.dart';
 import 'package:sparepark/screens/auth/register_screen.dart';
 import 'package:sparepark/screens/mapscreens/map_home.dart';
-import 'package:sparepark/services/auth_service.dart';
 import 'package:provider/provider.dart';
+import 'package:sparepark/shared/auth_service.dart';
 import 'package:sparepark/shared/widgets/drawer.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 

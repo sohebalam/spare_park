@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:sparepark/models/car_park_space.dart';
-import 'package:sparepark/services/auth_service.dart';
+import 'package:sparepark/shared/auth_service.dart';
 import 'package:sparepark/shared/carpark_space_db_helper.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:auth_buttons/auth_buttons.dart';
