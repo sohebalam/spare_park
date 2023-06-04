@@ -135,7 +135,7 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
-  Future<void> signInFunc(BuildContext context, String u_id) async {
+  Future<void> signInFunc(BuildContext context, [String? u_id]) async {
     GoogleSignInAccount? googleUser = await googleSignIn.signIn();
     if (googleUser == null) {
       return;
@@ -388,7 +388,10 @@ class _AuthScreenState extends State<AuthScreen> {
                             image: widget.image,
                           );
                         } else {
-                          await signInFunc(context, widget.u_id!);
+                          if (widget.u_id != null) {
+                            await signInFunc(context, widget.u_id!);
+                          }
+                          await signInFunc(context);
                         }
                       },
                       text: "Sign up with Google",

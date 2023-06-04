@@ -61,7 +61,6 @@ class _BookingState extends State<Booking> {
   void onSubmit() async {
     isLoading = true;
     // Create a new booking model object
-    // Create a new booking model object
     BookingModel booking = BookingModel(
       b_id: '', // Set b_id as an empty string initially
       p_id: widget.cpsId,
@@ -284,19 +283,6 @@ class _BookingState extends State<Booking> {
         CameraUpdate.newLatLngZoom(marker.position, 14.0),
       );
     }
-  }
-
-  Future<Uint8List> _resizeImage(
-      String imagePath, int width, int height) async {
-    final response = await http.get(Uri.parse(imagePath));
-    final data = response.bodyBytes;
-    final compressedData = await FlutterImageCompress.compressWithList(
-      data,
-      minHeight: height,
-      minWidth: width,
-      quality: 90,
-    );
-    return Uint8List.fromList(compressedData);
   }
 
   Widget _customMarker(Uint8List imageData, Color color) {

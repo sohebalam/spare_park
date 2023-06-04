@@ -13,6 +13,7 @@ import 'package:sparepark/screens/mapscreens/directions_page.dart';
 import 'package:sparepark/shared/auth_service.dart';
 import 'package:sparepark/shared/functions.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
+import 'package:sparepark/shared/widgets/drawer.dart';
 
 class ResultsPage extends StatefulWidget {
   final LatLng location;
@@ -158,7 +159,7 @@ class _ResultsPageState extends State<ResultsPage> {
     final authService = Provider.of<AuthService>(context);
     final isLoggedInStream = authService.user!.map((user) => user != null);
     return Scaffold(
-      // drawer: AppDrawer(),
+      drawer: AppDrawer(),
       appBar: CustomAppBar(
           title: 'Results',
           isLoggedInStream: isLoggedInStream,

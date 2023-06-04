@@ -9,16 +9,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sparepark/models/user_model.dart';
 import 'package:sparepark/screens/mapscreens/map_home.dart';
 import 'package:sparepark/screens/mapscreens/results_page.dart';
+import 'package:sparepark/shared/functions.dart';
 
 class AuthService {
   final auth.FirebaseAuth _firebaseAuth = auth.FirebaseAuth.instance;
   final StreamController<UserModel?> _userController =
       StreamController<UserModel?>();
-
-  Future<void> disconnect(BuildContext context) async {
-    await _firebaseAuth.signOut();
-    _userController.add(null);
-  }
 
   UserModel? _userFromFirebase(auth.User? user) {
     if (user == null) {
@@ -85,11 +81,6 @@ class AuthService {
       );
       return null;
     }
-  }
-
-  bool isEmailValid(String email) {
-    final emailRegex = RegExp(r'^[\w-]+(.[\w-]+)*@([\w-]+.)+[a-zA-Z]{2,7}$');
-    return emailRegex.hasMatch(email);
   }
 
   Future<UserModel?> createUserWithEmailAndPassword(

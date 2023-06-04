@@ -6,8 +6,9 @@ import 'package:google_maps_flutter_platform_interface/src/types/location.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:sparepark/shared/auth_service.dart';
+import 'package:sparepark/shared/functions.dart';
 import 'package:sparepark/shared/style/contstants.dart';
-import 'package:sparepark/shared/widgets/TextField.dart';
+import 'package:sparepark/shared/widgets/textField.dart';
 import 'package:sparepark/shared/widgets/app_bar.dart';
 import 'package:sparepark/shared/widgets/errorMessage.dart';
 
@@ -191,9 +192,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   controller: emailController,
                   decoration: InputDecoration(
                     labelText: 'Email',
-                    errorText: !submitted || emailController.text.isNotEmpty
+                    errorText: !submitted ||
+                            emailController.text.isEmpty ||
+                            isEmailValid(emailController.text)
                         ? null
-                        : 'Please enter your email.',
+                        : 'Please enter a valid email address.',
                   ),
                 ),
               ),
@@ -228,7 +231,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(
                 height: 16.0,
               ),
-
               GestureDetector(
                 onTap: _getImage,
                 child: Container(
@@ -272,10 +274,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               if (_isLoading) Center(child: CircularProgressIndicator()),
               buildErrorMessage(context, _errorMessage),
-              // ElevatedButton(
-              //   onPressed: _isLoading ? null : _registerUser,
-              //   child: const Text('Register'),
-              // ),
               Container(
                 height: 40.0,
                 width: double.infinity, // Span the button across the screen

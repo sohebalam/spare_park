@@ -49,6 +49,11 @@ DateTime roundToNearest15Minutes(DateTime dateTime) {
       roundedMinutes);
 }
 
+bool isEmailValid(String email) {
+  final emailRegex = RegExp(r'^[\w-]+(.[\w-]+)*@([\w-]+.)+[a-zA-Z]{2,7}$');
+  return emailRegex.hasMatch(email);
+}
+
 String formatDateTime(DateTime dateTime) {
   String day = dateTime.day.toString().padLeft(2, '0');
   String month = dateTime.month.toString().padLeft(2, '0');

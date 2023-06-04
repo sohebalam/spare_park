@@ -8,14 +8,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final Stream<bool> isLoggedInStream;
   final EdgeInsetsGeometry? padding; // Optional argument for padding
-
   CustomAppBar({
     Key? key,
     required this.title,
     required this.isLoggedInStream,
     this.padding,
   }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
@@ -41,7 +39,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               IconButton(
                 icon: Icon(Icons.logout),
                 onPressed: () {
-                  authService.disconnect(context);
+                  disconnect();
                 },
               ),
             ],

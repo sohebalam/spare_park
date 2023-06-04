@@ -110,6 +110,7 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
     final authService = Provider.of<AuthService>(context);
     final isLoggedInStream = authService.user!.map((user) => user != null);
     User? user = FirebaseAuth.instance.currentUser;
+
     void _submitForm() async {
       if (_formKey.currentState!.validate()) {
         setState(() {
@@ -128,7 +129,6 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
           );
           return;
         }
-
         // User is logged in, continue with form submission
         final postcode = _postcodeController.text;
         final postcodeUrl =
@@ -142,7 +142,6 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
 
           final id =
               FirebaseFirestore.instance.collection('parking_spaces').doc().id;
-
           final RegisterParkingSpace = CarParkSpaceModel(
             u_id: user!.uid,
             address: _addressController.text,
@@ -153,6 +152,20 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
             longitude: longitude,
             p_id: id,
           );
+
+          if (_image == null) {
+            // Image is not selected, show error message
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Please select an image'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+            setState(() {
+              _isLoading = false; // Reset loading state
+            });
+            return;
+          }
 
           // Upload image to Firebase Storage
           if (_image != null) {
@@ -165,9 +178,7 @@ class _RegisterParkingSpaceState extends State<RegisterParkingSpace> {
             final imageUrl = await snapshot.ref.getDownloadURL();
             RegisterParkingSpace.p_image = imageUrl;
           }
-
           DB_CarPark.create(RegisterParkingSpace);
-
           // Show success message
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

@@ -82,20 +82,6 @@ class _PaymentState extends State<Payment> {
                 },
                 child: Text('Make Payment'),
               ),
-
-              // child: ElevatedButton(
-              //   style: ButtonStyle(backgroundColor: Constants().primaryColor),
-              //   child: Text(
-              //     'Make Payment',
-              //     style: TextStyle(
-              //       color: Constants().primaryColor,
-              //       fontWeight: FontWeight.bold,
-              //     ),
-              //   ),
-              //   onPressed: () async {
-              //     await makePayment();
-              //   },
-              // ),
             ),
           ],
         ));
@@ -199,8 +185,6 @@ class _PaymentState extends State<Payment> {
       'paid': true,
       'paymentId': paymentIntentId,
     });
-
     print(paymentIntentId);
-    // BookingModel(paid: true, paymentId: paymentIntentId);
   }
 }

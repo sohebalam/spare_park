@@ -68,12 +68,6 @@ class _ParkingPageState extends State<ParkingPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Address: ${parking['address']}'),
-                        // Text('User id: ${parking['u_id']}'),
-                        // Text('Parking Space id: ${parking['p_id']}'),
-                        // Text('parking Date: ${parking['reg_date']}'),
-                        // Text('parking Start: ${parking['start_date_time']}'),
-                        // Text('parking End: ${parking['end_date_time']}'),
-                        // Text('Total Price: ${parking['b_total']}'),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
