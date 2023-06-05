@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -33,7 +34,8 @@ class _MapHomeState extends State<MapHome> {
   LatLng _currentPosition = const LatLng(0, 0);
   bool _isLoading = true;
   String? _selectedOption;
-  final _placesApiClient = GoogleMapsPlaces(apiKey: 'YOUR_API_KEY');
+  final _placesApiClient =
+      GoogleMapsPlaces(apiKey: 'AIzaSyCY8J7h0Q-5Q1UDP9aY0EOy_WZBPESNBBg');
   String _searchTerm = '';
   LatLng? location;
 
@@ -69,13 +71,19 @@ class _MapHomeState extends State<MapHome> {
       ]);
     }
 
+    List<List<dynamic>> filteredResults = await filterBookings(
+      results,
+      _selectedDateTimeStart,
+      _selectedDateTimeEnd,
+    );
+
     // Navigate to the results page with relevant data
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ResultsPage(
           location: LatLng(latitude!, longitude!),
-          results: results,
+          results: filteredResults,
           latitude: _currentPosition.latitude,
           longitude: _currentPosition.longitude,
           startdatetime: _selectedDateTimeStart,
@@ -349,4 +357,25 @@ class _MapHomeState extends State<MapHome> {
       ),
     );
   }
+}
+
+Future<List<List<dynamic>>> filterBookings(List<List<dynamic>> nearestSpaces,
+    DateTime startDateTime, DateTime endDateTime) async {
+  final bookingsSnapshot =
+      await FirebaseFirestore.instance.collection('bookings').get();
+
+  List<List<dynamic>> filteredResults = [];
+
+  for (var space in nearestSpaces) {
+    final matchingBookings = bookingsSnapshot.docs.where((booking) =>
+        booking.data()['p_id'] == space[0] &&
+        booking.data()['start_date_time'].toDate().isBefore(endDateTime) &&
+        booking.data()['end_date_time'].toDate().isAfter(startDateTime));
+
+    if (matchingBookings.isEmpty) {
+      filteredResults.add(space);
+    }
+  }
+
+  return filteredResults;
 }
